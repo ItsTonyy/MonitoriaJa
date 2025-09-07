@@ -23,6 +23,7 @@ body {
 
 main {
   width: 100dvw;
+  height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -36,6 +37,7 @@ main {
   align-items: center;
   flex-direction: row;
   padding: 10px;
+  padding-top: 50px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 
@@ -232,4 +234,8 @@ main {
   text-decoration: underline;
   cursor: pointer;
   font-weight: 500;
+}
+
+.titulo {
+  text-shadow: 2px 2px 2px rgb(209, 185, 143);
 }
