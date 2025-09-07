@@ -1,0 +1,119 @@
+body {
+  background-color: #68696d;
+  color: #fff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+main {
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 20px;
+}
+
+h1 {
+  align-self: center;
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.monitor-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.image-with-border {
+  border: 3px solid #fff;
+  border-radius: 10px;
+  padding: 0; /* Altere este valor para 0 ou remova a linha */
+}
+
+.image-with-border img {
+  width: 60px;
+  height: 60px;
+  border-radius: 2px;
+  margin: 0;
+  display: block;
+}
+
+.monitor-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.monitor-details h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.monitor-details h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: normal;
+  color: #bbb;
+}
+
+.monitor-details p {
+  margin: 5px 0 0 0;
+  font-size: 14px;
+  color: #999;
+}
+
+.section-title {
+  font-size: 18px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.rating {
+  font-size: 30px;
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+  margin-top: -20px; /* Ajusta a margem para mover as estrelas para cima */
+  margin-bottom: 20px;
+}
+
+.rating .star {
+  transition: color 0.2s ease-in-out;
+}
+
+.rating .star:hover,
+.rating .star.active {
+  color: #ffc107;
+}
+
+textarea {
+  width: calc(100% - 24px);
+  background-color: transparent;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  color: #fff;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 16px;
+  resize: vertical;
+}
+
+button {
+  background-color: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 10px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  align-self: center;
+  margin-top: 20px;
+}
