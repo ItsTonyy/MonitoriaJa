@@ -1,0 +1,216 @@
+/* Reset básico */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f7f7f7;
+    color: #222;
+    min-height: 100vh;
+    width: 100vw;
+    max-width: 430px;
+    margin: 0 auto;
+}
+
+/* Header */
+.header {
+    padding: 24px 16px 8px 16px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    display: flex;
+    justify-content: center;
+}
+
+.titulo {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d5be3;
+    text-align: left;
+}
+
+/* Busca e filtro */
+.busca-filtro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #fff;
+}
+
+.barra-busca {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 1rem;
+    background: #f3f4f6;
+}
+
+.btn-filtro {
+    background: #2d5be3;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0 16px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-filtro:hover {
+    background: #1b3e8a;
+}
+
+.icon-filtro {
+    font-size: 1.5rem;
+}
+
+/* Lista de monitores */
+.lista-monitores {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 16px;
+}
+
+.monitor-card {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(45,91,227,0.08);
+    padding: 16px;
+    width: 100%;
+    min-height: 120px;
+    gap: 16px;
+    position: relative;
+}
+
+.monitor-img-avaliacao {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 72px;
+    margin-right: 12px;
+}
+
+.monitor-foto {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #2d5be3;
+}
+
+.monitor-avaliacao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    font-size: 1rem;
+    color: #f5b301;
+    gap: 4px;
+}
+
+.monitor-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: center;
+}
+
+.monitor-nome {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d5be3;
+}
+
+.monitor-materia,
+.monitor-valor,
+.monitor-servico {
+    font-size: 0.98rem;
+    color: #444;
+}
+
+.monitor-avaliacao {
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+    font-size: 1rem;
+    color: #f5b301;
+    gap: 4px;
+}
+
+.estrela {
+    font-size: 1.2rem;
+}
+
+.nota {
+    color: #222;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+/* Botão acessar */
+.btn-acessar {
+    background: #2d5be3;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-left: 12px;
+}
+
+.btn-acessar:hover {
+    background: #1b3e8a;
+}
+
+/* Paginação */
+.paginacao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    padding: 24px 0 16px 0;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+}
+
+.btn-pagina {
+    background: #2d5be3;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-pagina:hover {
+    background: #1b3e8a;
+}
+
+.pagina-atual {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d5be3;
+}
+
+
