@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=alarm,calendar_today,video_call"
+    />
+
+    <link rel="stylesheet" href="agendamentoMonitor.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <main class="main">
+      <h1 class="agendamento-titulo">Confira Seu Agendamento</h1>
+
+      <div class="monitorDetails">
+        <div class="monitorProfile">
+          <div>
+            <img src="./public/usuario_desconhecido.png" alt="imagem do monitor" class="monitorImage" />
+          </div>
+        </div>
+        <div class="monitor-data">
+          <div class="monitor-data-specific">
+            <h1 class="titulo-monitor">Monitor X</h1>
+            <div class="monitor-materia-valor">
+              <h2>Matéria X</h2>
+            </div>
+            <h2 class="duração">Duração XX a YY Min</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="agendamento">
+        <div class="agendamento-details">
+          <div class="agendamento-details-row-1">
+            <div class="agendamento-details-attributes">
+              <span class="material-symbols-outlined"> calendar_today </span>
+              <p>XX/XX/XXXX</p>
+            </div>
+
+            <div class="agendamento-details-attributes">
+              <img src="./public/attach_money.png" alt="money icon" />
+              <p>$XX,00</p>
+            </div>
+          </div>
+
+          <div class="agendamento-details-row-2">
+            <div class="agendamento-details-attributes">
+              <span class="material-symbols-outlined"> alarm </span>
+              <p>XX:XX</p>
+            </div>
+
+            <div class="agendamento-details-attributes">
+              <span class="material-symbols-outlined"> video_call </span>
+              <p>Videoconferência</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="servicos">
+        <h1>Tipo de Serviço</h1>
+        <hr />
+        <div class="checkboxes">
+          <div class="checkboxes-box">
+            <input type="checkbox" name="servico" id="aula" class="checkbox" />
+            <label for="aula" class="checkbox-names">aula</label>
+          </div>
+          <div class="checkboxes-box">
+            <input type="checkbox" name="servico" id="exercicio" class="checkbox" />
+            <label for="exercicio" class="checkbox-names">exercício</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="pagamento">
+        <h1>Formas de Pagamento</h1>
+        <hr />
+        <div class="checkboxes">
+          <div class="checkboxes-box">
+            <input type="radio" name="pagamento" id="pix" class="checkbox" checked />
+            <label for="pix">pix</label>
+          </div>
+          <div class="checkboxes-box">
+            <input type="radio" name="pagamento" id="cartão" class="checkbox" />
+            <label for="cartão">cartão</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="formação">
+        <h1 class="titulo">Tópicos da Reunião</h1>
+        <hr />
+        <div class="text-box">
+          <input type="text" name="text" id="text" class="topicos-input" />
+        </div>
+      </div>
+
+      <div class="botoes">
+        <button class="botão">voltar</button>
+        <button class="botão">agendar</button>
+      </div>
+    </main>
+  </body>
+</html>
