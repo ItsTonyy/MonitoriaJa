@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=alarm,calendar_today,video_call"
+    />
+
+    <link rel="stylesheet" href="../../output.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <main>
+      <h1>Confira Seu Agendamento</h1>
+
+      <div>
+        <div>
+          <div>
+            <img src="./public/usuario_desconhecido.png" alt="imagem do monitor" />
+          </div>
+        </div>
+        <div>
+          <div>
+            <h1>Monitor X</h1>
+            <div>
+              <h2>Matéria X</h2>
+            </div>
+            <h2>Duração XX a YY Min</h2>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div>
+          <div>
+            <div>
+              <span> calendar_today </span>
+              <p>XX/XX/XXXX</p>
+            </div>
+
+            <div>
+              <img src="./public/attach_money.png" alt="money icon" />
+              <p>$XX,00</p>
+            </div>
+          </div>
+
+          <div>
+            <div>
+              <span> alarm </span>
+              <p>XX:XX</p>
+            </div>
+
+            <div>
+              <span> video_call </span>
+              <p>Videoconferência</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h1>Tipo de Serviço</h1>
+        <hr />
+        <div>
+          <div>
+            <input type="checkbox" name="servico" id="aula" />
+            <label for="aula">aula</label>
+          </div>
+          <div>
+            <input type="checkbox" name="servico" id="exercicio" />
+            <label for="exercicio">exercício</label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h1>Formas de Pagamento</h1>
+        <hr />
+        <div>
+          <div>
+            <input type="radio" name="pagamento" id="pix" checked />
+            <label for="pix">pix</label>
+          </div>
+          <div>
+            <input type="radio" name="pagamento" id="cartão" />
+            <label for="cartão">cartão</label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h1>Tópicos da Reunião</h1>
+        <hr />
+        <div>
+          <input type="text" name="text" id="text" />
+        </div>
+      </div>
+
+      <div>
+        <button>voltar</button>
+        <button>agendar</button>
+      </div>
+    </main>
+  </body>
+</html>

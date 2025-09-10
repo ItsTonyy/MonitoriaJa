@@ -1,0 +1,25 @@
+{
+  "name": "monitoraja",
+  "version": "1.0.0",
+  "description": "um projeto web com o propósito de conectar qualquer monitor à qualquer aluno no brasil",
+  "main": "index.js",
+  "scripts": {
+    "build-css": "tailwindcss -i ./src/input.css -o ./output.css --watch",
+    "build-css-prod": "tailwindcss -i ./src/input.css -o ./output.css --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ItsTonyy/MonitoraJa.git"
+  },
+  "author": "Tony, Otávio, Andrade, Penela, Paulo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ItsTonyy/MonitoraJa/issues"
+  },
+  "homepage": "https://github.com/ItsTonyy/MonitoraJa#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.13",
+    "tailwindcss": "^4.1.13"
+  }
+}

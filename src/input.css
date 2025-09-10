@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+/* Estilos customizados do projeto */
+@layer base {
+  html {
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  /* Componentes reutilizáveis do projeto */
+  .btn-primary {
+    background-color: rgb(37 99 235);
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+  }
+  
+  .btn-primary:hover {
+    background-color: rgb(29 78 216);
+  }
+  
+  .btn-secondary {
+    background-color: rgb(226 232 240);
+    color: rgb(30 41 59);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+  }
+  
+  .btn-secondary:hover {
+    background-color: rgb(203 213 225);
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgb(203 213 225);
+    border-radius: 0.5rem;
+    outline: none;
+  }
+  
+  .input-field:focus {
+    outline: 2px solid rgb(59 130 246);
+    outline-offset: 2px;
+    border-color: transparent;
+  }
+  
+  .card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    padding: 1.5rem;
+  }
+}
