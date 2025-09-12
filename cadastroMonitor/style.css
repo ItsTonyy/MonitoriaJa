@@ -1,21 +1,51 @@
+:root {
+  --cor-principal: #104C91;
+  --cor-secundaria: #1F8AC0;
+  --cor-acento: #EFC9AF;
+  --cor-background: #FBFBFE;
+  --cor-texto: #050315;
+}
+
+body {
+  background-color: var(--cor-background);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 70vh;
+}
+
+.container {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
 header {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 30px;
-  margin-bottom: 100px;
+ 
+  margin: 0 10px 100px;
+  padding-top: 10px;
+  border-radius: 10px;
+  box-shadow: #1f8ac050 0px 2px 10px;
 }
 
 .profile-img {
   width: 100px;
   height: auto;
-  border: 2px solid black;
+  border: 1px solid black;
   border-radius: 20px;
-}
-
-form {
-  margin: 0 20px;
 }
 
 .campos {
@@ -25,12 +55,13 @@ form {
 .campo {
   display: flex;
   margin-bottom: 15px;
-  align-items: center;
   margin-bottom: 20px;
+  flex-direction: column;
 }
 
 label {
   margin-right: 10px;
+  margin-bottom: 5px;
 }
 
 input {
@@ -40,14 +71,8 @@ input {
 }
 
 button {
-  display: flex;
-  justify-self: center;
-  justify-content: center;
-  align-items: center;
-  margin-top: 30%;
-  margin-bottom: 30px;
-  width: 100px;
-  height: 25px;
-  border: 1px solid black;
-  border-radius: 5px;
+  margin-top: 50px;
+  margin-bottom: 40px;
+  background-color: var(--cor-secundaria) !important;
+  color: #fff !important;
 }
