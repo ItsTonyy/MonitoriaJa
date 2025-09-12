@@ -1,28 +1,87 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" style="height: 100%;">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title> Pagamento por PIX </title>
-	<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento por PIX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fbfbfb;
+            color: #050315;
+        }
+        .navbar-custom {
+            background-color: #104c91; /* Cor primária */
+        }
+        .btn-primary, .btn-secondary {
+            background-color: #1f8ac0; /* Cor secundária */
+            border-color: #1f8ac0;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .navbar-toggler {
+            border: none;
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23fbfbfb' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        .info-label {
+            font-weight: bold;
+            color: #050315;
+        }
+        .buttons-container {
+            max-width: 500px; /* Limita a largura dos botões */
+            margin: 0 auto; /* Centraliza a div */
+        }
+    </style>
 </head>
-<body>
-	<main class="container">
-		<h1>Pix</h1>
+<body class="d-flex flex-column" style="height: 100%;">
 
-		<p class="pedido">Pedido #0000</p>
-		<p class="valor">Valor de compra: R$ 	00,00</p>
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-		<div class="qrcode">
-			<img src="../imagens/qrCodeExemplo.jpg" alt="QR Code do Pix">
-		</div>
+    <main class="container flex-grow-1 mt-5 text-center">
+        <h1 class="mb-4">Pix</h1>
 
-		<div class="botoes">
-			<button id="copiar">Copiar Código Pix</button>
-			<button onclick="document.location='../agendamento/index.html'">Ver Pedido</button>	
-		</div>
+        <p class="pedido info-label">Pedido #0000</p>
+        <p class="valor info-label">Valor de compra: R$ 00,00</p>
 
-		<button class="cancelar">Cancelar</button>	
-	</main>	
+        <div class="qrcode my-4">
+            <img src="../imagens/qrCodeExemplo.jpg" alt="QR Code do Pix" class="img-fluid" style="max-width: 250px;">
+        </div>
+
+        <div class="buttons-container d-flex justify-content-center gap-2 mb-4">
+            <button id="copiar" class="btn btn-primary w-50">Copiar Código Pix</button>
+            <button onclick="document.location='../agendamento/index.html'" class="btn btn-primary w-50">Ver Pedido</button>
+        </div>
+    </main>
+
+    <div class="d-flex justify-content-center p-3">
+        <button class="btn btn-secondary">Cancelar</button>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
