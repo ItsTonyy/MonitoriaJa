@@ -1,71 +1,91 @@
+/* Variáveis de cor com o tema azulado */
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #050d22;
+  --cor-texto-claro: #ffffff;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+}
+
+/* Estilos gerais usando as classes do Bootstrap */
 body {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  background-color: #68696d;
-  color: #ffffff;
-  font-family: sans-serif;
+  background-color: var(--cor-fundo) !important;
 }
 
-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+.login-card {
+  background-color: var(--cor-primaria) !important;
+  color: var(--cor-texto-claro) !important;
+  width: 90%;
+  max-width: 350px;
 }
 
-img {
+.card-title {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.user-avatar {
   width: 100px;
   height: 100px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  margin-bottom: 40px;
+  margin-top: 20px;
+  margin-bottom: 30px;
 }
 
-.bordas {
-  border: 5px solid #fff;
-  padding: 0.1px;
-  border-radius: 10px;
+.form-control {
+  background-color: var(--cor-input-fundo) !important;
+  border-color: var(--cor-borda-input) !important;
+  color: var(--cor-texto-claro) !important;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  width: 100%;
-  max-width: 300px;
-}
-.input-group {
-  width: 100%;
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
-label {
-  display: block;
-  margin-bottom: 5px;
+.form-control:focus {
+  border-color: var(--cor-secundaria) !important;
+  box-shadow: 0 0 0 0.25rem rgba(31, 138, 192, 0.25) !important;
 }
 
-input {
-  background-color: #ffffff;
-  border: none;
-  color: #ffffff;
-  padding: 10px;
-  border-radius: 5px;
-  width: 100%;
-  box-sizing: border-box;
+.btn-login-custom {
+  background-color: var(--cor-secundaria) !important;
+  border: none !important;
+  color: var(--cor-texto-claro) !important;
+  transition: background-color 0.3s ease;
 }
 
-button {
-  background-color: #ffffff;
-  border: none;
-  color: #68696d;
-  padding: 10px 20px;
-  border-radius: 5px;
+.btn-login-custom:hover {
+  background-color: #1a719c !important;
+}
+
+/* Estilos para o campo de senha e o ícone */
+.input-group-pass {
+  position: relative;
+}
+
+#togglePassword {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(10%);
   cursor: pointer;
-  margin-top: 50px;
-  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s;
+}
+
+#togglePassword:hover {
+  color: var(--cor-texto-claro);
+}
+
+/* Media Query para telas maiores que 768px (desktops e tablets maiores) */
+@media (min-width: 768px) {
+  .login-card {
+    max-width: 500px;
+    padding: 60px 50px !important;
+  }
+
+  .user-avatar {
+    width: 120px;
+    height: 120px;
+  }
 }

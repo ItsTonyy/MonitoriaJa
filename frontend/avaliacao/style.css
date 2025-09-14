@@ -1,6 +1,27 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-background-suave: #fbfbfe;
+  --cor-texto: #050315;
+  --cor-fundo-card: #ffffff;
+  --cor-borda-card: #e0e0e0;
+}
+@media (min-width: 768px) {
+  main {
+    max-width: 500px;
+  }
+}
+
+@media (min-width: 12000px) {
+  main {
+    max-width: 650px;
+  }
+}
+
 body {
-  background-color: #68696d;
-  color: #fff;
+  background: linear-gradient(135deg, var(--cor-background-suave), #e9eff2);
+  color: var(--cor-texto);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   flex-direction: column;
@@ -8,32 +29,64 @@ body {
   align-items: center;
   min-height: 100vh;
   margin: 0;
+  padding-top: 70px;
+}
+
+.header-custom {
+  width: 100%;
+  height: 60px;
+  background-color: var(--cor-primaria);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.header-custom .btn-menu {
+  color: white;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
 
 main {
   width: 90%;
-  max-width: 400px;
+  max-width: 1000px;
+  background-color: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda-card);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 15px;
-  padding: 20px;
+  padding: 25px;
+  margin-bottom: 25px;
 }
 
 h1 {
   align-self: center;
   margin-bottom: 30px;
-  font-size: 24px;
+  font-size: 28px;
+  color: var(--cor-primaria);
+  font-weight: 600;
 }
 
 .monitor-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
   width: 100%;
 }
+
 .image-with-border {
-  border: 3px solid #fff;
+  border: 5px solid var(--cor-background);
   border-radius: 10px;
   padding: 0;
 }
@@ -54,35 +107,38 @@ h1 {
 
 .monitor-details h2 {
   margin: 0;
-  font-size: 20px;
-  font-weight: normal;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--cor-texto);
 }
 
 .monitor-details h3 {
   margin: 0;
   font-size: 16px;
   font-weight: normal;
-  color: #bbb;
+  color: #666;
 }
 
 .monitor-details p {
   margin: 5px 0 0 0;
   font-size: 14px;
-  color: #999;
+  color: #888;
 }
 
 .section-title {
   font-size: 18px;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  font-weight: 500;
 }
+
 .rating {
-  font-size: 30px;
-  color: #555;
+  font-size: 32px;
+  color: #ccc;
   cursor: pointer;
   user-select: none;
-  margin-top: -20px; 
-  margin-bottom: 20px;
+  margin-top: -20px;
+  margin-bottom: 25px;
 }
 
 .rating .star {
@@ -91,29 +147,80 @@ h1 {
 
 .rating .star:hover,
 .rating .star.active {
+  color: var(--cor-acento);
+}
+
+.section-title {
+  font-size: 18px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.rating-card {
+  text-align: center;
+}
+
+.star-rating {
+  direction: rtl;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  color: #ccc;
+  font-size: 24px;
+  padding: 0 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
   color: #ffc107;
 }
 
 textarea {
   width: calc(100% - 24px);
-  background-color: transparent;
-  border: 2px solid #fff;
+  background-color: #f9f9f9;
+  border: 1px solid var(--cor-borda-card);
   border-radius: 10px;
-  color: #fff;
-  padding: 10px;
+  color: var(--cor-texto);
+  padding: 12px;
   font-family: inherit;
   font-size: 16px;
   resize: vertical;
+  min-height: 100px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(var(--cor-primaria), 0.2);
 }
 
 button {
-  background-color: transparent;
-  border: 2px solid #fff;
-  color: #fff;
-  padding: 10px 30px;
+  background-color: var(--cor-primaria);
+  border: none;
+  color: white;
+  padding: 12px 35px;
   border-radius: 10px;
   cursor: pointer;
   font-size: 18px;
+  font-weight: 600;
   align-self: center;
-  margin-top: 20px;
+  margin-top: 30px;
+  box-shadow: 0 4px 15px rgba(var(--cor-primaria), 0.3);
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--cor-secundaria);
+  box-shadow: 0 6px 20px rgba(var(--cor-secundaria), 0.4);
+  transform: translateY(-2px);
 }
