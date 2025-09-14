@@ -3,7 +3,7 @@
   --cor-primaria: #104c91;
   --cor-secundaria: #1f8ac0;
   --cor-acento: #efc9af;
-  --cor-fundo: #050d22;
+  --cor-fundo: #ffffff;
   --cor-texto-claro: #ffffff;
   --cor-borda-input: #ccc;
   --cor-input-fundo: #2b3a55;
@@ -11,7 +11,7 @@
 
 /* Estilos gerais usando as classes do Bootstrap */
 body {
-  background-color: var(--cor-fundo) !important;
+  background-color: var(--cor-fundo);
 }
 
 .login-card {

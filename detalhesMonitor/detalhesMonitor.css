@@ -259,11 +259,6 @@ main {
   cursor: pointer;
 }
 
-.time-slot:focus {
-  font-weight: bold;
-  text-decoration: underline;
-}
-
 .botoes {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -342,4 +337,16 @@ main {
   .titulo {
     font-size: 1.25rem;
   }
+}
+
+.time-slot.selecionado {
+  background-color: var(--cor-secundaria);
+  color: #fff;
+  padding:4px 12px;
+  font-weight: bold;
+  border: 1.5px solid var(--cor-principal);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px #1f8ac230;
+  transform: scale(1.04);
+  transition: background 0.2s, color 0.2s, transform 0.2s;
 }
