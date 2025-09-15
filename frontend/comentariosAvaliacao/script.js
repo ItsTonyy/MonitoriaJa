@@ -133,11 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const commentsContainer = document.querySelector(".comments-container");
   const verMaisBtn = document.querySelector(".btn-ver-mais");
-  const reviewsToShow = avaliacoes.slice(0, initialReviewsToShow);
-
-  if (avaliacoes.length > initialReviewsToShow) {
-    verMaisBtn.style.display = "block";
-  }
+  let allReviewsShown = false;
 
   const createCommentHtml = (avaliacao) => {
     const starIcons =
@@ -168,16 +164,30 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   };
 
-  reviewsToShow.forEach((review) => {
-    commentsContainer.innerHTML += createCommentHtml(review);
-  });
-
-  verMaisBtn.addEventListener("click", () => {
-    const remainingReviews = avaliacoes.slice(initialReviewsToShow);
-    remainingReviews.forEach((review) => {
+  const renderComments = () => {
+    commentsContainer.innerHTML = "";
+    const reviewsToRender = allReviewsShown
+      ? avaliacoes
+      : avaliacoes.slice(0, initialReviewsToShow);
+    reviewsToRender.forEach((review) => {
       commentsContainer.innerHTML += createCommentHtml(review);
     });
 
-    verMaisBtn.style.display = "none";
+    if (avaliacoes.length > initialReviewsToShow) {
+      verMaisBtn.style.display = "block";
+      verMaisBtn.textContent = allReviewsShown ? "Ver menos" : "Ver mais";
+    } else {
+      verMaisBtn.style.display = "none";
+    }
+  };
+
+  renderComments();
+
+  verMaisBtn.addEventListener("click", () => {
+    allReviewsShown = !allReviewsShown;
+    renderComments();
+    if (!allReviewsShown) {
+      commentsContainer.scrollIntoView({ behavior: "smooth" });
+    }
   });
 });

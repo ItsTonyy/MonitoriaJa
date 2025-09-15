@@ -23,7 +23,8 @@
 body {
   padding: 12px;
   margin: 0;
-  font-family: Roboto, Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  font-family: Roboto, Inter, system-ui, -apple-system, Segoe UI, Arial,
+    sans-serif;
   color: var(--cor-texto);
   background-color: rgb(240, 240, 240);
 
@@ -177,7 +178,7 @@ main {
 }
 
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
   color: var(--cor-secundaria);
   font-size: 20px;
   line-height: 1;
@@ -276,7 +277,11 @@ main {
 .botão {
   appearance: none;
   border: 1px solid var(--stroke-strong);
-  background: linear-gradient(180deg, var(--cor-acento) 0%, var(--cor-primaria) 120%);
+  background: linear-gradient(
+    180deg,
+    var(--cor-acento) 0%,
+    var(--cor-primaria) 120%
+  );
   color: var(--cor-texto);
   padding: 10px 12px;
   border-radius: 999px;
@@ -292,7 +297,11 @@ main {
 }
 
 .botão:last-child {
-  background: linear-gradient(180deg, var(--cor-secundaria) 0%, var(--cor-principal) 120%);
+  background: linear-gradient(
+    180deg,
+    var(--cor-secundaria) 0%,
+    var(--cor-principal) 120%
+  );
   color: #ffffff;
   border-color: var(--cor-principal);
 }
@@ -354,5 +363,25 @@ main {
   .pagamento h1,
   .formação h1 {
     font-size: 1.4rem;
+  }
+}
+.footer-custom {
+  background-color: var(--cor-principal);
+  color: var(--cor-texto-claro);
+  width: 100%;
+}
+
+.footer-custom .container {
+  max-width: 960px;
+}
+
+.footer-custom .text-white-50 {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+@media (max-width: 767.98px) {
+  .footer-custom {
+    padding-left: 15px;
+    padding-right: 15px;
   }
 }
