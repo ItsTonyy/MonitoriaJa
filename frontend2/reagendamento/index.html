@@ -3,108 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confira seu Agendamento</title>
+    <title>Confira seu Reagendamento</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        body {
-            background-color: #fbfbfb;
-            color: #050315;
-            padding-bottom: 120px; /* Adiciona padding para evitar que o conteúdo seja coberto pelos botões fixos */
+        :root {
+            --cor-primaria: rgb(249, 239, 226);
+            --cor-principal: rgb(16, 76, 145);
+            --cor-secundaria: rgb(31, 138, 192);
+            --cor-acento: rgb(239, 201, 175);
+            --cor-background: rgb(251, 251, 254);
+            --cor-texto: rgb(5, 3, 21);
+            /* detalhes leves permitidos */
+            --stroke: rgba(5, 3, 21, 0.12);
+            --stroke-strong: rgba(5, 3, 21, 0.18);
+            --texto-suave: rgba(5, 3, 21, 0.65);
+            --shadow: 0 8px 24px rgba(5, 3, 21, 0.08);
+            --radius-lg: 16px;
+            --radius-md: 12px;
         }
-        .navbar-custom {
-            background-color: #104c91; /* Cor primária */
+        body {
+            background-color: var(--cor-background);
         }
         .btn-primary, .btn-secondary {
-            background-color: #1f8ac0; /* Cor secundária */
-            border-color: #1f8ac0;
-        }
-        .form-label {
-            font-weight: bold;
-        }
-        .navbar-toggler {
-            border: none;
-        }
-        .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23fbfbfb' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            background-color: var(--cor-secundaria);
+            border-color: var(--cor-secundaria);
         }
         .agendamento-info {
             font-weight: bold;
-            color: #050315;
+            color: var(--cor-texto);
         }
-        .buttons-container {
-            max-width: 500px;
-            margin: 0 auto;
+        .modal-content {
+            border: 2px solid var(--cor-principal);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            background-color: var(--cor-background);
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--cor-principal);
+        }
+        .modal-footer {
+            border-top: 1px solid var(--cor-principal);
         }
     </style>
 </head>
-<body class="d-flex flex-column" style="height: 100%;">
+<body>
 
-    <nav class="navbar navbar-custom">
-        <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+<div class="d-flex justify-content-center p-5">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agendamentoModal">
+        Pedido de Reagendamento
+    </button>
+</div>
+
+<div class="modal fade" id="agendamentoModal" tabindex="-1" aria-labelledby="agendamentoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="agendamentoModalLabel">Confira seu reagendamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-person-circle fs-3 me-2" style="color: var(--cor-principal);"></i>
+                    <div>
+                        <span class="agendamento-info">Monitor X</span>
+                        <br>
+                        <span class="text-muted">Matéria X</span>
+                    </div>
                 </div>
-                <div class="offcanvas-body">
-                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
-                        </li>
-                    </ul>
+                <p class="agendamento-info">Data anterior</p>
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-calendar-check-fill me-2" style="color: var(--cor-secundaria);"></i>
+                    <span class="text-muted">xx/xx/xxxx</span>
+                    <i class="bi bi-clock-fill ms-4 me-2" style="color: var(--cor-secundaria);"></i>
+                    <span class="text-muted">xx:xx</span>
+                </div>
+                <p class="agendamento-info">proposta de reagendamento</p>
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-calendar-check-fill me-2" style="color: var(--cor-secundaria);"></i>
+                    <span class="text-muted">xx/xx/xxxx</span>
+                    <i class="bi bi-clock-fill ms-4 me-2" style="color: var(--cor-secundaria);"></i>
+                    <span class="text-muted">xx:xx</span>
                 </div>
             </div>
-        </div>
-    </nav>
-    
-    <div class="container flex-grow-1 mt-4">
-        <h2 class="mb-4 text-center agendamento-info">Confira seu agendamento</h2>
-
-        <div class="card p-3 mb-4 buttons-container">
-            <div class="d-flex align-items-center mb-3">
-                <i class="bi bi-person-circle fs-3 me-2" style="color: #104c91;"></i>
-                <div>
-                    <span class="agendamento-info">Monitor X</span>
-                    <br>
-                    <span class="text-muted">Matéria X</span>
+            <div class="modal-footer d-flex flex-column gap-2">
+                <div class="d-flex w-100 justify-content-center gap-2">
+                    <button type="button" class="btn btn-secondary w-50" onclick="window.location.href='../../Telas/listaAgendamentos.html'">recusar</button>
+                    <button type="button" class="btn btn-primary w-50" onclick="window.location.href='../../detalhesMonitor/agendamentoMonitor.html'">aceitar</button>
                 </div>
-            </div>
-
-            <p class="agendamento-info">Data anterior</p>
-            <div class="d-flex align-items-center mb-3">
-                <i class="bi bi-calendar-check-fill me-2" style="color: #1f8ac0;"></i>
-                <span class="text-muted">xx/xx/xxxx</span>
-                <i class="bi bi-clock-fill ms-4 me-2" style="color: #1f8ac0;"></i>
-                <span class="text-muted">xx:xx</span>
-            </div>
-
-            <p class="agendamento-info">proposta de reagendamento</p>
-            <div class="d-flex align-items-center mb-3">
-                <i class="bi bi-calendar-check-fill me-2" style="color: #1f8ac0;"></i>
-                <span class="text-muted">xx/xx/xxxx</span>
-                <i class="bi bi-clock-fill ms-4 me-2" style="color: #1f8ac0;"></i>
-                <span class="text-muted">xx:xx</span>
+                <div class="d-grid w-100">
+                    <button type="button" class="btn btn-primary">contra proposta</button>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="fixed-bottom p-3">
-        <div class="d-flex justify-content-center gap-2 mb-2 buttons-container">
-            <button type="button" class="btn btn-secondary w-50">recusar</button>
-            <button type="button" class="btn btn-primary w-50">aceitar</button>
-        </div>
-        <div class="d-grid gap-2 buttons-container">
-            <button type="button" class="btn btn-primary">contra proposta</button>
+</div>
+
+<div class="modal fade" id="contraPropostaModal" tabindex="-1" aria-labelledby="contraPropostaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="contraPropostaModalLabel">Enviar Contra Proposta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Aqui você pode adicionar o formulário para a contra proposta de agendamento, como campos para nova data e hora.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary">Enviar</button>
+            </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
