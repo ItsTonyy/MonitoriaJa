@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lista Agendamentos</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="estiloAgendamento.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header mb-3">
+        <h1 class="titulo text-center">Lista de Agendamentos</h1>
+      </header>
+      <main class="lista-agendamentos">
+        <div class="row-agendamentos d-flex flex-column align-items-center">
+          <!-- Agendamento 1 -->
+          <div class="agendamento-card">
+            <div class="agendamento-img-avaliacao">
+              <img
+                src="https://randomuser.me/api/portraits/men/1.jpg"
+                alt="Foto Monitor"
+                class="agendamento-foto mb-2"
+              />
+            </div>
+            <div class="agendamento-info">
+              <div class="agendamento-nome">João Silva</div>
+              <div class="agendamento-materia">Matemática</div>
+              <div class="agendamento-data-hora mt-2">
+                <span class="agendamento-data">12/09/2025</span> &bull;
+                <span class="agendamento-hora">14h</span>
+              </div>
+            </div>
+            <div class="agendamento-botoes">
+              <button class="btn btn-danger btn-cancelar"
+               onclick="window.location.href='../modalCancelamento/index.html'; return false;"
+               >
+               Cancelar
+              </button>
+              <button
+                class="btn btn-secondary btn-reagendar"
+                onclick="window.location.href='../frontend2/reagendamento/index.html'; return false;"
+              >
+                Reagendar
+              </button>
+              <button
+                class="btn btn-primary btn-acessar"
+                onclick="window.location.href='../frontend/avaliacao/index.html'; return false;"
+              >
+                Acessar
+              </button>
+            </div>
+          </div>
+          <!-- Agendamento 2 -->
+          <div class="agendamento-card">
+            <div class="agendamento-img-avaliacao">
+              <img
+                src="https://randomuser.me/api/portraits/women/2.jpg"
+                alt="Foto Monitor"
+                class="agendamento-foto mb-2"
+              />
+            </div>
+            <div class="agendamento-info">
+              <div class="agendamento-nome">Maria Souza</div>
+              <div class="agendamento-materia">Física</div>
+              <div class="agendamento-data-hora mt-2">
+                <span class="agendamento-data">15/09/2025</span> &bull;
+                <span class="agendamento-hora">10h</span>
+              </div>
+            </div>
+            <div class="agendamento-botoes">
+              <button class="btn btn-danger btn-cancelar"
+               onclick="window.location.href='../modalCancelamento/index.html'; return false;"
+               >
+               Cancelar
+              </button>
+              <button
+                class="btn btn-secondary btn-reagendar"
+                onclick="window.location.href='../frontend2/reagendamento/index.html'; return false;"
+              >
+                Reagendar
+              </button>
+              <button
+                class="btn btn-primary btn-acessar"
+                onclick="window.location.href='../frontend/avaliacao/index.html'; return false;"
+              >
+                Acessar
+              </button>
+            </div>
+          </div>
+          <!-- Agendamento 3 -->
+          <div class="agendamento-card">
+            <div class="agendamento-img-avaliacao">
+              <img
+                src="https://randomuser.me/api/portraits/men/3.jpg"
+                alt="Foto Monitor"
+                class="agendamento-foto mb-2"
+              />
+            </div>
+            <div class="agendamento-info">
+              <div class="agendamento-nome">Carlos Lima</div>
+              <div class="agendamento-materia">Química</div>
+              <div class="agendamento-data-hora mt-2">
+                <span class="agendamento-data">20/09/2025</span> &bull;
+                <span class="agendamento-hora">16h</span>
+              </div>
+            </div>
+            <div class="agendamento-botoes">
+              <button class="btn btn-danger btn-cancelar"
+               onclick="window.location.href='../modalCancelamento/index.html'; return false;"
+               >
+               Cancelar
+              </button>
+              <button
+                class="btn btn-secondary btn-reagendar"
+                onclick="window.location.href='../frontend2/reagendamento/index.html'; return false;"
+              >
+                Reagendar
+              </button>
+              <button
+                class="btn btn-primary btn-acessar"
+                onclick="window.location.href='../frontend/avaliacao/index.html'; return false;"
+              >
+                Acessar
+              </button>
+            </div>
+          </div>
+          <!-- Agendamento 4 -->
+          <div class="agendamento-card">
+            <div class="agendamento-img-avaliacao">
+              <img
+                src="https://randomuser.me/api/portraits/women/4.jpg"
+                alt="Foto Monitor"
+                class="agendamento-foto mb-2"
+              />
+            </div>
+            <div class="agendamento-info">
+              <div class="agendamento-nome">Ana Paula</div>
+              <div class="agendamento-materia">Biologia</div>
+              <div class="agendamento-data-hora mt-2">
+                <span class="agendamento-data">22/09/2025</span> &bull;
+                <span class="agendamento-hora">09h</span>
+              </div>
+            </div>
+            <div class="agendamento-botoes">
+              <button class="btn btn-danger btn-cancelar"
+               onclick="window.location.href='../modalCancelamento/index.html'; return false;"
+               >
+               Cancelar
+              </button>
+              <button
+                class="btn btn-secondary btn-reagendar"
+                onclick="window.location.href='../frontend2/reagendamento/index.html'; return false;"
+              >
+                Reagendar
+              </button>
+              <button
+                class="btn btn-primary btn-acessar"
+                onclick="window.location.href='../frontend/avaliacao/index.html'; return false;"
+              >
+                Acessar
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+      <footer class="paginacao mt-4">
+        <div class="d-flex justify-content-center align-items-center gap-3">
+          <button
+            class="btn btn-primary btn-pagina"
+            id="btnAnterior"
+            aria-label="Página anterior"
+          >
+            &#8592;
+          </button>
+          <span class="pagina-atual" id="paginaAtual">1</span>
+          <button
+            class="btn btn-primary btn-pagina"
+            id="btnProxima"
+            aria-label="Próxima página"
+          >
+            &#8594;
+          </button>
+        </div>
+      </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="scriptAgendamento.js"></script>
+  </body>
+  <footer class="footer-custom footer-fixed mt-auto py-3">
+    <div class="container text-center">
+      <span class="text-white-50">
+        &copy; 2025 MonitoriaJá. Todos os direitos reservados.
+      </span>
+      <span class="text-white-50 d-block d-md-inline mt-2 mt-md-0">
+        CNPJ: 00.000.000/0001-00
+      </span>
+    </div>
+  </footer>
+</html>
