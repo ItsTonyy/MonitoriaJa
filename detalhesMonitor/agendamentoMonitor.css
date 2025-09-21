@@ -6,7 +6,6 @@
   --cor-background: rgb(251, 251, 254);
   --cor-texto: rgb(5, 3, 21);
 
-  /* detalhes leves permitidos */
   --stroke: rgba(5, 3, 21, 0.12);
   --stroke-strong: rgba(5, 3, 21, 0.18);
   --texto-suave: rgba(5, 3, 21, 0.65);

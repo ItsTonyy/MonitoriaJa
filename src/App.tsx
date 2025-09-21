@@ -1,15 +1,21 @@
-import './App.css';
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/Login/LoginPage";
+import RecuperarSenhaPage from "./pages/Login/recuperarSenha/RecuperarSenhaPage";
+import AvaliacaoPosAulaPage from "./pages/Login/AvaliacaoPosAula/AvaliacaoPosAulaPage";
+import ComentariosAvaliacaoPage from "./pages/Login/ComentariosAvaliacao/ComentariosAvaliacaoPage";
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Monitoria Já</h1>
-        <p>Conectando monitores de todo o Brasil a qualquer aluno de forma remota.</p>
-        <p>Projeto desenvolvido por: Tony, Guilherme Andrade, Otávio, Rafael Penela, Paulo</p>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/recuperar-senha" element={<RecuperarSenhaPage />} />
+        <Route path="/avaliacao-pos-aula" element={<AvaliacaoPosAulaPage />} />
+        <Route path="/comentarios-avaliacao" element={<ComentariosAvaliacaoPage />} />
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
