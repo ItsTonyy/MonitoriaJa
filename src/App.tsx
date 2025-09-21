@@ -1,13 +1,14 @@
 import './App.css';
+import DetalhesMonitor from '../detalhesMonitor/DetalhesMonitor';
+import Footer from './components/footer';
+import ResponsiveAppBar from './components/AppBar';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Monitoria Já</h1>
-        <p>Conectando monitores de todo o Brasil a qualquer aluno de forma remota.</p>
-        <p>Projeto desenvolvido por: Tony, Guilherme Andrade, Otávio, Rafael Penela, Paulo</p>
-      </header>
+      <ResponsiveAppBar />
+      <DetalhesMonitor />
+      <Footer />
     </div>
   );
 }
