@@ -226,7 +226,8 @@ const LoginForm: React.FC = () => {
             type="submit"
             fullWidth
             variant="contained"
-            size="large"
+            color="primary"
+            size="medium"
             disabled={isLoading}
             sx={{ mt: 2, mb: 2 }}
           >

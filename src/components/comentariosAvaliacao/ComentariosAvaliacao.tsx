@@ -208,6 +208,7 @@ const ComentariosAvaliacao: React.FC = () => {
               </Typography>
               <Button
                 variant="contained"
+                color="primary"
                 size="medium"
                 onClick={handleModalOpen}
                 sx={{
@@ -216,6 +217,7 @@ const ComentariosAvaliacao: React.FC = () => {
                   alignSelf: { xs: "flex-start", sm: "auto" },
                   px: 3,
                   py: 1,
+                  borderRadius: "15px",
                 }}
               >
                 Quero avaliar
@@ -414,7 +416,8 @@ const ComentariosAvaliacao: React.FC = () => {
                       <Box sx={{ display: "flex", gap: 1 }}>
                         <Button
                           variant="outlined"
-                          size="small"
+                          color="primary"
+                          size="medium"
                           startIcon={
                             <ThumbUpIcon
                               sx={{ fontSize: { xs: 16, sm: 18 } }}
@@ -424,13 +427,15 @@ const ComentariosAvaliacao: React.FC = () => {
                             minWidth: "auto",
                             fontSize: { xs: "0.7rem", sm: "0.8rem" },
                             px: { xs: 1, sm: 2 },
+                            borderRadius: "15px",
                           }}
                         >
                           ({avaliacao.util})
                         </Button>
                         <Button
                           variant="outlined"
-                          size="small"
+                          color="primary"
+                          size="medium"
                           startIcon={
                             <ThumbDownIcon
                               sx={{ fontSize: { xs: 16, sm: 18 } }}
@@ -440,6 +445,7 @@ const ComentariosAvaliacao: React.FC = () => {
                             minWidth: "auto",
                             fontSize: { xs: "0.7rem", sm: "0.8rem" },
                             px: { xs: 1, sm: 2 },
+                            borderRadius: "15px",
                           }}
                         >
                           ({avaliacao.naoUtil})
@@ -457,6 +463,8 @@ const ComentariosAvaliacao: React.FC = () => {
                 <Box sx={{ textAlign: "center", mt: 3 }}>
                   <Button
                     variant="outlined"
+                    color="primary"
+                    size="medium"
                     onClick={() => setShowMore(!showMore)}
                     sx={{
                       borderColor: "var(--cor-primaria)",
@@ -466,6 +474,7 @@ const ComentariosAvaliacao: React.FC = () => {
                         backgroundColor: "var(--cor-secundaria)",
                         color: "white",
                       },
+                      borderRadius: "15px",
                     }}
                   >
                     {showMore ? "Ver menos" : "Ver mais"}
@@ -535,16 +544,25 @@ const ComentariosAvaliacao: React.FC = () => {
             />
 
             <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
-              <Button variant="outlined" onClick={handleModalClose}>
+              <Button 
+                variant="outlined" 
+                color="primary"
+                size="medium"
+                onClick={handleModalClose}
+                sx={{ borderRadius: "15px" }}
+              >
                 Cancelar
               </Button>
               <Button
                 type="submit"
                 variant="contained"
+                color="primary"
+                size="medium"
                 disabled={!formData.rating || !formData.comentario}
                 sx={{
                   backgroundColor: "var(--cor-primaria)",
                   "&:hover": { backgroundColor: "var(--cor-secundaria)" },
+                  borderRadius: "15px",
                 }}
               >
                 Enviar avaliação

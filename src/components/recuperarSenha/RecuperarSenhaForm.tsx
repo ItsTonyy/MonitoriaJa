@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./RecuperarSenha.css";
-import { TextField, Box } from "@mui/material";
+import { TextField, Box, Button } from "@mui/material";
 
 const RecuperarSenhaForm = () => {
   return (
@@ -25,9 +25,25 @@ const RecuperarSenhaForm = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary">
+          <Button 
+            type="submit" 
+            variant="contained"
+            color="primary"
+            size="medium"
+            fullWidth
+            sx={{
+              borderRadius: "15px",
+              backgroundColor: "var(--cor-primaria)",
+              "&:hover": {
+                backgroundColor: "var(--cor-secundaria)",
+              },
+              py: 1.5,
+              fontSize: "1rem",
+              fontWeight: 600
+            }}
+          >
             Enviar
-          </button>
+          </Button>
           <div className="link-wrapper">
             <Link to="/" className="back-link">
               {" "}

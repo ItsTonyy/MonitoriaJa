@@ -221,7 +221,8 @@ const AvaliacaoPosAula: React.FC = () => {
           <Button
             type="submit"
             variant="contained"
-            size="large"
+            color="primary"
+            size="medium"
             disabled={isLoading || !formData.rating}
             sx={{
               mt: 2,
@@ -230,7 +231,7 @@ const AvaliacaoPosAula: React.FC = () => {
               backgroundColor: "var(--cor-primaria)",
               fontSize: "1.1rem",
               fontWeight: 600,
-              borderRadius: 2,
+              borderRadius: "15px",
               "&:hover": {
                 backgroundColor: "var(--cor-secundaria)",
                 transform: "translateY(-2px)",
