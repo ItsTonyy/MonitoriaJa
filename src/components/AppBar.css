@@ -1,8 +1,10 @@
 :root {
-  --cor-primaria: #104c91;
-  --cor-secundaria: #1f8ac0;
-  --cor-acento: #efc9af;
-  --cor-fundo: #ffffff;
+  --cor-primaria: rgb(249, 239, 226);
+  --cor-principal: rgb(16, 76, 145);
+  --cor-secundaria: rgb(31, 138, 192);
+  --cor-acento: rgb(239, 201, 175);
+  --cor-background: rgb(251, 251, 254);
+  --cor-texto: rgb(5, 3, 21);
   --cor-texto-claro: #ffffff;
   --cor-borda-input: #ccc;
   --cor-input-fundo: #2b3a55;

@@ -38,7 +38,7 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: 'var(--cor-primaria)' }}>
+    <AppBar position="static" sx={{ backgroundColor: 'var(--cor-principal)' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* Menu hambúrguer - primeiro item no mobile */}

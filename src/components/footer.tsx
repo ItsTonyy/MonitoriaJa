@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
         py: 4,
         px: 4,
         mt: 'auto',
-        backgroundColor: 'var(--cor-primaria)',
+        backgroundColor: 'var(--cor-principal)',
       }}
     >
       <Box

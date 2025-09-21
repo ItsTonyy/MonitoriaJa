@@ -1,5 +1,10 @@
 :root {
   --cor-primaria: rgb(249, 239, 226);
+  --cor-principal: rgb(16, 76, 145);
+  --cor-secundaria: rgb(31, 138, 192);
+  --cor-acento: rgb(239, 201, 175);
+  --cor-background: rgb(251, 251, 254);
+  --cor-texto: rgb(5, 3, 21);
   padding: 0;
   margin: 0;
   display: block;
@@ -18,9 +23,21 @@
   margin: 0;
 }
 
+.agendamento-wrapper {
+  width: 100%;
+  background: var(--cor-background);
+  border: 2px solid var(--cor-principal);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(5, 3, 21, 0.08);
+  margin: 40px auto;
+  max-width: 1200px;
+  overflow: hidden;
+}
+
 main {
-  width: 100dvw;
-  height: 100dvh;
+  width: 100%;
+  padding: 20px;
+  gap: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -28,7 +45,7 @@ main {
 }
 
 .monitorDetails {
-  background-color: var(--cor-primaria);
+  background-color: var(--cor-background);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -38,13 +55,6 @@ main {
   padding-top: 20px;
 
   width: 100%;
-  @media (min-width: 768px) {
-    width: 80%;
-  }
-
-  @media (min-width: 1280px) {
-    width: 70%;
-  }
 }
 
 .monitorProfile {
@@ -107,25 +117,13 @@ main {
 }
 
 .agendamento-titulo {
-  background-color: var(--cor-primaria);
+  background-color: var(--cor-background);
   font-weight: 400;
-  padding-top: 50px;
-  padding: 10px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  padding-bottom: 20px;
 
   width: 100%;
-  @media (min-width: 768px) {
-    width: 80%;
-  }
-
-  @media (min-width: 1280px) {
-    width: 70%;
-  }
-
-  @media (height >=890px) {
-    padding-bottom: 55px;
-  }
 }
 
 .material-symbols-outlined {
@@ -133,33 +131,20 @@ main {
 }
 
 .agendamento {
-  background-color: var(--cor-primaria);
-  width: 100%;
+  background-color: var(--cor-background);
+  width: 50%;
   padding: 10px;
-  @media (min-width: 768px) {
-    width: 80%;
-  }
 
-  @media (min-width: 1280px) {
-    width: 70%;
-  }
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .agendamento-details {
-  background-color: var(--cor-primaria);
+  background-color: var(--cor-background);
   padding-top: 20px;
 
-  width: 80%;
-  @media (min-width: 768px) {
-    width: 80%;
-  }
-
-  @media (min-width: 1280px) {
-    width: 70%;
-  }
+  width: 100%;
 
   display: flex;
   flex-direction: column;
@@ -181,19 +166,13 @@ main {
 }
 
 .servicos {
-  background-color: var(--cor-primaria);
+  background-color: var(--cor-background);
   padding-top: 20px;
   padding-left: 10px;
   padding-right: 10px;
 
   width: 100%;
-  @media (min-width: 768px) {
-    width: 80%;
-  }
 
-  @media (min-width: 1280px) {
-    width: 70%;
-  }
   @media (height >=855px) {
     padding-bottom: 15px;
     padding-top: 25px;
@@ -201,19 +180,12 @@ main {
 }
 
 .pagamento {
-  background-color: var(--cor-primaria);
+  background-color: var(--cor-background);
   padding-top: 20px;
   padding-left: 10px;
   padding-right: 10px;
 
   width: 100%;
-  @media (min-width: 768px) {
-    width: 80%;
-  }
-
-  @media (min-width: 1280px) {
-    width: 70%;
-  }
 
   @media (height >=855px) {
     padding-bottom: 15px;
@@ -241,17 +213,10 @@ main {
 }
 
 .formação {
-  background-color: var(--cor-primaria);
+  background-color: var(--cor-background);
   padding: 10px;
 
   width: 100%;
-  @media (min-width: 768px) {
-    width: 80%;
-  }
-
-  @media (min-width: 1280px) {
-    width: 70%;
-  }
 }
 
 .formação-paragrafo {
@@ -269,6 +234,8 @@ main {
 .topicos-input {
   width: 99%;
   height: 140px;
+  resize: none;
+  text-align: left;
   @media (height <= 830px) {
     height: 120px;
   }
@@ -284,7 +251,7 @@ main {
 }
 
 .botoes {
-  background-color: var(--cor-primaria);
+  background-color: var(--cor-background);
   padding: 10px;
   padding-bottom: 50px;
 
@@ -294,13 +261,7 @@ main {
   gap: 50px;
 
   width: 100%;
-  @media (min-width: 768px) {
-    width: 80%;
-  }
 
-  @media (min-width: 1280px) {
-    width: 70%;
-  }
   @media (height >=855px) {
     padding-bottom: 70px;
   }
@@ -325,4 +286,25 @@ main {
 .titulo {
   display: flex;
   justify-content: flex-start;
+}
+
+@media (width <= 640px) {
+  .agendamento-wrapper {
+    margin: 10px;
+    border-radius: 12px;
+  }
+
+  main {
+    padding: 16px;
+  }
+}
+
+@media (min-width: 640px) {
+  .agendamento-wrapper {
+    margin: 20px auto;
+  }
+
+  main {
+    padding: 24px;
+  }
 }
