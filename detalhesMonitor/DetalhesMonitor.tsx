@@ -5,7 +5,7 @@ import ratingImg from '/five-stars-rating-icon-png.webp';
 import Button from '@mui/material/Button';
 
 interface TimeSlot {
-  day: string;
+  day: 'seg' | 'ter' | 'qua' | 'qui' | 'sex' | 'sab' | 'dom';
   times: string[];
 }
 
@@ -36,6 +36,9 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
       return newSet;
     });
   };
+
+  const numeroColunasHorarios = props.horarios ? props.horarios.length : 0;
+  console.log(numeroColunasHorarios);
 
   return (
     <div className="main">
@@ -68,7 +71,10 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
         <p className="formação-paragrafo">{props.formacao}</p>
       </div>
 
-      <div className="horários">
+      <div
+        className="horários"
+        style={{ '--numero-de-colunas': numeroColunasHorarios } as React.CSSProperties}
+      >
         <h1 className="titulo">Horários</h1>
         <hr />
         <div className="outer-tabela">

@@ -286,6 +286,13 @@ main {
 .titulo {
   display: flex;
   justify-content: flex-start;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--cor-principal);
+
+  @media (width <= 640px) {
+    font-size: 1.5rem;
+  }
 }
 
 @media (width <= 640px) {
@@ -296,6 +303,10 @@ main {
 
   main {
     padding: 16px;
+  }
+
+  .titulo {
+    font-size: 1.2rem;
   }
 }
 
