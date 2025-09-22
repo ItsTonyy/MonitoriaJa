@@ -1,0 +1,49 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto-claro: #ffffff;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+}
+
+.loginCard {
+  background-color: var(--cor-fundo) !important;
+  color: var(--cor-primaria) !important;
+  width: 90%;
+  max-width: 350px;
+  border-color: var(--cor-primaria);
+  border-radius: 10px;
+  border-width: 1.5px;
+  padding: 0px 25px;
+}
+
+.cardTitle {
+  font-family: "Roboto", Courier, monospace;
+}
+
+.userAvatar {
+  width: 100px;
+  height: 100px;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  border-color: var(--cor-secundaria) !important;
+}
+
+@media (min-width: 768px) {
+  .loginCard {
+    max-width: 500px;
+    padding: 60px 50px !important;
+  }
+
+  .userAvatar {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+.appBar {
+  background-color: var(--cor-primaria);
+}

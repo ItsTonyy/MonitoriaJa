@@ -1,0 +1,54 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-background-suave: #fbfbfe;
+  --cor-texto: #050315;
+  --cor-fundo-card: #ffffff;
+  --cor-borda-card: #e0e0e0;
+  --cor-texto-claro: #ffffff;
+}
+
+.MuiButton-contained {
+  font-weight: 600;
+}
+
+.MuiButton-outlined {
+  font-weight: 500;
+}
+
+.MuiRating-iconFilled {
+  color: #ffc107;
+}
+
+.MuiRating-iconEmpty {
+  color: #e0e0e0;
+}
+
+.MuiLinearProgress-root {
+  background-color: #e0e0e0;
+}
+
+.MuiChip-colorSuccess {
+  border-color: #4caf50;
+  color: #4caf50;
+}
+
+@media (max-width: 768px) {
+  .MuiBox-root {
+    padding: 1rem;
+  }
+}
+
+.MuiButton-root {
+  transition: all 0.2s ease-in-out;
+}
+
+.MuiButton-root:hover {
+  transform: translateY(-1px);
+}
+
+.MuiModal-root .MuiBox-root {
+  max-height: 90vh;
+  overflow-y: auto;
+}

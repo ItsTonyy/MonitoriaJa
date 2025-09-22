@@ -1,0 +1,69 @@
+/* Variáveis CSS globais */
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto-claro: #ffffff;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--cor-background-escuro);
+}
+
+.formLabel {
+  color: var(--cor-primaria) !important;
+}
+
+.formControl {
+  background-color: var(--cor-input-fundo) !important;
+  border-color: var(--cor-primaria) !important;
+  color: var(--cor-texto-claro) !important;
+}
+
+.formControl::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.formControl:focus {
+  border-color: var(--cor-secundaria) !important;
+  box-shadow: 0 0 0 0.25rem rgba(31, 138, 192, 0.25) !important;
+}
+
+.inputGroupPass {
+  position: relative;
+}
+
+.inputGroupPass i {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(10%);
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s;
+}
+
+.inputGroupPass i:hover {
+  color: var(--cor-texto-claro);
+}
+
+.forgotPasswordLink {
+  color: var(--cor-secundaria);
+  font-size: 0.9em;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.forgotPasswordLink:hover {
+  color: #1a719c;
+  text-decoration: underline;
+}
