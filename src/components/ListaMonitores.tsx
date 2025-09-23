@@ -14,6 +14,7 @@ import Grid from "@mui/material/Grid";
 import SearchIcon from "@mui/icons-material/Search";
 import StarIcon from "@mui/icons-material/Star";
 import styles from "./ListaMonitores.module.css";
+import { useNavigate } from "react-router-dom";
 
 type Monitor = {
   id: number;
@@ -66,6 +67,7 @@ function getCardsPerPage() {
 }
 
 function ListaMonitores() {
+  const navigate = useNavigate();
   const [buscaNome, setBuscaNome] = useState("");
   const [buscaMateria, setBuscaMateria] = useState("");
   const [pagina, setPagina] = useState(1);
@@ -167,7 +169,14 @@ function ListaMonitores() {
                 </CardContent>
 
                 <Box className={styles.btnAcessarBox}>
-                  <Button variant="contained" color="primary" className={styles.btnAcessar} href="/detalhesMonitor">Acessar</Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className={styles.btnAcessar}
+                    onClick={() => navigate("/detalhes-monitor", { state: { monitor } })}
+                  >
+                    Acessar
+                  </Button>
                 </Box>
               </div>
             </Grid>

@@ -1,5 +1,6 @@
 :root {
   --cor-primaria: #104c91;
+   --cor-principal: rgb(16, 76, 145);
   --cor-secundaria: #1f8ac0;
   --cor-acento: #efc9af;
   --cor-fundo: #ffffff;
@@ -8,7 +9,6 @@
   --cor-input-fundo: #2b3a55;
   --cor-background-escuro: rgb(240, 240, 240);
 }
-
 .parentContainer {
   flex-direction: row;
   display: flex;
@@ -29,14 +29,35 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
 .txtColor {
-  background-color: var(--cor-primaria);
-  font-family: "Roboto";
+  background-color: var(--cor-principal);
+  font-family: 'Roboto';
   font-size: large;
 }
 
 .link {
   color: rgb(255, 255, 255) !important;
+}
+
+.nome-desenvolvedor {
+  color: white;
+  user-select: none;
+}
+
+.nome-desenvolvedor:hover {
+  text-decoration: underline;
+}
+
+.icon-img {
+  width: 25px;
+  height: 25px;
+  margin-left: 7px;
+}
+
+.links-dev {
+  display: flex;
+  flex-direction: row;
 }
