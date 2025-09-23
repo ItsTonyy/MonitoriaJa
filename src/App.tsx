@@ -5,6 +5,7 @@ import AvaliacaoPosAulaPage from "./pages/Login/AvaliacaoPosAula/AvaliacaoPosAul
 import ComentariosAvaliacaoPage from "./pages/Login/ComentariosAvaliacao/ComentariosAvaliacaoPage";
 import ListaMonitores from "./components/ListaMonitores";
 import ListaAgendamentos from "./components/ListaAgendamentos";
+import CadastroMonitor from "./pages/CadastroMonitor";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/comentarios-avaliacao" element={<ComentariosAvaliacaoPage />} />
         <Route path="/lista-monitores" element={<ListaMonitores/>} />
         <Route path="/lista-agendamentos" element={<ListaAgendamentos/>} />
+        <Route path="/cadastro-monitor" element={<CadastroMonitor />} />
       </Routes>
     </BrowserRouter>
   );

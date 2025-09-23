@@ -2,6 +2,7 @@ import Button from '@mui/material/Button';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
+import { Box } from '@mui/material';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -17,7 +18,7 @@ const VisuallyHiddenInput = styled('input')({
 
 function CadastroHeader() {
   return (
-    <header>
+    <Box sx={{justifySelf: 'center'}}>
         <h1>Cadastre-se</h1>
         <Avatar
             sx={{ 
@@ -42,7 +43,7 @@ function CadastroHeader() {
                 max={1}
             />
         </Button>
-    </header>
+    </Box>
   );
 }
 
