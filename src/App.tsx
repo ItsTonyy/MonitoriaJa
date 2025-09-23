@@ -16,15 +16,15 @@ const App = () => {
       <BrowserRouter>
         <ResponsiveAppBar />
           <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/recuperar-senha" element={<RecuperarSenhaPage />} />
-            <Route path="/avaliacao-pos-aula" element={<AvaliacaoPosAulaPage />} />
-            <Route path="/comentarios-avaliacao" element={<ComentariosAvaliacaoPage />} />
-            <Route path="/lista-monitores" element={<ListaMonitores />} />
-            <Route path="/lista-agendamentos" element={<ListaAgendamentos />} />
-            <Route path="/cadastro-monitor" element={<CadastroMonitor />} />
-            <Route path="/detalhes-monitor" element={<DetalhesMonitor />} />
-            <Route path="/agendamento-monitor" element={<AgendamentoMonitor />} />
+            <Route path="/MonitoriaJa" element={<LoginPage />} />
+            <Route path="/MonitoriaJa/recuperar-senha" element={<RecuperarSenhaPage />} />
+            <Route path="/MonitoriaJa/avaliacao-pos-aula" element={<AvaliacaoPosAulaPage />} />
+            <Route path="/MonitoriaJa/comentarios-avaliacao" element={<ComentariosAvaliacaoPage />} />
+            <Route path="/MonitoriaJa/lista-monitores" element={<ListaMonitores />} />
+            <Route path="/MonitoriaJa/lista-agendamentos" element={<ListaAgendamentos />} />
+            <Route path="/MonitoriaJa/cadastro-monitor" element={<CadastroMonitor />} />
+            <Route path="/MonitoriaJa/detalhes-monitor" element={<DetalhesMonitor />} />
+            <Route path="/MonitoriaJa/agendamento-monitor" element={<AgendamentoMonitor />} />
           </Routes>
         <Footer />
       </BrowserRouter>

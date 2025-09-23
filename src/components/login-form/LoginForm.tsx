@@ -115,7 +115,7 @@ const LoginForm: React.FC = () => {
     
     setTimeout(() => {
       setIsLoading(false);
-      navigate("/lista-monitores"); 
+      navigate("MonitoriaJa/lista-monitores"); 
     }, 800);
   };
 
@@ -215,7 +215,7 @@ const LoginForm: React.FC = () => {
           />
 
           <Box sx={{ textAlign: "center", mt: 2, mb: 1 }}>
-            <LinkRouter to="/recuperar-senha">
+            <LinkRouter to="/MonitoriaJa/recuperar-senha">
               <Link
                 variant="body2"
                 color="primary"

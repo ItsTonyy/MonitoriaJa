@@ -116,7 +116,7 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
         <Button
           variant="outlined"
           sx={{ padding: '5px 40px' }}
-          onClick={() => navigate("/lista-monitores")}
+          onClick={() => navigate("MonitoriaJa/lista-monitores")}
         >
           Voltar
         </Button>
