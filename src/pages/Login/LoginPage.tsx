@@ -1,13 +1,10 @@
 import React from "react";
 import { Box, Container } from "@mui/material";
 import LoginForm from "../../components/login-form/LoginForm";
-import Footer from "../../components/footer";
-import ResponsiveAppBar from "../../components/login-form/AppBar";
 import "./LoginPage.css";
 const LoginPage: React.FC = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <ResponsiveAppBar></ResponsiveAppBar>
       <Container
         sx={{
           display: "flex",
@@ -20,7 +17,6 @@ const LoginPage: React.FC = () => {
       >
         <LoginForm />
       </Container>
-      <Footer></Footer>
     </Box>
   );
 };

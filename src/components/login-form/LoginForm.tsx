@@ -10,7 +10,7 @@ import {
   Avatar,
   Alert,
 } from "@mui/material";
-import { Link as LinkRouter } from "react-router-dom";
+import { Link as LinkRouter, useNavigate } from "react-router-dom";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import PersonIcon from "@mui/icons-material/Person";
@@ -53,6 +53,7 @@ const LoginForm: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const navigate = useNavigate();
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
@@ -110,6 +111,12 @@ const LoginForm: React.FC = () => {
     }
 
     setIsLoading(true);
+
+    
+    setTimeout(() => {
+      setIsLoading(false);
+      navigate("/lista-monitores"); 
+    }, 800);
   };
 
   return (

@@ -13,7 +13,6 @@ import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
 import SearchIcon from "@mui/icons-material/Search";
 import StarIcon from "@mui/icons-material/Star";
-import UndoIcon from "@mui/icons-material/Undo";
 import styles from "./ListaMonitores.module.css";
 
 type Monitor = {
@@ -74,7 +73,6 @@ function ListaMonitores() {
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
   const title = "Lista de Monitores";
   const nenhumMonitorMsg = "Nenhum monitor encontrado.";
-  const filtroMsg= "Limpar filtros";
 
   useEffect(() => {
     function handleResize() {
@@ -100,12 +98,6 @@ function ListaMonitores() {
     (pagina - 1) * cardsPorPagina,
     pagina * cardsPorPagina
   );
-
-  const handleLimpar = () => {
-    setBuscaNome("");
-    setBuscaMateria("");
-    setPagina(1);
-  };
 
   return (
     <Box className={styles.container} sx={{ py: 4 }}>
@@ -139,13 +131,8 @@ function ListaMonitores() {
           onInputChange={(_, value) => { setBuscaMateria(value); setPagina(1); }}
           filterOptions={(options, { inputValue }) => options.filter((o) => matchStartOfWords(o, inputValue))}
           renderInput={(params) => <TextField {...params} label="Filtrar por disciplina" variant="outlined" sx={{ minWidth: 220, maxWidth: 350 }} />}
+          ListboxProps={{ style: { maxHeight: 190, overflowY: "auto" } }}
         />
-
-        {(buscaNome || buscaMateria) && (
-          <Button variant="outlined" color="secondary" startIcon={<UndoIcon />} onClick={handleLimpar}>
-            {filtroMsg}
-          </Button>
-        )}
       </Stack>
 
       <Stack direction="row" spacing={1} justifyContent="center" sx={{ mb: 2, minHeight: 32 }}>
