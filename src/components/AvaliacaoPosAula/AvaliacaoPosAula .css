@@ -1,0 +1,41 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-background-suave: #fbfbfe;
+  --cor-texto: #050315;
+  --cor-fundo-card: #ffffff;
+  --cor-borda-card: #e0e0e0;
+  --cor-texto-claro: #ffffff;
+}
+
+/* Animações customizadas para as estrelas */
+.MuiRating-iconFilled {
+  transition: all 0.2s ease-in-out;
+}
+
+.MuiRating-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Estilos customizados para o textarea */
+.MuiTextField-root .MuiOutlinedInput-root {
+  border-radius: 10px;
+}
+
+.MuiTextField-root .MuiOutlinedInput-root:focus-within {
+  box-shadow: 0 0 0 3px rgba(16, 76, 145, 0.1);
+}
+
+/* Responsividade */
+@media (min-width: 768px) {
+  .avaliacao-card {
+    max-width: 600px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .avaliacao-card {
+    max-width: 700px;
+  }
+}
