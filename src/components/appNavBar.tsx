@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import './appNavBar.css';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -34,6 +36,20 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 export default function AppAppBar() {
   const [open, setOpen] = React.useState(false);
 
+  const navigate = useNavigate();
+
+  function handleClickHome() {
+    navigate('/');
+  }
+
+  function handleClickMonitores() {
+    navigate('/lista-monitores');
+  }
+
+  function handleClickAgendamento() {
+    navigate('/lista-agendamentos');
+  }
+
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
@@ -52,7 +68,10 @@ export default function AppAppBar() {
       <Container maxWidth="lg">
         <StyledToolbar variant="dense" disableGutters>
           <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0, padding: 0 }}>
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, padding: 0 }}>
+            <Box
+              sx={{ display: { xs: 'none', md: 'flex' }, padding: 0 }}
+              className="box-header-main"
+            >
               <Box>
                 <img
                   src="src/assets/logoMonitoriaJá-SomenteGlobo.png"
@@ -60,38 +79,62 @@ export default function AppAppBar() {
                   className="logo-img"
                 />
               </Box>
+
               <Button
                 variant="text"
                 color="info"
                 size="small"
-                sx={{ paddingLeft: '10px', paddingRight: '10px', ':hover': { transform: 'none' } }}
+                sx={{
+                  paddingLeft: '10px',
+                  paddingRight: '10px',
+                  ':hover': { transform: 'none' },
+                }}
+                onClick={handleClickHome}
               >
                 Home
               </Button>
+
               <Button
                 variant="text"
                 color="info"
                 size="small"
-                sx={{ paddingLeft: '10px', paddingRight: '10px', ':hover': { transform: 'none' } }}
+                sx={{
+                  paddingLeft: '10px',
+                  paddingRight: '10px',
+                  ':hover': { transform: 'none' },
+                }}
+                onClick={handleClickMonitores}
               >
                 Monitores
               </Button>
+
               <Button
                 variant="text"
                 color="info"
                 size="small"
-                sx={{ paddingLeft: '10px', paddingRight: '10px', ':hover': { transform: 'none' } }}
+                sx={{
+                  paddingLeft: '10px',
+                  paddingRight: '10px',
+                  ':hover': { transform: 'none' },
+                }}
+                onClick={handleClickAgendamento}
               >
                 Agendamento
               </Button>
+
               <Button
                 variant="text"
                 color="info"
                 size="small"
-                sx={{ paddingLeft: '10px', paddingRight: '10px', ':hover': { transform: 'none' } }}
+                sx={{
+                  paddingLeft: '10px',
+                  paddingRight: '10px',
+                  ':hover': { transform: 'none' },
+                }}
               >
                 Dashboard
               </Button>
+
               <Button
                 variant="text"
                 color="info"
@@ -159,9 +202,9 @@ export default function AppAppBar() {
                   </IconButton>
                 </Box>
 
-                <MenuItem>Home</MenuItem>
-                <MenuItem>Monitores</MenuItem>
-                <MenuItem>Agendamento</MenuItem>
+                <MenuItem onClick={handleClickHome}>Home</MenuItem>
+                <MenuItem onClick={handleClickMonitores}>Monitores</MenuItem>
+                <MenuItem onClick={handleClickAgendamento}>Agendamento</MenuItem>
                 <MenuItem>Dashboard</MenuItem>
                 <MenuItem>Sobre Nós</MenuItem>
                 <Divider sx={{ my: 3 }} />
