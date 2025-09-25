@@ -51,8 +51,8 @@ export default function AppAppBar() {
     >
       <Container maxWidth="lg">
         <StyledToolbar variant="dense" disableGutters>
-          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: '7px' }}>
+          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0, padding: 0 }}>
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, padding: 0 }}>
               <Box>
                 <img
                   src="src/assets/logoMonitoriaJá-SomenteGlobo.png"
