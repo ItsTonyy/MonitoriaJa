@@ -9,7 +9,6 @@
   --cor-texto-claro: #ffffff;
 }
 
-/* Animações customizadas para as estrelas */
 .MuiRating-iconFilled {
   transition: all 0.2s ease-in-out;
 }
@@ -18,7 +17,6 @@
   transform: scale(1.1);
 }
 
-/* Estilos customizados para o textarea */
 .MuiTextField-root .MuiOutlinedInput-root {
   border-radius: 10px;
 }
@@ -27,7 +25,6 @@
   box-shadow: 0 0 0 3px rgba(16, 76, 145, 0.1);
 }
 
-/* Responsividade */
 @media (min-width: 768px) {
   .avaliacao-card {
     max-width: 600px;
