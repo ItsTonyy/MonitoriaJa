@@ -15,6 +15,11 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PaymentIcon from "@mui/icons-material/Payment";
 import StarIcon from "@mui/icons-material/Star";
+import { Monitor, MONITORES } from "../ListaMonitores";
+
+interface NotificacaoCardProps {
+  color: "primary";
+}
 
 interface Notificacao {
   id: string;
@@ -25,18 +30,65 @@ interface Notificacao {
     | "avaliacao"
     | "agendamentoConfirmado";
   titulo: string;
+  previa: string;
   descricao: string;
   tempo: string;
   lida: boolean;
   icone?: React.ReactNode;
 }
 
+const monitorMock: Monitor[] = [
+  {
+    id: 1,
+    nome: "João Silva",
+    materia: "Matemática",
+    valor: "R$ 50/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/men/1.jpg",
+    avaliacao: 4.9,
+  },
+  {
+    id: 2,
+    nome: "Maria Souza",
+    materia: "Física",
+    valor: "R$ 60/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/women/2.jpg",
+    avaliacao: 4.8,
+  },
+  {
+    id: 3,
+    nome: "Carlos Lima",
+    materia: "Química",
+    valor: "R$ 55/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/men/3.jpg",
+    avaliacao: 4.5,
+  },
+  {
+    id: 4,
+    nome: "Ana Paula",
+    materia: "Biologia",
+    valor: "R$ 58/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/women/4.jpg",
+    avaliacao: 4.7,
+  },
+];
+
 const notificacoesMock: Notificacao[] = [
   {
     id: "1",
     tipo: "reagendamento",
+    previa:
+      "Olá, Aluno x! Passando pra avisar que sua aula com " +
+      monitorMock[0].nome +
+      " foi reagendada.",
     titulo: "Reagendamento realizado com sucesso",
-    descricao: "Reagendamento para o monitor X confirmado",
+    descricao:
+      "Sua aula com " +
+      monitorMock[0].nome +
+      " foi reagendada com sucesso. Seu novo horário é: dia 21/10/2023 às 10h",
     tempo: "há 2 min",
     lida: false,
     icone: <CalendarMonthIcon color="primary" />,
@@ -44,8 +96,12 @@ const notificacoesMock: Notificacao[] = [
   {
     id: "2",
     tipo: "reagendamento",
+    previa:
+      "Olá, " +
+      monitorMock[0].nome +
+      "! Passando pra avisar que sua aula com Aluno x foi reagendada.",
     titulo: "Reagendamento confirmado",
-    descricao: "A aula de aluno X foi reagendada",
+    descricao: "A aula de Aluno x foi reagendada para dia 21/10/2023 às 10h",
     tempo: "há 1 hora",
     lida: false,
     icone: <CalendarMonthIcon color="primary" />,
@@ -53,8 +109,15 @@ const notificacoesMock: Notificacao[] = [
   {
     id: "3",
     tipo: "agendamentoConfirmado",
-    titulo: "Pagamento aprovado",
-    descricao: "Sua compra de R$ 1.299,99 foi aprovada",
+    previa:
+      "Olá, Aluno y! Passando pra avisar que sua aula com " +
+      monitorMock[2].nome +
+      " foi reagendada.",
+    titulo: "Aula confirmada",
+    descricao:
+      "Sua aula com " +
+      monitorMock[2].nome +
+      " foi confirmada. O horário selecionado foi: dia 10/10/2023 às 17h.",
     tempo: "há 3 horas",
     lida: true,
     icone: <CalendarMonthIcon color="primary" />,
@@ -62,8 +125,15 @@ const notificacoesMock: Notificacao[] = [
   {
     id: "4",
     tipo: "avaliacao",
-    titulo: "Avalie sua compra",
-    descricao: "Como foi sua experiência com o produto?",
+    previa:
+      "Fala, Aluno y! Conta com a gente um pouco da sua experiência com " +
+      monitorMock[2].nome +
+      "!",
+    titulo: "Avalie sua experiência",
+    descricao:
+      "Conta pra gente como foi o serviço com " +
+      monitorMock[2].nome +
+      '! Clique em "Avaliar" para deixar seu feedback!',
     tempo: "há 1 dia",
     lida: true,
     icone: <StarIcon color="warning" />,
@@ -114,7 +184,7 @@ export default function NotificacaoCard() {
         }}
       >
         <Badge badgeContent={notificacaoNaoLidas} color="error">
-          <NotificationsIcon />
+          <NotificationsIcon color="primary" />
         </Badge>
       </Button>
 
@@ -205,7 +275,7 @@ export default function NotificacaoCard() {
                     {notificacao.titulo}
                   </Box>
                   <Box sx={{ color: "text.secondary", fontSize: "0.875rem" }}>
-                    {notificacao.descricao}
+                    {notificacao.previa}
                   </Box>
                   <Box
                     sx={{

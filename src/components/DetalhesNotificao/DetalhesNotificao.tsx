@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState } from "react";
 import {
   Box,
   Card,
@@ -7,6 +8,11 @@ import {
   Avatar,
   Container,
   Button,
+  useMediaQuery,
+  useTheme,
+  TextField,
+  Rating,
+  Divider,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -15,11 +21,27 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PaymentIcon from "@mui/icons-material/Payment";
 import StarIcon from "@mui/icons-material/Star";
+import SchoolIcon from "@mui/icons-material/School";
+import { Monitor, MONITORES } from "../ListaMonitores";
+import { Link as LinkRouter } from "react-router-dom";
+interface FormData {
+  rating: number | null;
+  titulo: string;
+  comentario: string;
+}
 
 export default function DetalhesNotificao() {
   const location = useLocation();
   const navigate = useNavigate();
   const notificacao = location.state?.notificacao;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [formData, setFormData] = useState<FormData>({
+    rating: null,
+    titulo: "",
+    comentario: "",
+  });
 
   // Função para obter o ícone baseado no tipo
   const getIconeByTipo = (tipo: string) => {
@@ -37,6 +59,17 @@ export default function DetalhesNotificao() {
       default:
         return <CalendarMonthIcon />;
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.rating || !formData.comentario) {
+      alert("Por favor, preencha todos os campos obrigatórios!");
+      return;
+    }
+    console.log("Avaliação enviada:", formData);
+    setFormData({ rating: null, titulo: "", comentario: "" });
+    alert("Avaliação enviada com sucesso!");
   };
 
   // Se não há dados da notificação, mostrar uma mensagem padrão
@@ -61,22 +94,15 @@ export default function DetalhesNotificao() {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container
+      maxWidth="md"
+      sx={{
+        pt: { xs: 12, sm: 14, md: 16 }, // Distância do header responsiva
+        pb: 4,
+        px: { xs: 2, sm: 3, md: 4 }, // Padding lateral responsivo
+      }}
+    >
       {/* ========== BOTÃO VOLTAR ========== */}
-      <Button
-        startIcon={<ArrowBackIcon />}
-        onClick={() => navigate(-1)}
-        sx={{ mb: 3 }}
-        variant="text"
-      >
-        Voltar às notificações
-      </Button>
-
-      {/* ========== TÍTULO DA PÁGINA ========== */}
-      {/* EDITE AQUI: Mude o título principal */}
-      <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4 }}>
-        {notificacao.titulo}
-      </Typography>
 
       {/* ========== CARD PRINCIPAL DA NOTIFICAÇÃO ========== */}
       <Card sx={{ mb: 3, p: 2 }}>
@@ -93,77 +119,167 @@ export default function DetalhesNotificao() {
               {getIconeByTipo(notificacao.tipo)}
             </Avatar>
             <Box>
-              <Typography variant="h6" component="h2">
+              <Typography
+                variant="h6"
+                component="h2"
+                sx={{ fontWeight: "bold" }}
+              >
                 {notificacao.titulo}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {notificacao.tempo} • Tipo: {notificacao.tipo}
               </Typography>
             </Box>
           </Box>
           <Typography variant="body1">{notificacao.descricao}</Typography>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="caption" color="text.disabled">
-              Status: {notificacao.lida ? "Lida" : "Não lida"}
-            </Typography>
-          </Box>
+          <Box sx={{ mt: 2 }}></Box>
+          {(notificacao.tipo == "reagendamento" ||
+            notificacao.tipo == "agendamentoConfirmado" ||
+            notificacao.tipo == "agendamento") && (
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <LinkRouter to="/lista-agendamentos">
+                <Button
+                  startIcon={<CalendarMonthIcon />}
+                  variant="contained"
+                  color="primary"
+                  size="medium"
+                >
+                  Visualizar agendamentos
+                </Button>
+              </LinkRouter>
+            </Box>
+          )}
         </CardContent>
       </Card>
 
       {/* ========== CARD 2 ========== */}
-      {/* EDITE AQUI: Segundo card - mude conteúdo, cores, ícones */}
-      <Card sx={{ mb: 3, p: 2 }}>
-        <CardContent>
-          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-            <Avatar sx={{ bgcolor: "success.main", mr: 2 }}>
-              <CheckCircleIcon />
-            </Avatar>
-            <Box>
-              {/* EDITE: Título do segundo card */}
-              <Typography variant="h6" component="h2">
-                Agendamento Aprovado
-              </Typography>
-              {/* EDITE: Subtítulo do segundo card */}
-              <Typography variant="body2" color="text.secondary">
-                há 1 hora
-              </Typography>
+      {/* EDITE AQUI: Cards extras - só aparecem em desktop */}
+      {!isMobile && notificacao.tipo !== "avaliacao" && (
+        <Card sx={{ mb: 3, p: 2 }}>
+          <CardContent>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <Avatar sx={{ bgcolor: "error.main", mr: 2 }}>
+                <CancelIcon />
+              </Avatar>
+              <Box>
+                {/* EDITE: Título do card extra */}
+                <Typography variant="h6" component="h2">
+                  Cancelamento Processado
+                </Typography>
+                {/* EDITE: Subtítulo do card extra */}
+                <Typography variant="body2" color="text.secondary">
+                  há 3 horas
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-          {/* EDITE: Descrição do segundo card */}
-          <Typography variant="body1">
-            Sua solicitação de monitoria foi aprovada. A sessão está marcada
-            para quinta-feira, 17 de outubro às 16:00 na sala 205.
-          </Typography>
-        </CardContent>
-      </Card>
-
-      {/* ========== CARD 3 ========== */}
-      {/* EDITE AQUI: Terceiro card - mude conteúdo, cores, ícones */}
-      <Card sx={{ mb: 3, p: 2 }}>
-        <CardContent>
-          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-            <Avatar sx={{ bgcolor: "error.main", mr: 2 }}>
-              <CancelIcon />
-            </Avatar>
-            <Box>
-              {/* EDITE: Título do terceiro card */}
-              <Typography variant="h6" component="h2">
-                Cancelamento Processado
-              </Typography>
-              {/* EDITE: Subtítulo do terceiro card */}
-              <Typography variant="body2" color="text.secondary">
-                há 3 horas
-              </Typography>
+            {/* EDITE: Descrição do card extra */}
+            <Typography variant="body1">
+              Sua monitoria de Cálculo II foi cancelada conforme solicitado. O
+              valor será estornado em até 5 dias úteis.
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+      {!isMobile && notificacao.tipo == "avaliacao" && (
+        <Card sx={{ mb: 3, p: 2 }}>
+          <CardContent>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+              <Avatar
+                sx={{
+                  bgcolor: "background.paper",
+                  mr: 2,
+                  border: "2px solid",
+                  borderColor: "primary.main",
+                }}
+              >
+                <SchoolIcon color="warning" />
+              </Avatar>
+              <Box>
+                <Typography
+                  variant="h6"
+                  component="h2"
+                  sx={{ fontWeight: "bold" }}
+                >
+                  Deixe sua avaliação para {MONITORES[0].nome}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Compartilhe sua experiência com outros alunos
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-          {/* EDITE: Descrição do terceiro card */}
-          <Typography variant="body1">
-            Sua monitoria de Cálculo II foi cancelada conforme solicitado. O
-            valor será estornado em até 5 dias úteis.
-          </Typography>
-        </CardContent>
-      </Card>
 
+            <Divider sx={{ mb: 3 }} />
+
+            <Box component="form" onSubmit={handleSubmit}>
+              <Box sx={{ mb: 3 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ mb: 1, fontWeight: "medium" }}
+                >
+                  Sua nota *
+                </Typography>
+                <Rating
+                  name="rating"
+                  value={formData.rating}
+                  onChange={(_, newValue) =>
+                    setFormData((prev) => ({ ...prev, rating: newValue }))
+                  }
+                  size="large"
+                />
+              </Box>
+
+              <TextField
+                fullWidth
+                label="Título do seu comentário (opcional)"
+                placeholder="Ex: Ótima monitoria, gostei bastante!"
+                value={formData.titulo}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, titulo: e.target.value }))
+                }
+                sx={{ mb: 3 }}
+              />
+
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                label="Seu comentário *"
+                placeholder="Deixe aqui sua opinião detalhada..."
+                value={formData.comentario}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    comentario: e.target.value,
+                  }))
+                }
+                sx={{ mb: 3 }}
+              />
+
+              <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="medium"
+                  sx={{ borderRadius: "none" }}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="medium"
+                  disabled={!formData.rating || !formData.comentario}
+                  sx={{
+                    backgroundColor: "var(--cor-primaria)",
+                    "&:hover": { backgroundColor: "var(--cor-secundaria)" },
+                    borderRadius: "none",
+                  }}
+                >
+                  Enviar avaliação
+                </Button>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
       {/* ========== INSTRUÇÕES DE EDIÇÃO ========== */}
       {/* REMOVA ESTE COMENTÁRIO QUANDO TERMINAR DE EDITAR */}
       {/* 

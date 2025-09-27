@@ -16,7 +16,7 @@ import StarIcon from "@mui/icons-material/Star";
 import styles from "./ListaMonitores.module.css";
 import { useNavigate } from "react-router-dom";
 
-type Monitor = {
+export type Monitor = {
   id: number;
   nome: string;
   materia: string;
@@ -26,21 +26,64 @@ type Monitor = {
   avaliacao: number;
 };
 
-const MONITORES: Monitor[] = [
-  { id: 1, nome: "João Silva", materia: "Matemática", valor: "R$ 50/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/men/1.jpg", avaliacao: 4.9 },
-  { id: 2, nome: "Maria Souza", materia: "Física", valor: "R$ 60/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/women/2.jpg", avaliacao: 4.8 },
-  { id: 3, nome: "Carlos Lima", materia: "Química", valor: "R$ 55/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/men/3.jpg", avaliacao: 4.5 },
-  { id: 4, nome: "Ana Paula", materia: "Biologia", valor: "R$ 58/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/women/4.jpg", avaliacao: 4.7 },
+export const MONITORES: Monitor[] = [
+  {
+    id: 1,
+    nome: "João Silva",
+    materia: "Matemática",
+    valor: "R$ 50/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/men/1.jpg",
+    avaliacao: 4.9,
+  },
+  {
+    id: 2,
+    nome: "Maria Souza",
+    materia: "Física",
+    valor: "R$ 60/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/women/2.jpg",
+    avaliacao: 4.8,
+  },
+  {
+    id: 3,
+    nome: "Carlos Lima",
+    materia: "Química",
+    valor: "R$ 55/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/men/3.jpg",
+    avaliacao: 4.5,
+  },
+  {
+    id: 4,
+    nome: "Ana Paula",
+    materia: "Biologia",
+    valor: "R$ 58/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/women/4.jpg",
+    avaliacao: 4.7,
+  },
 ];
 
 const MATERIAS = [
-  "Matemática","Física","Química","Biologia","História","Geografia","Português","Inglês","Programação",
+  "Matemática",
+  "Física",
+  "Química",
+  "Biologia",
+  "História",
+  "Geografia",
+  "Português",
+  "Inglês",
+  "Programação",
 ];
 
 function matchStartOfWords(text: string, search: string) {
   if (!search) return true;
   const s = search.trim().toLowerCase();
-  return text.toLowerCase().split(/\s+/).some((w) => w.startsWith(s));
+  return text
+    .toLowerCase()
+    .split(/\s+/)
+    .some((w) => w.startsWith(s));
 }
 
 function getGridCols() {
@@ -60,9 +103,9 @@ function getCardsPerPage() {
   const cols = getGridCols();
   const rows = getGridRows();
   if (cols === 1) {
-    return rows; 
+    return rows;
   } else {
-    return rows * 2; 
+    return rows * 2;
   }
 }
 
@@ -87,11 +130,16 @@ function ListaMonitores() {
   }, []);
   const monitoresFiltrados = useMemo(() => {
     return MONITORES.filter(
-      (m) => matchStartOfWords(m.nome, buscaNome) && matchStartOfWords(m.materia, buscaMateria)
+      (m) =>
+        matchStartOfWords(m.nome, buscaNome) &&
+        matchStartOfWords(m.materia, buscaMateria)
     );
   }, [buscaNome, buscaMateria]);
 
-  const totalPaginas = Math.max(1, Math.ceil(monitoresFiltrados.length / cardsPorPagina));
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(monitoresFiltrados.length / cardsPorPagina)
+  );
   useEffect(() => {
     if (pagina > totalPaginas) setPagina(1);
   }, [totalPaginas, pagina]);
@@ -107,17 +155,31 @@ function ListaMonitores() {
         {title}
       </Typography>
 
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent="center" alignItems="center" className={styles.buscaFiltro} sx={{ mb: 3 }}>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={2}
+        justifyContent="center"
+        alignItems="center"
+        className={styles.buscaFiltro}
+        sx={{ mb: 3 }}
+      >
         <TextField
           variant="outlined"
           placeholder="Buscar por nome"
           value={buscaNome}
-          onChange={(e) => { setBuscaNome(e.target.value); setPagina(1); }}
+          onChange={(e) => {
+            setBuscaNome(e.target.value);
+            setPagina(1);
+          }}
           onKeyDown={(e) => e.key === "Enter" && setPagina(1)}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton aria-label="Buscar" onClick={() => setPagina(1)} edge="end">
+                <IconButton
+                  aria-label="Buscar"
+                  onClick={() => setPagina(1)}
+                  edge="end"
+                >
                   <SearchIcon />
                 </IconButton>
               </InputAdornment>
@@ -130,42 +192,111 @@ function ListaMonitores() {
           freeSolo
           options={MATERIAS}
           value={buscaMateria}
-          onInputChange={(_, value) => { setBuscaMateria(value); setPagina(1); }}
-          filterOptions={(options, { inputValue }) => options.filter((o) => matchStartOfWords(o, inputValue))}
-          renderInput={(params) => <TextField {...params} label="Filtrar por disciplina" variant="outlined" sx={{ minWidth: 220, maxWidth: 350 }} />}
+          onInputChange={(_, value) => {
+            setBuscaMateria(value);
+            setPagina(1);
+          }}
+          filterOptions={(options, { inputValue }) =>
+            options.filter((o) => matchStartOfWords(o, inputValue))
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Filtrar por disciplina"
+              variant="outlined"
+              sx={{ minWidth: 220, maxWidth: 350 }}
+            />
+          )}
           ListboxProps={{ style: { maxHeight: 190, overflowY: "auto" } }}
         />
       </Stack>
 
-      <Stack direction="row" spacing={1} justifyContent="center" sx={{ mb: 2, minHeight: 32 }}>
-        {buscaMateria && <Chip label={`Matéria: ${buscaMateria}`} onDelete={() => setBuscaMateria("")} color="primary" variant="outlined" />}
-        {buscaNome && <Chip label={`Nome: ${buscaNome}`} onDelete={() => setBuscaNome("")} color="secondary" variant="outlined" />}
+      <Stack
+        direction="row"
+        spacing={1}
+        justifyContent="center"
+        sx={{ mb: 2, minHeight: 32 }}
+      >
+        {buscaMateria && (
+          <Chip
+            label={`Matéria: ${buscaMateria}`}
+            onDelete={() => setBuscaMateria("")}
+            color="primary"
+            variant="outlined"
+          />
+        )}
+        {buscaNome && (
+          <Chip
+            label={`Nome: ${buscaNome}`}
+            onDelete={() => setBuscaNome("")}
+            color="secondary"
+            variant="outlined"
+          />
+        )}
       </Stack>
 
       {}
-      <Grid container spacing={4} justifyContent="center" className={styles.rowMonitores}>
+      <Grid
+        container
+        spacing={4}
+        justifyContent="center"
+        className={styles.rowMonitores}
+      >
         {monitoresPagina.length === 0 ? (
-          <Grid item xs={12}
-          component={"div" as unknown as React.ElementType}>
-            <Typography align="center" color="text.secondary">{nenhumMonitorMsg}</Typography>
+          <Grid item xs={12} component={"div" as unknown as React.ElementType}>
+            <Typography align="center" color="text.secondary">
+              {nenhumMonitorMsg}
+            </Typography>
           </Grid>
         ) : (
           monitoresPagina.map((monitor) => (
-            <Grid item xs={12} sm={cols === 2 ? 6 : 12} component={"div" as unknown as React.ElementType} key={monitor.id} style={{ display: "flex" }}>
+            <Grid
+              item
+              xs={12}
+              sm={cols === 2 ? 6 : 12}
+              component={"div" as unknown as React.ElementType}
+              key={monitor.id}
+              style={{ display: "flex" }}
+            >
               <div className={styles.monitorCard}>
                 <div className={styles.monitorImgAvaliacao}>
-                  <CardMedia component="img" image={monitor.foto} alt={`Foto de ${monitor.nome}`} className={styles.monitorFoto} />
+                  <CardMedia
+                    component="img"
+                    image={monitor.foto}
+                    alt={`Foto de ${monitor.nome}`}
+                    className={styles.monitorFoto}
+                  />
                   <div className={styles.monitorAvaliacao}>
-                    <StarIcon sx={{ color: "#f5b301", verticalAlign: "middle" }} />
-                    <Typography variant="body2" component="span" sx={{ fontWeight: 500, ml: 0.5 }}>{monitor.avaliacao}</Typography>
+                    <StarIcon
+                      sx={{ color: "#f5b301", verticalAlign: "middle" }}
+                    />
+                    <Typography
+                      variant="body2"
+                      component="span"
+                      sx={{ fontWeight: 500, ml: 0.5 }}
+                    >
+                      {monitor.avaliacao}
+                    </Typography>
                   </div>
                 </div>
 
                 <CardContent className={styles.monitorInfo}>
-                  <Typography variant="h6" className={styles.monitorNome} color="primary">{monitor.nome}</Typography>
-                  <Typography variant="body1" className={styles.monitorMateria}>{monitor.materia}</Typography>
-                  <Typography variant="body2" className={styles.monitorValor}>{monitor.valor}</Typography>
-                  <Typography variant="body2" className={styles.monitorServico}>{monitor.servico}</Typography>
+                  <Typography
+                    variant="h6"
+                    className={styles.monitorNome}
+                    color="primary"
+                  >
+                    {monitor.nome}
+                  </Typography>
+                  <Typography variant="body1" className={styles.monitorMateria}>
+                    {monitor.materia}
+                  </Typography>
+                  <Typography variant="body2" className={styles.monitorValor}>
+                    {monitor.valor}
+                  </Typography>
+                  <Typography variant="body2" className={styles.monitorServico}>
+                    {monitor.servico}
+                  </Typography>
                 </CardContent>
 
                 <Box className={styles.btnAcessarBox}>
@@ -173,7 +304,9 @@ function ListaMonitores() {
                     variant="contained"
                     color="primary"
                     className={styles.btnAcessar}
-                    onClick={() => navigate("/detalhes-monitor", { state: { monitor } })}
+                    onClick={() =>
+                      navigate("/detalhes-monitor", { state: { monitor } })
+                    }
                   >
                     Acessar
                   </Button>
@@ -186,11 +319,30 @@ function ListaMonitores() {
 
       {}
       <Stack direction="row" justifyContent="center" spacing={2} sx={{ mt: 4 }}>
-        <Button variant="contained" color="primary" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={pagina === 1} aria-label="Página anterior">&#8592;</Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setPagina((p) => Math.max(1, p - 1))}
+          disabled={pagina === 1}
+          aria-label="Página anterior"
+        >
+          &#8592;
+        </Button>
         <Box sx={{ display: "flex", alignItems: "center", px: 1 }}>
-          <Typography variant="body1"> {pagina} de {totalPaginas}</Typography>
+          <Typography variant="body1">
+            {" "}
+            {pagina} de {totalPaginas}
+          </Typography>
         </Box>
-        <Button variant="contained" color="primary" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={pagina === totalPaginas} aria-label="Próxima página">&#8594;</Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
+          disabled={pagina === totalPaginas}
+          aria-label="Próxima página"
+        >
+          &#8594;
+        </Button>
       </Stack>
     </Box>
   );
