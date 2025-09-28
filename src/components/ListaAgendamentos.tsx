@@ -52,7 +52,6 @@ const AGENDAMENTOS: Agendamento[] = [
   },
 ];
 
-
 function getCardsPerPage() {
   const alturaReservada = 250;
   const alturaCard = 200;
@@ -64,7 +63,7 @@ function getCardsPerPage() {
 function ListaAgendamentos() {
   const [pagina, setPagina] = useState(1);
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
-  const title= "Lista de Agendamentos";
+  const title = "Lista de Agendamentos";
   const nenhumAgendamentoMsg = "Nenhum agendamento encontrado.";
 
   useEffect(() => {
@@ -75,7 +74,10 @@ function ListaAgendamentos() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const totalPaginas = Math.max(1, Math.ceil(AGENDAMENTOS.length / cardsPorPagina));
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(AGENDAMENTOS.length / cardsPorPagina)
+  );
 
   useEffect(() => {
     if (pagina > totalPaginas) setPagina(1);
@@ -104,8 +106,11 @@ function ListaAgendamentos() {
           className={styles.rowAgendamentos}
         >
           {agendamentosPagina.length === 0 ? (
-            <Grid item xs={12}
-            component={"div" as unknown as React.ElementType}>
+            <Grid
+              item
+              xs={12}
+              component={"div" as unknown as React.ElementType}
+            >
               <Typography align="center" color="text.secondary">
                 {nenhumAgendamentoMsg}
               </Typography>
@@ -162,7 +167,8 @@ function ListaAgendamentos() {
                       color="error"
                       className={styles.btnCancelar}
                       onClick={() =>
-                        window.location.href = "../modalCancelamento/index.html"
+                        (window.location.href =
+                          "../modalCancelamento/index.html")
                       }
                     >
                       Cancelar
@@ -172,7 +178,8 @@ function ListaAgendamentos() {
                       color="secondary"
                       className={styles.btnReagendar}
                       onClick={() =>
-                        window.location.href = "../frontend2/reagendamento/index.html"
+                        (window.location.href =
+                          "../frontend2/reagendamento/index.html")
                       }
                     >
                       Reagendar
@@ -182,7 +189,7 @@ function ListaAgendamentos() {
                       color="primary"
                       className={styles.btnAcessar}
                       onClick={() =>
-                        window.location.href = "../frontend/avaliacao/index.html"
+                        (window.location.href = "/avaliacao-pos-aula")
                       }
                     >
                       Acessar
@@ -195,7 +202,13 @@ function ListaAgendamentos() {
         </Grid>
       </main>
       {}
-      <Stack direction="row" justifyContent="center" alignItems="center" spacing={2} className={styles.paginacao}>
+      <Stack
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+        spacing={2}
+        className={styles.paginacao}
+      >
         <Button
           variant="contained"
           color="primary"

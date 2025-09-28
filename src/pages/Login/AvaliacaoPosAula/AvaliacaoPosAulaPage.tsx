@@ -8,7 +8,6 @@ import "./AvaliacaoPosAulaPage.css";
 const AvaliacaoPosAulaPage: React.FC = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <ResponsiveAppBar></ResponsiveAppBar>
       <Container
         sx={{
           display: "flex",

@@ -17,18 +17,72 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PaymentIcon from "@mui/icons-material/Payment";
 import StarIcon from "@mui/icons-material/Star";
 import SchoolIcon from "@mui/icons-material/School";
+import PersonIcon from "@mui/icons-material/Person";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import LinkIcon from "@mui/icons-material/Link";
+import NotificationAddIcon from "@mui/icons-material/NotificationAdd";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import InfoIcon from "@mui/icons-material/Info";
+import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
 import { Monitor, MONITORES } from "../ListaMonitores";
-import { Link as LinkRouter } from "react-router-dom";
+
 interface FormData {
   rating: number | null;
   titulo: string;
   comentario: string;
 }
+
+
+const MONITORES_ALTERNATIVOS = [
+  {
+    id: 2,
+    nome: "Ana Silva",
+    materia: "Cálculo II",
+    nota: 4.8,
+    preco: "R$ 35/h",
+    especialidades: ["Derivadas", "Integrais", "Limites"],
+  },
+  {
+    id: 3,
+    nome: "Pedro Santos",
+    materia: "Cálculo II",
+    nota: 4.7,
+    preco: "R$ 30/h",
+    especialidades: ["Funções", "Equações Diferenciais"],
+  },
+];
+
+const MATERIAIS_PREPARATORIOS = [
+  { titulo: "Lista de Exercícios - Integrais", tipo: "PDF", tamanho: "2.1 MB" },
+  { titulo: "Resumo Teórico - Cálculo II", tipo: "PDF", tamanho: "1.8 MB" },
+  { titulo: "Formulário Básico", tipo: "PDF", tamanho: "0.5 MB" },
+];
+
+
+const DADOS_REAGENDAMENTO = {
+  monitor: {
+    nome: "João Silva",
+    contato: "(11) 99999-9999",
+    email: "joao.silva@email.com",
+  },
+  aluno: {
+    nome: "Maria Santos",
+    contato: "(11) 88888-8888",
+  },
+  sessaoAnterior: {
+    data: "Segunda-feira, 10 de outubro",
+    horario: "14h00 - 15h30",
+  },
+  novaSessao: {
+    data: "Quarta-feira, 12 de outubro",
+    horario: "16h00 - 17h30",
+    motivo: "Conflito de horário do aluno",
+  },
+};
 
 export default function DetalhesNotificao() {
   const location = useLocation();
@@ -43,7 +97,7 @@ export default function DetalhesNotificao() {
     comentario: "",
   });
 
-  // Função para obter o ícone baseado no tipo
+
   const getIconeByTipo = (tipo: string) => {
     switch (tipo) {
       case "cancelamento":
@@ -72,7 +126,7 @@ export default function DetalhesNotificao() {
     alert("Avaliação enviada com sucesso!");
   };
 
-  // Se não há dados da notificação, mostrar uma mensagem padrão
+
   if (!notificacao) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
@@ -97,14 +151,11 @@ export default function DetalhesNotificao() {
     <Container
       maxWidth="md"
       sx={{
-        pt: { xs: 12, sm: 14, md: 16 }, // Distância do header responsiva
+        pt: { xs: 12, sm: 14, md: 16 },
         pb: 4,
-        px: { xs: 2, sm: 3, md: 4 }, // Padding lateral responsivo
+        px: { xs: 2, sm: 3, md: 4 },
       }}
     >
-      {/* ========== BOTÃO VOLTAR ========== */}
-
-      {/* ========== CARD PRINCIPAL DA NOTIFICAÇÃO ========== */}
       <Card sx={{ mb: 3, p: 2 }}>
         <CardContent>
           <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -134,49 +185,354 @@ export default function DetalhesNotificao() {
             notificacao.tipo == "agendamentoConfirmado" ||
             notificacao.tipo == "agendamento") && (
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <LinkRouter to="/lista-agendamentos">
-                <Button
-                  startIcon={<CalendarMonthIcon />}
-                  variant="contained"
-                  color="primary"
-                  size="medium"
-                >
-                  Visualizar agendamentos
-                </Button>
-              </LinkRouter>
+              <Button
+                startIcon={<CalendarMonthIcon />}
+                variant="contained"
+                color="primary"
+                size="medium"
+                onClick={() => navigate("/lista-agendamentos")}
+              >
+                Visualizar agendamentos
+              </Button>
             </Box>
           )}
         </CardContent>
       </Card>
 
-      {/* ========== CARD 2 ========== */}
-      {/* EDITE AQUI: Cards extras - só aparecem em desktop */}
-      {!isMobile && notificacao.tipo !== "avaliacao" && (
+      {!isMobile && notificacao.tipo === "agendamento" && (
         <Card sx={{ mb: 3, p: 2 }}>
           <CardContent>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <Avatar sx={{ bgcolor: "error.main", mr: 2 }}>
-                <CancelIcon />
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+              <Avatar sx={{ bgcolor: "primary.main", mr: 2 }}>
+                <PersonIcon />
               </Avatar>
               <Box>
-                {/* EDITE: Título do card extra */}
-                <Typography variant="h6" component="h2">
-                  Cancelamento Processado
+                <Typography
+                  variant="h6"
+                  component="h2"
+                  sx={{ fontWeight: "bold" }}
+                >
+                  Conheça seu monitor
                 </Typography>
-                {/* EDITE: Subtítulo do card extra */}
                 <Typography variant="body2" color="text.secondary">
-                  há 3 horas
+                  Informações sobre {MONITORES[0].nome}
                 </Typography>
               </Box>
             </Box>
-            {/* EDITE: Descrição do card extra */}
-            <Typography variant="body1">
-              Sua monitoria de Cálculo II foi cancelada conforme solicitado. O
-              valor será estornado em até 5 dias úteis.
+
+            <Divider sx={{ mb: 3 }} />
+
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <Avatar
+                sx={{ bgcolor: "secondary.main", mr: 2, width: 48, height: 48 }}
+              >
+                <PersonIcon />
+              </Avatar>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                  {MONITORES[0].nome}
+                </Typography>
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}
+                >
+                  <Rating value={4} readOnly size="small" />
+                  <Typography variant="body2" color="text.secondary">
+                    4.8 (127 avaliações)
+                  </Typography>
+                </Box>
+                <Typography variant="body2" color="text.secondary">
+                  Especialista em {MONITORES[0].materia} • 3 anos de experiência
+                </Typography>
+              </Box>
+            </Box>
+
+            <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.6 }}>
+              <strong>Sobre:</strong> Monitor experiente com foco em metodologia
+              prática. Especializado em resolver dúvidas de forma clara e
+              objetiva.
+            </Typography>
+
+            <Typography variant="body2" color="text.secondary">
+              <strong>Horários disponíveis:</strong> Segunda a Sexta: 14h-18h
             </Typography>
           </CardContent>
         </Card>
       )}
+
+      {!isMobile && notificacao.tipo === "agendamentoConfirmado" && (
+        <Card sx={{ mb: 3, p: 2 }}>
+          <CardContent>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+              <Avatar sx={{ bgcolor: "success.main", mr: 2 }}>
+                <AssignmentIcon />
+              </Avatar>
+              <Box>
+                <Typography
+                  variant="h6"
+                  component="h2"
+                  sx={{ fontWeight: "bold" }}
+                >
+                  Prepare-se para a sessão
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Materiais e próximos passos
+                </Typography>
+              </Box>
+            </Box>
+
+            <Divider sx={{ mb: 3 }} />
+
+            <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>
+              Informações da sessão
+            </Typography>
+            <Box sx={{ mb: 3, p: 2, bgcolor: "action.hover", borderRadius: 1 }}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>Data/Hora:</strong> Quinta-feira, 15 de outubro às 16h00
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>Duração:</strong> 1h30min
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <LinkIcon fontSize="small" color="primary" />
+                <Typography
+                  variant="body2"
+                  color="primary"
+                  sx={{ cursor: "pointer" }}
+                >
+                  Acessar sala virtual
+                </Typography>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
+
+      {!isMobile &&
+        notificacao.tipo === "reagendamento" &&
+        notificacao.titulo.includes("realizado") && (
+          <Card sx={{ mb: 3, p: 2 }}>
+            <CardContent>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                <Avatar sx={{ bgcolor: "info.main", mr: 2 }}>
+                  <AccessTimeIcon />
+                </Avatar>
+                <Box>
+                  <Typography
+                    variant="h6"
+                    component="h2"
+                    sx={{ fontWeight: "bold" }}
+                  >
+                    Novo horário confirmado
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Detalhes da sua sessão reagendada
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Divider sx={{ mb: 3 }} />
+
+              <Box sx={{ mb: 3 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ mb: 2, fontWeight: "bold" }}
+                >
+                  Horário cancelado
+                </Typography>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 1,
+                    mb: 2,
+                    opacity: 0.7,
+                    bgcolor: "action.hover",
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{ mb: 1, textDecoration: "line-through" }}
+                  >
+                    <strong>Data:</strong>{" "}
+                    {DADOS_REAGENDAMENTO.sessaoAnterior.data}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ textDecoration: "line-through" }}
+                  >
+                    <strong>Horário:</strong>{" "}
+                    {DADOS_REAGENDAMENTO.sessaoAnterior.horario}
+                  </Typography>
+                </Box>
+
+                <Typography
+                  variant="subtitle2"
+                  sx={{ mb: 2, fontWeight: "bold" }}
+                >
+                  Novo horário confirmado
+                </Typography>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 1,
+                    mb: 2,
+                    bgcolor: "action.hover",
+                  }}
+                >
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Nova data:</strong>{" "}
+                    {DADOS_REAGENDAMENTO.novaSessao.data}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Novo horário:</strong>{" "}
+                    {DADOS_REAGENDAMENTO.novaSessao.horario}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Motivo:</strong>{" "}
+                    {DADOS_REAGENDAMENTO.novaSessao.motivo}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 2, fontWeight: "bold" }}
+              >
+                Informações do Monitor
+              </Typography>
+              <Box
+                sx={{ p: 2, bgcolor: "action.hover", borderRadius: 1, mb: 3 }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                  <Avatar
+                    sx={{
+                      bgcolor: "primary.main",
+                      mr: 2,
+                      width: 32,
+                      height: 32,
+                    }}
+                  >
+                    <PersonIcon fontSize="small" />
+                  </Avatar>
+                  <Box>
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                      {DADOS_REAGENDAMENTO.monitor.nome}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}
+                >
+                  <ContactPhoneIcon fontSize="small" color="action" />
+                  <Typography variant="body2">
+                    {DADOS_REAGENDAMENTO.monitor.contato}
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        )}
+
+      {!isMobile &&
+        notificacao.tipo === "reagendamento" &&
+        notificacao.titulo.includes("confirmado") && (
+          <Card sx={{ mb: 3, p: 2 }}>
+            <CardContent>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                <Avatar sx={{ bgcolor: "warning.main", mr: 2 }}>
+                  <InfoIcon />
+                </Avatar>
+                <Box>
+                  <Typography
+                    variant="h6"
+                    component="h2"
+                    sx={{ fontWeight: "bold" }}
+                  >
+                    Informações do Aluno
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Prepare-se para a sessão reagendada
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Divider sx={{ mb: 3 }} />
+
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 2, fontWeight: "bold" }}
+              >
+                Dados do Aluno
+              </Typography>
+              <Box
+                sx={{ p: 2, bgcolor: "action.hover", borderRadius: 1, mb: 3 }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                  <Avatar
+                    sx={{
+                      bgcolor: "secondary.main",
+                      mr: 2,
+                      width: 40,
+                      height: 40,
+                    }}
+                  >
+                    <PersonIcon />
+                  </Avatar>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                      {DADOS_REAGENDAMENTO.aluno.nome}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {DADOS_REAGENDAMENTO.aluno.contato}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 2, fontWeight: "bold" }}
+              >
+                Detalhes da Sessão
+              </Typography>
+              <Box
+                sx={{ p: 2, bgcolor: "action.hover", borderRadius: 1, mb: 3 }}
+              >
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  <strong>Nova data:</strong>{" "}
+                  {DADOS_REAGENDAMENTO.novaSessao.data}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  <strong>Horário:</strong>{" "}
+                  {DADOS_REAGENDAMENTO.novaSessao.horario}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 2 }}>
+                  <strong>Duração:</strong> 1h30min
+                </Typography>
+              </Box>
+
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 2, fontWeight: "bold" }}
+              >
+                Sugestões para a aula
+              </Typography>
+              <Box
+                sx={{ p: 2, bgcolor: "action.hover", borderRadius: 1, mb: 3 }}
+              >
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  • Revisar o conteúdo da aula cancelada
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  • Preparar exercícios extras como compensação
+                </Typography>
+                <Typography variant="body2">
+                  • Confirmar se o aluno tem alguma dúvida específica
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        )}
+
       {!isMobile && notificacao.tipo == "avaliacao" && (
         <Card sx={{ mb: 3, p: 2 }}>
           <CardContent>
@@ -280,16 +636,6 @@ export default function DetalhesNotificao() {
           </CardContent>
         </Card>
       )}
-      {/* ========== INSTRUÇÕES DE EDIÇÃO ========== */}
-      {/* REMOVA ESTE COMENTÁRIO QUANDO TERMINAR DE EDITAR */}
-      {/* 
-      GUIA DE EDIÇÃO RÁPIDA:
-      1. Cores dos avatares: 'primary.main', 'success.main', 'error.main', 'warning.main'
-      2. Ícones: Importe novos ícones de @mui/icons-material
-      3. Textos: Edite os Typography dentro de cada card
-      4. Espaçamentos: Mude os valores sx={{ mb: X, p: X }}
-      5. Para adicionar mais cards: Copie um dos cards e cole abaixo
-      */}
     </Container>
   );
 }

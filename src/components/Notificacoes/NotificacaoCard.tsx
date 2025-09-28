@@ -12,8 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import PaymentIcon from "@mui/icons-material/Payment";
+import CancelIcon from "@mui/icons-material/Cancel";
 import StarIcon from "@mui/icons-material/Star";
 import { Monitor, MONITORES } from "../ListaMonitores";
 
@@ -88,7 +87,7 @@ const notificacoesMock: Notificacao[] = [
     descricao:
       "Sua aula com " +
       monitorMock[0].nome +
-      " foi reagendada com sucesso. Seu novo horário é: dia 21/10/2023 às 10h",
+      ' foi reagendada com sucesso. Clique em "Visualizar Agendamentos" para mais informacoes.',
     tempo: "há 2 min",
     lida: false,
     icone: <CalendarMonthIcon color="primary" />,
@@ -101,7 +100,8 @@ const notificacoesMock: Notificacao[] = [
       monitorMock[0].nome +
       "! Passando pra avisar que sua aula com Aluno x foi reagendada.",
     titulo: "Reagendamento confirmado",
-    descricao: "A aula de Aluno x foi reagendada para dia 21/10/2023 às 10h",
+    descricao:
+      'A aula de Aluno x foi reagendada. Clique em "Visualizar Agendamentos" para mais informacoes.',
     tempo: "há 1 hora",
     lida: false,
     icone: <CalendarMonthIcon color="primary" />,
@@ -117,7 +117,7 @@ const notificacoesMock: Notificacao[] = [
     descricao:
       "Sua aula com " +
       monitorMock[2].nome +
-      " foi confirmada. O horário selecionado foi: dia 10/10/2023 às 17h.",
+      'foi confirmada. Clique em "Visualizar Agendamentos" para mais informacoes.',
     tempo: "há 3 horas",
     lida: true,
     icone: <CalendarMonthIcon color="primary" />,
@@ -138,13 +138,39 @@ const notificacoesMock: Notificacao[] = [
     lida: true,
     icone: <StarIcon color="warning" />,
   },
+  {
+    id: "5",
+    tipo: "cancelamento",
+    previa:
+      "Olá," +
+      monitorMock[2].nome +
+      "! Passando pra avisar que sua aula com Aluno y foi cancelada.",
+    titulo: "Aula cancelada",
+    descricao: "Sua aula com Aluno y foi cancelada",
+    tempo: "há 2 dias",
+    lida: false,
+    icone: <CancelIcon color="error" />,
+  },
 ];
 
 export default function NotificacaoCard() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [notificacoes, setNotificacoes] = React.useState(notificacoesMock);
   const open = Boolean(anchorEl);
-  const notificacaoNaoLidas = notificacoesMock.filter((n) => !n.lida).length;
+  const notificacaoNaoLidas = notificacoes.filter((n) => !n.lida).length;
   const navigate = useNavigate();
+
+  // Ordenar notificações: não lidas primeiro, depois por data mais recente
+  const notificacoesOrdenadas = React.useMemo(() => {
+    return [...notificacoes].sort((a, b) => {
+      // Primeiro critério: não lidas primeiro
+      if (a.lida !== b.lida) {
+        return a.lida ? 1 : -1; // não lidas (false) vão para o topo
+      }
+      // Segundo critério: você pode adicionar ordenação por data se necessário
+      return 0;
+    });
+  }, [notificacoes]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -156,15 +182,22 @@ export default function NotificacaoCard() {
 
   const handleNotificationClick = (notificacao: Notificacao) => {
     console.log("Clicou na notificação:", notificacao);
+
+    // Marcar notificação como lida se não estiver lida
+    if (!notificacao.lida) {
+      setNotificacoes((prev) =>
+        prev.map((n) => (n.id === notificacao.id ? { ...n, lida: true } : n))
+      );
+    }
+
     // Passar apenas dados serializáveis (sem o ícone)
-    notificacao.lida = true;
     const notificacaoData = {
       id: notificacao.id,
       tipo: notificacao.tipo,
       titulo: notificacao.titulo,
       descricao: notificacao.descricao,
       tempo: notificacao.tempo,
-      lida: notificacao.lida,
+      lida: true, // sempre true após o clique
     };
     navigate(`/detalhes-notificacao/${notificacao.id}`, {
       state: { notificacao: notificacaoData },
@@ -231,7 +264,7 @@ export default function NotificacaoCard() {
         <Divider />
 
         <Box sx={{ p: 0, maxHeight: 350, overflow: "auto" }}>
-          {notificacoesMock.map((notificacao, index) => (
+          {notificacoesOrdenadas.map((notificacao, index) => (
             <Box key={notificacao.id}>
               <Box
                 onClick={(e) => {
@@ -301,7 +334,7 @@ export default function NotificacaoCard() {
                 )}
               </Box>
 
-              {index < notificacoesMock.length - 1 && (
+              {index < notificacoesOrdenadas.length - 1 && (
                 <Divider sx={{ ml: 7 }} />
               )}
             </Box>
