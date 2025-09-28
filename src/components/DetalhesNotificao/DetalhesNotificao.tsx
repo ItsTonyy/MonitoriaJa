@@ -13,6 +13,7 @@ import {
   TextField,
   Rating,
   Divider,
+  IconButton,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -28,6 +29,7 @@ import NotificationAddIcon from "@mui/icons-material/NotificationAdd";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import InfoIcon from "@mui/icons-material/Info";
 import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Monitor, MONITORES } from "../ListaMonitores";
 
 interface FormData {
@@ -97,6 +99,11 @@ export default function DetalhesNotificao() {
     comentario: "",
   });
 
+  const [showSecondCard, setShowSecondCard] = useState(false);
+
+  const hasSecondCard = (tipo: string) => {
+    return ["agendamento", "agendamentoConfirmado", "reagendamento", "avaliacao"].includes(tipo);
+  };
 
   const getIconeByTipo = (tipo: string) => {
     switch (tipo) {
@@ -169,7 +176,7 @@ export default function DetalhesNotificao() {
             >
               {getIconeByTipo(notificacao.tipo)}
             </Avatar>
-            <Box>
+            <Box sx={{ flex: 1 }}>
               <Typography
                 variant="h6"
                 component="h2"
@@ -178,6 +185,19 @@ export default function DetalhesNotificao() {
                 {notificacao.titulo}
               </Typography>
             </Box>
+            {isMobile && hasSecondCard(notificacao.tipo) && (
+              <IconButton
+                onClick={() => setShowSecondCard(!showSecondCard)}
+                sx={{ ml: 1 }}
+              >
+                <ExpandMoreIcon
+                  sx={{
+                    transform: showSecondCard ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 0.3s ease",
+                  }}
+                />
+              </IconButton>
+            )}
           </Box>
           <Typography variant="body1">{notificacao.descricao}</Typography>
           <Box sx={{ mt: 2 }}></Box>
@@ -199,7 +219,7 @@ export default function DetalhesNotificao() {
         </CardContent>
       </Card>
 
-      {!isMobile && notificacao.tipo === "agendamento" && (
+      {((!isMobile) || (isMobile && showSecondCard)) && notificacao.tipo === "agendamento" && (
         <Card sx={{ mb: 3, p: 2 }}>
           <CardContent>
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
@@ -259,7 +279,7 @@ export default function DetalhesNotificao() {
         </Card>
       )}
 
-      {!isMobile && notificacao.tipo === "agendamentoConfirmado" && (
+      {((!isMobile) || (isMobile && showSecondCard)) && notificacao.tipo === "agendamentoConfirmado" && (
         <Card sx={{ mb: 3, p: 2 }}>
           <CardContent>
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
@@ -307,7 +327,7 @@ export default function DetalhesNotificao() {
         </Card>
       )}
 
-      {!isMobile &&
+      {((!isMobile) || (isMobile && showSecondCard)) &&
         notificacao.tipo === "reagendamento" &&
         notificacao.titulo.includes("realizado") && (
           <Card sx={{ mb: 3, p: 2 }}>
@@ -432,7 +452,7 @@ export default function DetalhesNotificao() {
           </Card>
         )}
 
-      {!isMobile &&
+      {((!isMobile) || (isMobile && showSecondCard)) &&
         notificacao.tipo === "reagendamento" &&
         notificacao.titulo.includes("confirmado") && (
           <Card sx={{ mb: 3, p: 2 }}>
@@ -533,7 +553,7 @@ export default function DetalhesNotificao() {
           </Card>
         )}
 
-      {!isMobile && notificacao.tipo == "avaliacao" && (
+      {((!isMobile) || (isMobile && showSecondCard)) && notificacao.tipo == "avaliacao" && (
         <Card sx={{ mb: 3, p: 2 }}>
           <CardContent>
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>

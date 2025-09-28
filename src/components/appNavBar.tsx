@@ -184,6 +184,7 @@ export default function AppAppBar() {
             <ColorModeIconDropdown />
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" }, gap: 1 }}>
+            {isLoggedIn && <NotificacaoCard />}
             <ColorModeIconDropdown size="medium" />
             <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
               <MenuIcon />
@@ -216,16 +217,36 @@ export default function AppAppBar() {
                 <MenuItem>Dashboard</MenuItem>
                 <MenuItem>Sobre Nós</MenuItem>
                 <Divider sx={{ my: 3 }} />
-                <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth>
-                    Sign up
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth>
-                    Sign in
-                  </Button>
-                </MenuItem>
+                {!isLoggedIn ? (
+                  <>
+                    <MenuItem>
+                      <Button color="primary" variant="contained" fullWidth>
+                        Sign up
+                      </Button>
+                    </MenuItem>
+                    <MenuItem>
+                      <Button 
+                        color="primary" 
+                        variant="outlined" 
+                        fullWidth
+                        onClick={handleLogin}
+                      >
+                        Sign in
+                      </Button>
+                    </MenuItem>
+                  </>
+                ) : (
+                  <MenuItem>
+                    <Button 
+                      color="primary" 
+                      variant="outlined" 
+                      fullWidth
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </Button>
+                  </MenuItem>
+                )}
               </Box>
             </Drawer>
           </Box>
