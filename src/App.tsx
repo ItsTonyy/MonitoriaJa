@@ -7,8 +7,12 @@ import LoginPage from "./pages/Login/LoginPage";
 import RecuperarSenhaPage from "./pages/Login/recuperarSenha/RecuperarSenhaPage";
 import AvaliacaoPosAulaPage from "./pages/Login/AvaliacaoPosAula/AvaliacaoPosAulaPage";
 import ComentariosAvaliacaoPage from "./pages/Login/ComentariosAvaliacao/ComentariosAvaliacaoPage";
+import AgendamentoPage from "./pages/ModalReagendamento/ModalReagendamentoPage"; 
+import PagamentoPixPage from "./pages/Pix/PixPage"; // ✅ nova importação
 
-const ListaAgendamentosPage: React.FC = () => <div>Lista de agendamentos (temporária)</div>;
+const ListaAgendamentosPage: React.FC = () => (
+  <div>Lista de agendamentos (temporária)</div>
+);
 
 const App: React.FC = () => {
   return (
@@ -19,8 +23,10 @@ const App: React.FC = () => {
         <Route path="/avaliacao-pos-aula" element={<AvaliacaoPosAulaPage />} />
         <Route path="/comentarios-avaliacao" element={<ComentariosAvaliacaoPage />} />
         <Route path="/perfil-monitor" element={<PerfilMonitorPage />} />
-        <Route path="/perfil-usuario" element={<PerfilUsuarioPage />} /> {/* Nova rota adicionada */}
-        <Route path="/lista-agendamentos" element={<ListaAgendamentosPage />} /> {/* rota temporária */}
+        <Route path="/perfil-usuario" element={<PerfilUsuarioPage />} />
+        <Route path="/lista-agendamentos" element={<ListaAgendamentosPage />} />
+        <Route path="/agendamento" element={<AgendamentoPage />} />
+        <Route path="/pagamento-pix" element={<PagamentoPixPage />} /> {/* ✅ nova rota */}
       </Routes>
     </BrowserRouter>
   );
