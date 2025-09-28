@@ -115,7 +115,7 @@ const LoginForm: React.FC = () => {
     
     setTimeout(() => {
       setIsLoading(false);
-      navigate("MonitoriaJa/lista-monitores"); 
+      navigate("/MonitoriaJa/lista-monitores"); 
     }, 800);
   };
 

@@ -1,19 +1,23 @@
 import React, { useState, useMemo, useEffect } from "react";
-import Box from "@mui/material/Box";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
-import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
-import Grid from "@mui/material/Grid";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  CardActions,
+  Typography,
+  Button,
+  TextField,
+  Autocomplete,
+  InputAdornment,
+  Chip,
+  Stack,
+  Grid,
+  Paper,
+  Box,
+  Fade
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import StarIcon from "@mui/icons-material/Star";
-import styles from "./ListaMonitores.module.css";
 import { useNavigate } from "react-router-dom";
 
 type Monitor = {
@@ -45,25 +49,30 @@ function matchStartOfWords(text: string, search: string) {
 
 function getGridCols() {
   if (typeof window === "undefined") return 2;
-  return window.innerWidth >= 831 ? 2 : 1;
+  const width = window.innerWidth;
+  if (width >= 1200) return 3; 
+  if (width >= 730) return 2;
+  return 1;
 }
 
 function getGridRows() {
-  const alturaReservada = 350;
-  const alturaCard = 200;
-  const alturaDisponivel =
-    typeof window !== "undefined" ? window.innerHeight - alturaReservada : 600;
-  return Math.max(1, Math.floor(alturaDisponivel / alturaCard));
+  const alturaReservada = 350; // altura do header + margens
+  const alturaCard = 180; // altura fixa do card
+  const espacamentoVertical = 24; // spacing do Grid (3 * 8px)
+  const alturaTotal = alturaCard + espacamentoVertical;
+  
+  const alturaDisponivel = typeof window !== "undefined" 
+    ? window.innerHeight - alturaReservada 
+    : 600;
+
+  return Math.max(1, Math.floor(alturaDisponivel / alturaTotal));
 }
+
 
 function getCardsPerPage() {
   const cols = getGridCols();
   const rows = getGridRows();
-  if (cols === 1) {
-    return rows; 
-  } else {
-    return rows * 2; 
-  }
+  return cols * rows;
 }
 
 function ListaMonitores() {
@@ -73,8 +82,6 @@ function ListaMonitores() {
   const [pagina, setPagina] = useState(1);
   const [cols, setCols] = useState(getGridCols());
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
-  const title = "Lista de Monitores";
-  const nenhumMonitorMsg = "Nenhum monitor encontrado.";
 
   useEffect(() => {
     function handleResize() {
@@ -101,98 +108,309 @@ function ListaMonitores() {
     pagina * cardsPorPagina
   );
 
-  return (
-    <Box className={styles.container} sx={{ py: 4 }}>
-      <Typography variant="h4" align="center" gutterBottom>
-        {title}
+ return (
+    <Paper 
+        elevation={0}
+        sx={{
+          p: 3,
+          m: 2,
+          borderRadius: 2,
+          bgcolor: 'background.default',
+          maxWidth: 1400, // Limita largura máxima
+          margin: '0 auto', // Centraliza na tela
+        }}
+      >
+      <Typography 
+        variant="h4" 
+        align="center" 
+        gutterBottom
+        sx={{ 
+          fontWeight: 500,
+          color: 'primary.main',
+          mb: 4
+        }}
+      >
+        Lista de Monitores
       </Typography>
 
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent="center" alignItems="center" className={styles.buscaFiltro} sx={{ mb: 3 }}>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={2}
+        alignItems="center"
+        justifyContent="center" // Adiciona centralização
+        sx={{ 
+          mb: 3,
+          width: "100%", // Garante largura total
+          display: "flex",
+          "& > *": { // Aplica aos filhos diretos
+            width: { xs: "100%", sm: "auto" } // Responsivo
+          }
+        }}
+      >
         <TextField
+          fullWidth
           variant="outlined"
-          placeholder="Buscar por nome"
+          placeholder="Buscar monitor por nome..."
           value={buscaNome}
-          onChange={(e) => { setBuscaNome(e.target.value); setPagina(1); }}
-          onKeyDown={(e) => e.key === "Enter" && setPagina(1)}
+          onChange={(e) => {
+            setBuscaNome(e.target.value);
+            setPagina(1);
+          }}
           InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton aria-label="Buscar" onClick={() => setPagina(1)} edge="end">
-                  <SearchIcon />
-                </IconButton>
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
               </InputAdornment>
             ),
           }}
-          sx={{ minWidth: 220, maxWidth: 350 }}
+          sx={{ maxWidth: 350 }}
         />
 
         <Autocomplete
+          fullWidth
           freeSolo
           options={MATERIAS}
           value={buscaMateria}
-          onInputChange={(_, value) => { setBuscaMateria(value); setPagina(1); }}
-          filterOptions={(options, { inputValue }) => options.filter((o) => matchStartOfWords(o, inputValue))}
-          renderInput={(params) => <TextField {...params} label="Filtrar por disciplina" variant="outlined" sx={{ minWidth: 220, maxWidth: 350 }} />}
-          ListboxProps={{ style: { maxHeight: 190, overflowY: "auto" } }}
+          onInputChange={(_, value) => {
+            setBuscaMateria(value);
+            setPagina(1);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Filtrar por disciplina"
+              variant="outlined"
+            />
+          )}
+          sx={{ maxWidth: 350 }}
+          ListboxProps={{ style: { maxHeight: 200 } }}
         />
       </Stack>
 
-      <Stack direction="row" spacing={1} justifyContent="center" sx={{ mb: 2, minHeight: 32 }}>
-        {buscaMateria && <Chip label={`Matéria: ${buscaMateria}`} onDelete={() => setBuscaMateria("")} color="primary" variant="outlined" />}
-        {buscaNome && <Chip label={`Nome: ${buscaNome}`} onDelete={() => setBuscaNome("")} color="secondary" variant="outlined" />}
+      <Stack
+        direction="row"
+        spacing={1}
+        justifyContent="center"
+        sx={{ mb: 3 }}
+      >
+        {buscaMateria && (
+          <Chip
+            label={`Matéria: ${buscaMateria}`}
+            onDelete={() => setBuscaMateria("")}
+            color="primary"
+          />
+        )}
+        {buscaNome && (
+          <Chip
+            label={`Nome: ${buscaNome}`}
+            onDelete={() => setBuscaNome("")}
+            color="secondary"
+          />
+        )}
       </Stack>
 
-      {}
-      <Grid container spacing={4} justifyContent="center" className={styles.rowMonitores}>
+      <Grid
+        container
+        spacing={3}
+        justifyContent="center"
+        sx={{
+          width: '100%',
+          margin: '0 auto',
+        }}
+      >
         {monitoresPagina.length === 0 ? (
-          <Grid item xs={12}
-          component={"div" as unknown as React.ElementType}>
-            <Typography align="center" color="text.secondary">{nenhumMonitorMsg}</Typography>
+          <Grid 
+                item 
+                xs={12} // Sempre ocupará 100% da largura
+                component={"div" as unknown as React.ElementType}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center' // Centraliza o card dentro do Grid item
+                }}
+              >
+            <Typography
+              align="center"
+              color="text.secondary"
+              sx={{ my: 4 }}
+            >
+              Nenhum monitor encontrado.
+            </Typography>
           </Grid>
         ) : (
           monitoresPagina.map((monitor) => (
-            <Grid item xs={12} sm={cols === 2 ? 6 : 12} component={"div" as unknown as React.ElementType} key={monitor.id} style={{ display: "flex" }}>
-              <div className={styles.monitorCard}>
-                <div className={styles.monitorImgAvaliacao}>
-                  <CardMedia component="img" image={monitor.foto} alt={`Foto de ${monitor.nome}`} className={styles.monitorFoto} />
-                  <div className={styles.monitorAvaliacao}>
-                    <StarIcon sx={{ color: "#f5b301", verticalAlign: "middle" }} />
-                    <Typography variant="body2" component="span" sx={{ fontWeight: 500, ml: 0.5 }}>{monitor.avaliacao}</Typography>
-                  </div>
-                </div>
-
-                <CardContent className={styles.monitorInfo}>
-                  <Typography variant="h6" className={styles.monitorNome} color="primary">{monitor.nome}</Typography>
-                  <Typography variant="body1" className={styles.monitorMateria}>{monitor.materia}</Typography>
-                  <Typography variant="body2" className={styles.monitorValor}>{monitor.valor}</Typography>
-                  <Typography variant="body2" className={styles.monitorServico}>{monitor.servico}</Typography>
-                </CardContent>
-
-                <Box className={styles.btnAcessarBox}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={styles.btnAcessar}
-                    onClick={() => navigate("/detalhes-monitor", { state: { monitor } })}
+           <Grid 
+                item 
+                xs={12} // Sempre ocupará 100% da largura
+                component={"div" as unknown as React.ElementType}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center' // Centraliza o card dentro do Grid item
+                }}
+              >
+              <Fade in timeout={500}>
+              <Card
+                    elevation={2}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      height: '180px',
+                      width: '100%',
+                      maxWidth: '800px', // Largura máxima fixa
+                      minWidth: '330px', // ADICIONE ESTA LINHA - Garante largura mínima igual à máxima
+                      margin: '0 auto',
+                      '&:hover': {
+                        elevation: 4,
+                        transform: 'translateY(-2px)',
+                        transition: 'all 0.2s ease-in-out'
+                      }
+                    }}
                   >
-                    Acessar
-                  </Button>
-                </Box>
-              </div>
+                  <Box 
+                      sx={{ 
+                        p: 1.5,
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center',
+                        justifyContent: 'center', 
+                        width: '100px', // Largura fixa para a seção da foto
+                        minWidth: '100px', // Evita encolhimento
+                      }}
+                    >
+                    <CardMedia
+                      component="img"
+                      image={monitor.foto}
+                      alt={`Foto de ${monitor.nome}`}
+                      sx={{
+                        width: { xs: 70, sm: 80 },
+                        height: { xs: 70, sm: 80 },
+                        borderRadius: '50%',
+                        border: 2,
+                        borderColor: 'primary.main'
+                      }}
+                    />
+                      <div>
+                    <StarIcon sx={{ color: "#f5b301", verticalAlign: "middle" }} />
+                   <Typography variant="body2" component="span" color="text.secondary" sx={{ fontSize: '0.9rem',overflow: 'hidden',textOverflow: 'ellipsis' }}>{monitor.avaliacao}</Typography>
+                      </div>
+                  </Box>
+
+                <CardContent 
+                    sx={{ 
+                      flex: 1,
+                      p: 1.5,
+                      overflow: 'hidden',
+                      '&:last-child': { pb: 1.5 },
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <Typography 
+                      variant="h6" 
+                      color="primary.main" 
+                      sx={{ 
+                        fontSize: '1.1rem',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {monitor.nome}
+                    </Typography>
+                   <Typography variant="body2" color="text.secondary" 
+                      sx={{ fontSize: '0.9rem', whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis' }}>
+                        {monitor.materia}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" 
+                      sx={{ fontSize: '0.9rem', whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis' }}>
+                        {monitor.valor}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" 
+                      sx={{ fontSize: '0.9rem', whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis' }}>
+                        {monitor.servico}
+                      </Typography>
+                    </CardContent>
+
+                 <CardActions 
+                  sx={{ 
+                    p: 1.5,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+                    minWidth: '110px',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <Stack
+                    spacing={1}
+                    sx={{ 
+                      width: '100%',
+                      minWidth: '110px',
+                       '& .MuiButton-root': { // Estilo comum para todos os botões
+                        padding: '8px 16px',
+                        fontSize: '0.875rem'
+                      }
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="medium"
+                      onClick={() =>
+                        navigate("/MonitoriaJa/detalhes-monitor", {
+                          state: { monitor }
+                        })
+                      }
+                    >
+                      Acessar
+                    </Button>
+                  </Stack>
+                </CardActions>
+                </Card>
+              </Fade>
             </Grid>
           ))
         )}
       </Grid>
 
-      {}
-      <Stack direction="row" justifyContent="center" spacing={2} sx={{ mt: 4 }}>
-        <Button variant="contained" color="primary" onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={pagina === 1} aria-label="Página anterior">&#8592;</Button>
-        <Box sx={{ display: "flex", alignItems: "center", px: 1 }}>
-          <Typography variant="body1"> {pagina} de {totalPaginas}</Typography>
-        </Box>
-        <Button variant="contained" color="primary" onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={pagina === totalPaginas} aria-label="Próxima página">&#8594;</Button>
+      <Stack
+        direction="row"
+        spacing={2}
+        justifyContent="center"
+        sx={{ mt: 4 }}
+      >
+        <Button
+          variant="contained"
+          onClick={() => setPagina((p) => Math.max(1, p - 1))}
+          disabled={pagina === 1}
+        >
+          &#8592;
+        </Button>
+        <Typography
+          variant="body1"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            px: 2
+          }}
+        >
+          {pagina} de {totalPaginas}
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
+          disabled={pagina === totalPaginas}
+        >
+          &#8594;
+        </Button>
       </Stack>
-    </Box>
+    </Paper>
   );
 }
 
