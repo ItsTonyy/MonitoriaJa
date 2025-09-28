@@ -51,7 +51,7 @@ function getGridCols() {
   if (typeof window === "undefined") return 2;
   const width = window.innerWidth;
   if (width >= 1200) return 3; 
-  if (width >= 730) return 2;
+  if (width >= 771) return 2;
   return 1;
 }
 
@@ -80,7 +80,7 @@ function ListaMonitores() {
   const [buscaNome, setBuscaNome] = useState("");
   const [buscaMateria, setBuscaMateria] = useState("");
   const [pagina, setPagina] = useState(1);
-  const [cols, setCols] = useState(getGridCols());
+  const [, setCols] = useState(getGridCols());
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
 
   useEffect(() => {

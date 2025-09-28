@@ -62,7 +62,7 @@ function getGridCols() {
   if (typeof window === "undefined") return 2;
   const width = window.innerWidth;
   if (width >= 1200) return 3; 
-  if (width >= 786) return 2;
+  if (width >= 783) return 2;
   return 1;
 }
 
