@@ -2,6 +2,9 @@ import Button from '@mui/material/Button';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import React, { useState } from 'react';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -16,34 +19,48 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 function CadastroHeader() {
-  return (
-    <header>
-        <h1>Cadastre-se</h1>
-        <Avatar
-            sx={{ 
-                width: 100, 
-                height: 100,
-                justifySelf: 'center',
-                marginBottom: 3,
-                border: '1px solid gray'
-            }}
-            src="/broken-image.jpg" />
-        <Button
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-            startIcon={<AddAPhotoIcon />}
-        >
-            Insira sua foto
-            <VisuallyHiddenInput
-                type="file"
-                onChange={(event) => console.log(event.target.files)}
-                max={1}
+    const [avatar, setAvatar] = useState<string | undefined>(undefined);
+
+    const mudarAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setAvatar(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    return (
+        <Box sx={{ justifySelf: 'center' }}>
+            <Typography variant="h4" component="h1" gutterBottom>Cadastre-se</Typography>
+            <Avatar
+                sx={{
+                    width: 100,
+                    height: 100,
+                    justifySelf: 'center',
+                    marginBottom: 3,
+                    border: '1px solid gray',
+                }}
+                src={avatar || '/broken-image.jpg'}
             />
-        </Button>
-    </header>
-  );
+            <Button
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                startIcon={<AddAPhotoIcon />}
+            >
+                Insira sua foto
+                <VisuallyHiddenInput
+                    type="file"
+                    accept="image/*"
+                    onChange={mudarAvatar}
+                />
+            </Button>
+        </Box>
+    );
 }
 
 export default CadastroHeader;

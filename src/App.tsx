@@ -11,6 +11,7 @@ import DetalhesMonitor from "./components/detalhesMonitor/DetalhesMonitor";
 import AgendamentoMonitor from "./components/detalhesMonitor/agendamentoMonitor";
 import AppNavBar from "./components/appNavBar";
 import DetalhesNotificao from "./components/DetalhesNotificao/DetalhesNotificao";
+import ModalCancelamento from "./components/ModalCancelamento";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
             <Route path="/MonitoriaJa/lista-monitores" element={<ListaMonitores />} />
             <Route path="/MonitoriaJa/lista-agendamentos" element={<ListaAgendamentos />} />
             <Route path="/MonitoriaJa/cadastro-monitor" element={<CadastroMonitor />} />
+             <Route path="/MonitoriaJa/cancelamento" element={<ModalCancelamento open={true} onClose={() => {}} onConfirm={(motivo) => { console.log(motivo); }} />} />
             <Route path="/MonitoriaJa/detalhes-monitor" element={<DetalhesMonitor />} />
             <Route path="/MonitoriaJa/agendamento-monitor" element={<AgendamentoMonitor />} />
             <Route path="/MonitoriaJa/detalhes-notificacao/:id" element={<DetalhesNotificao />}/>
