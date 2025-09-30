@@ -13,7 +13,7 @@ interface AgendamentoMonitorProps {
   data?: string; // xx/yy/zz
   horario?: string; // xx:00 - xx:00
   valor?: number; // x,00
-  nota: string; // x.0
+  nota?: string; // x.0
 }
 
 function AgendamentoMonitor(props: AgendamentoMonitorProps) {
