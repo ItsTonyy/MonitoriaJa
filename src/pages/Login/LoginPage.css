@@ -12,7 +12,7 @@
 .loginCard {
   background-color: var(--cor-fundo) !important;
   color: var(--cor-primaria) !important;
-  width: 90%;
+  width: 100%;
   max-width: 350px;
   border-color: var(--cor-primaria);
   border-radius: 10px;
@@ -21,7 +21,7 @@
 }
 
 .cardTitle {
-  font-family: "Roboto", Courier, monospace;
+  font-family: 'Roboto', Courier, monospace;
 }
 
 .userAvatar {

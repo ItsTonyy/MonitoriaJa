@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import "./RecuperarSenha.css";
 import { TextField, Box, Button } from "@mui/material";
@@ -45,7 +44,7 @@ const RecuperarSenhaForm = () => {
             Enviar
           </Button>
           <div className="link-wrapper">
-            <Link to="/" className="back-link">
+            <Link to="/MonitoriaJa" className="back-link">
               {" "}
       
               Voltar para o Login

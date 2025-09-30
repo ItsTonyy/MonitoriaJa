@@ -34,12 +34,6 @@
   color: #4caf50;
 }
 
-@media (max-width: 768px) {
-  .MuiBox-root {
-    padding: 1rem;
-  }
-}
-
 .MuiButton-root {
   transition: all 0.2s ease-in-out;
 }

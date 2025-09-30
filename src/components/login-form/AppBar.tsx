@@ -12,8 +12,14 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import "./AppBar.css";
+import { useNavigate } from "react-router-dom";
 
-const pages = ["Avaliações", "Monitores", "Sobre Nós"];
+const pages = [
+  { label: "Avaliações", path: "MonitoriaJa/comentarios-avaliacao" },
+  { label: "Monitores", path: "MonitoriaJa/lista-monitores" },
+  { label: "Agendamentos", path: "MonitoriaJa/lista-agendamentos" },
+  { label: "Sobre Nós", path: "#" }
+];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
@@ -39,6 +45,7 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  const navigate = useNavigate();
   return (
     <AppBar position="static" sx={{ backgroundColor: "var(--cor-primaria)" }}>
       <Container maxWidth="xl">
@@ -62,11 +69,14 @@ function ResponsiveAppBar() {
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
-                key={page}
-                onClick={handleCloseNavMenu}
+                key={page.label}
+                onClick={() => {
+                  handleCloseNavMenu();
+                  if (page.path !== "#") navigate(page.path);
+                }}
                 sx={{ my: 2, color: "white", display: "block", mx: 1 }}
               >
-                {page}
+                {page.label}
               </Button>
             ))}
           </Box>
@@ -125,8 +135,14 @@ function ResponsiveAppBar() {
             sx={{ display: { xs: "block", md: "none" } }}
           >
             {pages.map((page) => (
-              <MenuItem key={page} onClick={handleCloseNavMenu}>
-                <Typography sx={{ textAlign: "center" }}>{page}</Typography>
+              <MenuItem
+                key={page.label}
+                onClick={() => {
+                  handleCloseNavMenu();
+                  if (page.path !== "#") navigate(page.path);
+                }}
+              >
+                <Typography sx={{ textAlign: "center" }}>{page.label}</Typography>
               </MenuItem>
             ))}
           </Menu>
