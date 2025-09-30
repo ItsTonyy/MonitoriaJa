@@ -81,7 +81,6 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
 
       <div className="formação">
         <h1 className="titulo">Formação e Cursos</h1>
-        <hr />
         <p className="formação-paragrafo">{formacao}</p>
       </div>
 
@@ -90,7 +89,6 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
         style={{ '--numero-de-colunas': horarios ? horarios.length : 0 } as React.CSSProperties}
       >
         <h1 className="titulo">Horários</h1>
-        <hr />
         <div className="outer-tabela">
           <div className="schedule-container">
             {horarios &&
@@ -120,7 +118,7 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
         <Button
           variant="outlined"
           sx={{ padding: '5px 40px' }}
-          onClick={() => navigate('MonitoriaJa/lista-monitores')}
+          onClick={() => navigate('/MonitoriaJa/')}
         >
           Voltar
         </Button>
@@ -128,9 +126,9 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
           variant="contained"
           sx={{ padding: '5px 40px' }}
           onClick={() =>
-            navigate('MonitoriaJa/agendamento-monitor', {
+            navigate('/MonitoriaJa/agendamento-monitor', {
               state: {
-                monitorImage,
+                monitorImage, 
                 monitorName,
                 materia,
                 valor,

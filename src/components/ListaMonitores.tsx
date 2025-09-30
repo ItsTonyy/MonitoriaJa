@@ -117,8 +117,14 @@ function ListaMonitores() {
           m: 2,
           borderRadius: 2,
           bgcolor: 'background.default',
-          maxWidth: 1400, // Limita largura máxima
+          maxWidth: 1100, // Limita largura máxima
           margin: '0 auto', // Centraliza na tela
+          marginTop: '130px',
+          '@media (width <= 760px)': {
+            marginTop: '6rem',
+          },
+          marginBottom: '40px',
+          boxShadow: '0 8px 24px rgba(5, 3, 21, 0.08)',
         }}
       >
       <Typography 

@@ -119,7 +119,13 @@ function ListaAgendamentos() {
             borderRadius: 2,
             bgcolor: 'background.default',
             maxWidth: 1400,
-            margin: '0 auto'
+            margin: '0 auto',
+            marginTop: '130px',
+            '@media (width <= 760px)': {
+              marginTop: '6rem',
+            },
+           marginBottom: '40px',
+           boxShadow: ' 0 8px 24px rgba(5, 3, 21, 0.08)',
         }}
         >
       <Typography 
