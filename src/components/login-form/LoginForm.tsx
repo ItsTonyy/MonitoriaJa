@@ -109,7 +109,7 @@ const LoginForm: React.FC = () => {
 
     setTimeout(() => {
       setIsLoading(false);
-      navigate('/lista-monitores');
+      navigate('MonitoriaJa/lista-monitores');
     }, 800);
   };
 
@@ -120,12 +120,12 @@ const LoginForm: React.FC = () => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '60vh',
-        boxShadow: 'grey 5px 5px 10px',
+        boxShadow: 'grey 2px 2px 5px',
         backgroundColor: 'var(--cor-fundo)',
         borderRadius: '5px',
       }}
     >
-      <LoginCard>
+      <LoginCard sx={{ width: '100%' }}>
         <Typography
           variant="h4"
           component="h1"

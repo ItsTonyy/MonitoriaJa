@@ -1,3 +1,8 @@
+:root {
+  --cor-gradient: #057aff2a;
+  --cor-background: rgb(251, 251, 254);
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -6,6 +11,8 @@ body {
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(180deg, var(--cor-gradient) 0%, var(--cor-background) 25%);
+  min-height: 100vh;
 }
 
 html {
@@ -20,8 +27,7 @@ html {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 * {

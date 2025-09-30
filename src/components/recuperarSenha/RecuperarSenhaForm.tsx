@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom';
-import './RecuperarSenha.css';
-import { TextField, Box, Button } from '@mui/material';
+import { Link } from "react-router-dom";
+import "./RecuperarSenha.css";
+import { TextField, Box, Button } from "@mui/material";
 
 const RecuperarSenhaForm = () => {
   return (
     <main className="container">
-      <Box className="card" sx={{ boxShadow: 'grey 5px 5px 10px' }}>
+      <Box className="card" sx={{ boxShadow: "grey 5px 5px 10px" }}>
         <h1 className="card-title">Recuperar senha</h1>
         <p className="card-subtitle">
           Informe seu email para receber as instruções de recuperação.
@@ -24,28 +24,29 @@ const RecuperarSenhaForm = () => {
             />
           </div>
 
-          <Button
-            type="submit"
+          <Button 
+            type="submit" 
             variant="contained"
             color="primary"
             size="medium"
             fullWidth
             sx={{
-              borderRadius: '15px',
-              backgroundColor: 'var(--cor-primaria)',
-              '&:hover': {
-                backgroundColor: 'var(--cor-secundaria)',
+              borderRadius: "15px",
+              backgroundColor: "var(--cor-primaria)",
+              "&:hover": {
+                backgroundColor: "var(--cor-secundaria)",
               },
               py: 1.5,
-              fontSize: '1rem',
-              fontWeight: 600,
+              fontSize: "1rem",
+              fontWeight: 600
             }}
           >
             Enviar
           </Button>
           <div className="link-wrapper">
-            <Link to="/" className="back-link">
-              {' '}
+            <Link to="/MonitoriaJa" className="back-link">
+              {" "}
+      
               Voltar para o Login
             </Link>
           </div>
