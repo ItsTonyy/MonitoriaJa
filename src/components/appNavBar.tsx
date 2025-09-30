@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import './appNavBar.css';
-import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
@@ -33,21 +32,21 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   padding: '8px 12px',
 }));
 
-export default function AppAppBar() {
+export default function AppNavBar() {
   const [open, setOpen] = React.useState(false);
 
   const navigate = useNavigate();
 
   function handleClickHome() {
-    navigate('/');
+    navigate('/MonitoriaJa');
   }
 
   function handleClickMonitores() {
-    navigate('/lista-monitores');
+    navigate('/MonitoriaJa/lista-monitores');
   }
 
   function handleClickAgendamento() {
-    navigate('/lista-agendamentos');
+    navigate('/MonitoriaJa/lista-agendamentos');
   }
 
   const toggleDrawer = (newOpen: boolean) => () => {

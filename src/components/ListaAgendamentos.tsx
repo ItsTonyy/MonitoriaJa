@@ -1,12 +1,18 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import Box from '@mui/material/Box';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import Grid from '@mui/material/Grid';
-import styles from './ListaAgendamentos.module.css';
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  CardActions,
+  Typography,
+  Button,
+  Stack,
+  Grid,
+  Paper,
+  Box,
+  Fade
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 type Agendamento = {
   id: number;
@@ -20,58 +26,77 @@ type Agendamento = {
 const AGENDAMENTOS: Agendamento[] = [
   {
     id: 1,
-    nome: 'João Silva',
-    materia: 'Matemática',
-    foto: 'https://randomuser.me/api/portraits/men/1.jpg',
-    data: '12/09/2025',
-    hora: '14h',
+    nome: "João Silva",
+    materia: "Matemática",
+    foto: "https://randomuser.me/api/portraits/men/1.jpg",
+    data: "12/09/2025",
+    hora: "14h",
   },
   {
     id: 2,
-    nome: 'Maria Souza',
-    materia: 'Física',
-    foto: 'https://randomuser.me/api/portraits/women/2.jpg',
-    data: '15/09/2025',
-    hora: '10h',
+    nome: "Maria Souza",
+    materia: "Física",
+    foto: "https://randomuser.me/api/portraits/women/2.jpg",
+    data: "15/09/2025",
+    hora: "10h",
   },
   {
     id: 3,
-    nome: 'Carlos Lima',
-    materia: 'Química',
-    foto: 'https://randomuser.me/api/portraits/men/3.jpg',
-    data: '20/09/2025',
-    hora: '16h',
+    nome: "Carlos Lima",
+    materia: "Química",
+    foto: "https://randomuser.me/api/portraits/men/3.jpg",
+    data: "20/09/2025",
+    hora: "16h",
   },
   {
     id: 4,
-    nome: 'Ana Paula',
-    materia: 'Biologia',
-    foto: 'https://randomuser.me/api/portraits/women/4.jpg',
-    data: '22/09/2025',
-    hora: '09h',
+    nome: "Ana Paula",
+    materia: "Biologia",
+    foto: "https://randomuser.me/api/portraits/women/4.jpg",
+    data: "22/09/2025",
+    hora: "09h",
   },
 ];
 
-function getCardsPerPage() {
-  const alturaReservada = 250;
-  const alturaCard = 200;
-  const alturaDisponivel =
-    typeof window !== 'undefined' ? window.innerHeight - alturaReservada : 600;
-  return Math.max(1, Math.floor(alturaDisponivel / alturaCard));
+function getGridCols() {
+  if (typeof window === "undefined") return 2;
+  const width = window.innerWidth;
+  if (width >= 1200) return 3; 
+  if (width >= 783) return 2;
+  return 1;
 }
 
+
+function getGridRows() {
+  const alturaReservada = 350;
+  const alturaCard = 180;
+  const espacamentoVertical = 24;
+  const alturaTotal = alturaCard + espacamentoVertical;
+  
+  const alturaDisponivel = typeof window !== "undefined" 
+    ? window.innerHeight - alturaReservada 
+    : 600;
+
+  return Math.max(1, Math.floor(alturaDisponivel / alturaTotal));
+}
+
+// Altere a função getCardsPerPage
+function getCardsPerPage() {
+  const cols = getGridCols();
+  const rows = getGridRows();
+  return cols * rows;
+}
 function ListaAgendamentos() {
+  const navigate = useNavigate();
   const [pagina, setPagina] = useState(1);
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
-  const title = 'Lista de Agendamentos';
-  const nenhumAgendamentoMsg = 'Nenhum agendamento encontrado.';
 
   useEffect(() => {
     function handleResize() {
       setCardsPorPagina(getCardsPerPage());
     }
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const totalPaginas = Math.max(1, Math.ceil(AGENDAMENTOS.length / cardsPorPagina));
@@ -86,125 +111,258 @@ function ListaAgendamentos() {
   );
 
   return (
-    <Box className={styles.container}>
-      <Typography variant="h4" align="center" gutterBottom>
-        {title}
-      </Typography>
-      <main className={styles.listaAgendamentos}>
-        <Grid
-          container
-          direction="column"
-          spacing={4}
-          justifyContent="center"
-          className={styles.rowAgendamentos}
+    <Paper 
+        elevation={0}
+        sx={{
+            p: 3,
+            m: 2,
+            borderRadius: 2,
+            bgcolor: 'background.default',
+            maxWidth: 1400,
+            margin: '0 auto'
+        }}
         >
-          {agendamentosPagina.length === 0 ? (
-            <Grid item xs={12} component={'div' as unknown as React.ElementType}>
-              <Typography align="center" color="text.secondary">
-                {nenhumAgendamentoMsg}
-              </Typography>
-            </Grid>
-          ) : (
-            agendamentosPagina.map((agendamento) => (
-              <Grid
-                item
-                xs={12}
-                key={agendamento.id}
-                style={{ display: 'flex' }}
-                component={'div' as unknown as React.ElementType}
-              >
-                <div className={styles.agendamentoCard}>
-                  <div className={styles.agendamentoImgAvaliacao}>
+      <Typography 
+        variant="h4" 
+        align="center" 
+        gutterBottom
+        sx={{ 
+          fontWeight: 500,
+          color: 'primary.main',
+          mb: 4
+        }}
+      >
+        Lista de Agendamentos
+      </Typography>
+
+      <Grid
+        container
+        spacing={3}
+        justifyContent="center"
+        sx={{
+            width: '100%',
+            margin: '0 auto'
+        }}
+        >
+        {agendamentosPagina.length === 0 ? (
+          <Grid item xs={12}  component={"div" as unknown as React.ElementType}>
+            <Typography
+              align="center"
+              color="text.secondary"
+              sx={{ my: 4 }}
+            >
+              Nenhum agendamento encontrado.
+            </Typography>
+          </Grid>
+        ) : (
+          agendamentosPagina.map((agendamento) => (
+            <Grid 
+              item 
+              xs={12}
+              key={agendamento.id}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center'
+              }}
+               component={"div" as unknown as React.ElementType}
+            >
+              <Fade in timeout={500}>
+                <Card
+                    elevation={2}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        height: '180px',
+                        width: '100%',
+                        maxWidth: '800px',
+                        minWidth: '330px',
+                        margin: '0 auto',
+                        '&:hover': {
+                        elevation: 4,
+                        transform: 'translateY(-2px)',
+                        transition: 'all 0.2s ease-in-out'
+                        }
+                    }}
+                    >
+                  <Box 
+                    sx={{ 
+                      p: 1.5,
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center',
+                    justifyContent: 'center',
+                      width: '100px',
+                      minWidth: '100px'
+                    }}
+                  >
                     <CardMedia
                       component="img"
                       image={agendamento.foto}
                       alt={`Foto de ${agendamento.nome}`}
-                      className={styles.agendamentoFoto}
+                      sx={{
+                        width: { xs: 70, sm: 80 },
+                        height: { xs: 70, sm: 80 },
+                        borderRadius: '50%',
+                        border: 2,
+                        borderColor: 'primary.main'
+                      }}
                     />
-                  </div>
-                  <CardContent className={styles.agendamentoInfo}>
-                    <Typography variant="h6" className={styles.agendamentoNome} color="primary">
+                  </Box>
+
+                  <CardContent 
+                    sx={{ 
+                      flex: 1,
+                      p: 1.5,
+                      overflow: 'hidden',
+                      '&:last-child': { pb: 1.5 },
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <Typography 
+                      variant="h6" 
+                      color="primary.main" 
+                      sx={{ 
+                        fontSize: '1.1rem',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
                       {agendamento.nome}
                     </Typography>
-                    <Typography variant="body1" className={styles.agendamentoMateria}>
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        fontSize: '0.9rem',
+                        color: 'text.secondary'
+                      }}
+                    >
                       {agendamento.materia}
                     </Typography>
-                    <Typography
-                      variant="body2"
-                      className={styles.agendamentoDataHora}
-                      sx={{ mt: 1 }}
+                     <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        fontSize: '0.9rem',
+                        color: 'text.secondary'
+                      }}
                     >
-                      <span className={styles.agendamentoData}>{agendamento.data}</span> &bull;{' '}
-                      <span className={styles.agendamentoHora}>{agendamento.hora}</span>
-                    </Typography>
+                        {agendamento.data}
+                      </Typography>
+                      <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        fontSize: '0.9rem',
+                        color: 'text.secondary'
+                      }}
+                    >
+                        {agendamento.hora}
+                      </Typography>
                   </CardContent>
-                  <Box className={styles.agendamentoBotoes}>
+
+                  <CardActions 
+                    sx={{ 
+                      p: 1.5,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 1,
+                      minWidth: '110px',
+                      justifyContent: 'center'
+                      
+                    }}
+                  >
+                    <Stack
+                spacing={1} // Adiciona espaçamento vertical entre botões
+                sx={{ 
+                    width: '100%',
+                minWidth: '110px',
+                '& .MuiButton-root': { // Estilo comum para todos os botões
+                        padding: '8px 16px',
+                        fontSize: '0.875rem'
+                      }}}
+                    
+                >
                     <Button
-                      variant="contained"
-                      color="error"
-                      className={styles.btnCancelar}
-                      onClick={() => (window.location.href = '../modalCancelamento/index.html')}
+                     size="medium"
+                    variant="contained"
+                    onClick={() => navigate("/modalCancelamento")}
+                    sx={{
+                    bgcolor: '#e53e3e !important', // Cor original do btnCancelar
+                    '&:hover': {
+                        bgcolor: '#a81d1d !important'
+                    }
+                    }}
                     >
-                      Cancelar
+                        Cancelar
                     </Button>
                     <Button
-                      variant="contained"
-                      color="secondary"
-                      className={styles.btnReagendar}
-                      onClick={() =>
-                        (window.location.href = '../frontend2/reagendamento/index.html')
-                      }
+                         size="medium"
+                        variant="contained"
+                        onClick={() => navigate("/reagendamento")}
+                        sx={{
+                        bgcolor: '#6b7280 !important', // Cor original do btnReagendar
+                        '&:hover': {
+                            bgcolor: '#374151 !important'
+                        }
+                        }}
                     >
-                      Reagendar
+                        Reagendar
                     </Button>
                     <Button
-                      variant="contained"
-                      color="primary"
-                      className={styles.btnAcessar}
-                      onClick={() => (window.location.href = '../frontend/avaliacao/index.html')}
+                     size="medium"
+                        variant="contained"
+                        onClick={() => navigate("/avaliacao")}
+                        sx={{
+                        bgcolor: '#2d5be3 !important', // Cor original do btnAcessar
+                        '&:hover': {
+                            bgcolor: '#1b3e8a !important'
+                        }
+                        }}
                     >
-                      Acessar
+                        Acessar
                     </Button>
-                  </Box>
-                </div>
-              </Grid>
-            ))
-          )}
-        </Grid>
-      </main>
-      {}
+                </Stack>
+                  </CardActions>
+                </Card>
+              </Fade>
+            </Grid>
+          ))
+        )}
+      </Grid>
+
       <Stack
+        spacing={1}
         direction="row"
         justifyContent="center"
-        alignItems="center"
-        spacing={2}
-        className={styles.paginacao}
+        sx={{ mt: 4 }}
       >
         <Button
           variant="contained"
-          color="primary"
           onClick={() => setPagina((p) => Math.max(1, p - 1))}
           disabled={pagina === 1}
-          className={styles.btnPagina}
-          aria-label="Página anterior"
         >
           &#8592;
         </Button>
-        <Typography className={styles.paginaAtual} variant="body1">
+        <Typography
+          variant="body1"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            px: 2
+          }}
+        >
           {pagina} de {totalPaginas}
         </Typography>
         <Button
           variant="contained"
-          color="primary"
           onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
           disabled={pagina === totalPaginas}
-          className={styles.btnPagina}
-          aria-label="Próxima página"
         >
           &#8594;
         </Button>
       </Stack>
-    </Box>
+    </Paper>
   );
 }
 

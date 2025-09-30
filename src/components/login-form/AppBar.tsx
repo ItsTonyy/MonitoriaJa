@@ -15,9 +15,9 @@ import "./AppBar.css";
 import { useNavigate } from "react-router-dom";
 
 const pages = [
-  { label: "Avaliações", path: "/comentarios-avaliacao" },
-  { label: "Monitores", path: "/lista-monitores" },
-  { label: "Agendamentos", path: "/lista-agendamentos" },
+  { label: "Avaliações", path: "MonitoriaJa/comentarios-avaliacao" },
+  { label: "Monitores", path: "MonitoriaJa/lista-monitores" },
+  { label: "Agendamentos", path: "MonitoriaJa/lista-agendamentos" },
   { label: "Sobre Nós", path: "#" }
 ];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
