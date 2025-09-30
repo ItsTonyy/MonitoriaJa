@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './detalhesMonitor.css';
 import Button from '@mui/material/Button';
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface TimeSlot {
   day: 'seg' | 'ter' | 'qua' | 'qui' | 'sex' | 'sab' | 'dom';
@@ -24,7 +24,7 @@ interface DetalhesMonitorProps {
 function DetalhesMonitor(props: DetalhesMonitorProps) {
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
   const location = useLocation();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const monitor = location.state?.monitor;
   const monitorImage = monitor?.foto || props.monitorImage;
   const monitorName = monitor?.nome || props.monitorName;
@@ -32,7 +32,15 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
   const valor = monitor?.valor || props.valor;
   const duracao = monitor?.duracao || props.duracao;
   const formacao = monitor?.formacao || props.formacao;
-  const horarios = [{day: 'seg', times:["10","14","16","22"]},{day: 'ter', times:["10","14","16"]}, {day: 'qua', times:["10","14","16","20"]}, {day: 'qui', times:["10","14","16","20"]}, {day: 'sex', times:["7","10","20"]},{day: 'sab', times:["10" ]},{day: 'dom', times:["16","20"]}];
+  const horarios = [
+    { day: 'seg', times: ['10', '14', '16', '22'] },
+    { day: 'ter', times: ['10', '14', '16'] },
+    { day: 'qua', times: ['10', '14', '16', '20'] },
+    { day: 'qui', times: ['10', '14', '16', '20'] },
+    { day: 'sex', times: ['7', '10', '20'] },
+    { day: 'sab', times: ['10'] },
+    { day: 'dom', times: ['16', '20'] },
+  ];
 
   const handleTimeSlotClick = (day: string, time: string) => {
     const slotId = `${day}-${time}`;
@@ -59,7 +67,11 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
           </div>
           <div className="avaliacao">
             <p className="nota">5.0</p>
-            <img src="./public/five-stars-rating-icon-png.webp" alt="avaliação do monitor" className="avaliação-monitor" />
+            <img
+              src="./public/five-stars-rating-icon-png.webp"
+              alt="avaliação do monitor"
+              className="avaliação-monitor"
+            />
           </div>
         </div>
         <div className="monitor-data">
@@ -83,7 +95,7 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
 
       <div
         className="horários"
-          style={{ '--numero-de-colunas': horarios ? horarios.length : 0 } as React.CSSProperties}
+        style={{ '--numero-de-colunas': horarios ? horarios.length : 0 } as React.CSSProperties}
       >
         <h1 className="titulo">Horários</h1>
         <hr />
@@ -116,7 +128,7 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
         <Button
           variant="outlined"
           sx={{ padding: '5px 40px' }}
-          onClick={() => navigate("MonitoriaJa/lista-monitores")}
+          onClick={() => navigate('/lista-monitores')}
         >
           Voltar
         </Button>
@@ -124,7 +136,7 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
           variant="contained"
           sx={{ padding: '5px 40px' }}
           onClick={() =>
-            navigate("/agendamento-monitor", {
+            navigate('/agendamento-monitor', {
               state: {
                 monitorImage,
                 monitorName,
