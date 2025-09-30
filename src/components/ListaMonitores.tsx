@@ -20,7 +20,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import StarIcon from "@mui/icons-material/Star";
 import { useNavigate } from "react-router-dom";
 
-type Monitor = {
+export type Monitor = {
   id: number;
   nome: string;
   materia: string;

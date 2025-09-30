@@ -25,8 +25,7 @@ body {
 
 .main {
   width: 100%;
-  background: var(--cor-background);
-  border: 2px solid var(--cor-principal);
+  background: var(--cor-fundo);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 20px;
@@ -34,11 +33,13 @@ body {
   display: flex;
   flex-direction: column;
   margin: 40px auto;
-  max-width: 1200px;
+  max-width: 1100px;
+  margin-top: 130px;
+  margin-bottom: 40px;
 
   @media (width <= 640px) {
     margin: 0;
-    padding: 0;
+    padding-top: 6rem;
     width: auto;
     border-radius: 0;
   }
@@ -50,9 +51,9 @@ body {
   }
 }
 
-.monitor-details {
-  display: grid;
-  grid-template-columns: 1fr;
+.monitor-details-detalhes {
+  display: flex;
+  flex-direction: row;
   gap: 12px;
   padding: 16px 12px 4px;
   background: transparent;
@@ -69,12 +70,18 @@ body {
   flex-direction: column;
 }
 
+.avaliacao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .monitorImage {
   width: clamp(140px, 18vw, 170px);
   height: clamp(140px, 18vw, 170px);
   border-radius: 12px;
   object-fit: cover;
-  border: 1px solid var(--stroke);
+  border: 2px solid var(--stroke);
 }
 
 .avaliação-monitor {
@@ -102,14 +109,16 @@ body {
 
 .monitor-data-specific h1 {
   font-size: clamp(1.5rem, 1rem + 1.2vw, 2rem);
-  font-weight: 700;
+  font-weight: 500;
+  display: flex;
+  justify-items: flex-start;
+  color: var(--cor-primaria);
 }
 
 .monitor-materia-valor {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
   color: var(--texto-suave);
 }
 
@@ -135,7 +144,7 @@ body {
 .titulo {
   display: flex;
   justify-content: flex-start;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--cor-principal);
 
   @media (width <= 640px) {
@@ -297,9 +306,6 @@ body {
   }
   .monitor-data-specific h1 {
     font-size: 1.35rem;
-  }
-  .titulo {
-    font-size: 1.2rem;
   }
   .botoes {
     display: flex;

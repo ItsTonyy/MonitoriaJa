@@ -25,12 +25,10 @@ import SchoolIcon from "@mui/icons-material/School";
 import PersonIcon from "@mui/icons-material/Person";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import LinkIcon from "@mui/icons-material/Link";
-import NotificationAddIcon from "@mui/icons-material/NotificationAdd";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import InfoIcon from "@mui/icons-material/Info";
 import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Monitor, MONITORES } from "../ListaMonitores";
 
 interface FormData {
   rating: number | null;
@@ -39,7 +37,7 @@ interface FormData {
 }
 
 
-const MONITORES_ALTERNATIVOS = [
+const MONITORES = [
   {
     id: 2,
     nome: "Ana Silva",

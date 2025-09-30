@@ -14,7 +14,8 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CancelIcon from "@mui/icons-material/Cancel";
 import StarIcon from "@mui/icons-material/Star";
-import { Monitor, MONITORES } from "../ListaMonitores";
+import { Monitor } from "../ListaMonitores";
+
 
 interface NotificacaoCardProps {
   color: "primary";
@@ -199,7 +200,7 @@ export default function NotificacaoCard() {
       tempo: notificacao.tempo,
       lida: true, // sempre true após o clique
     };
-    navigate(`/detalhes-notificacao/${notificacao.id}`, {
+    navigate(`/MonitoriaJa/detalhes-notificacao/${notificacao.id}`, {
       state: { notificacao: notificacaoData },
     });
     handleClose();

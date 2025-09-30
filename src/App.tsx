@@ -6,15 +6,16 @@ import ComentariosAvaliacaoPage from "./pages/Login/ComentariosAvaliacao/Comenta
 import ListaMonitores from "./components/ListaMonitores";
 import ListaAgendamentos from "./components/ListaAgendamentos";
 import CadastroMonitor from "./pages/CadastroMonitor";
-import ResponsiveAppBar from "./components/login-form/AppBar";
 import Footer from "./components/footer";
 import DetalhesMonitor from "./components/detalhesMonitor/DetalhesMonitor";
 import AgendamentoMonitor from "./components/detalhesMonitor/agendamentoMonitor";
+import AppNavBar from "./components/appNavBar";
+import DetalhesNotificao from "./components/DetalhesNotificao/DetalhesNotificao";
 
 const App = () => {
   return (
       <BrowserRouter>
-        <ResponsiveAppBar />
+        <AppNavBar />
           <Routes>
             <Route path="/MonitoriaJa" element={<LoginPage />} />
             <Route path="/MonitoriaJa/recuperar-senha" element={<RecuperarSenhaPage />} />
@@ -25,6 +26,7 @@ const App = () => {
             <Route path="/MonitoriaJa/cadastro-monitor" element={<CadastroMonitor />} />
             <Route path="/MonitoriaJa/detalhes-monitor" element={<DetalhesMonitor />} />
             <Route path="/MonitoriaJa/agendamento-monitor" element={<AgendamentoMonitor />} />
+            <Route path="/MonitoriaJa/detalhes-notificacao/:id" element={<DetalhesNotificao />}/>
           </Routes>
         <Footer />
       </BrowserRouter>
