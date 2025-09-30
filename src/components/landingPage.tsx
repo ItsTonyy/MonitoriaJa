@@ -4,12 +4,20 @@ import { Button } from '@mui/material'; // Assuming you're using Material UI for
 import CalculateIcon from '@mui/icons-material/Calculate';
 import PublicIcon from '@mui/icons-material/Public';
 import MicExternalOnIcon from '@mui/icons-material/MicExternalOn';
+import { useNavigate } from 'react-router-dom';
 
 interface LandingPageProps {
   // Add any props if needed
 }
 
 const LandingPage: React.FC<LandingPageProps> = () => {
+
+  const navigate = useNavigate();
+
+  function handleClickLogin() {
+    navigate('/MonitoriaJa/login');
+  }
+
   return (
     <div className="landing-page">
       {/* Hero Section */}
@@ -27,6 +35,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
               variant="contained" 
               className="cta-button"
               href="#programs"
+              onClick={handleClickLogin}
             >
               Crie uma Conta
             </Button>

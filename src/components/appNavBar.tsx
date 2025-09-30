@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import './appNavBar.css';
+import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
@@ -47,6 +48,10 @@ export default function AppNavBar() {
 
   function handleClickAgendamento() {
     navigate('/MonitoriaJa/lista-agendamentos');
+  }
+
+  function handleClickLogin() {
+    navigate('/MonitoriaJa/login');
   }
 
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -161,6 +166,7 @@ export default function AppNavBar() {
               variant="text"
               size="small"
               sx={{ ':hover': { transform: 'none' } }}
+              onClick={handleClickLogin}
             >
               Sign in
             </Button>
@@ -169,6 +175,7 @@ export default function AppNavBar() {
               variant="contained"
               size="small"
               sx={{ ':hover': { transform: 'none' } }}
+              onClick={handleClickLogin}
             >
               Sign up
             </Button>
@@ -208,12 +215,12 @@ export default function AppNavBar() {
                 <MenuItem>Sobre Nós</MenuItem>
                 <Divider sx={{ my: 3 }} />
                 <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth>
+                  <Button color="primary" variant="contained" fullWidth onClick={handleClickLogin}>
                     Sign up
                   </Button>
                 </MenuItem>
                 <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth>
+                  <Button color="primary" variant="outlined" fullWidth  onClick={handleClickLogin}>
                     Sign in
                   </Button>
                 </MenuItem>
