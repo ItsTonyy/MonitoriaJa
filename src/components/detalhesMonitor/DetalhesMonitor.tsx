@@ -60,7 +60,7 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
 
   return (
     <div className="main">
-      <div className="monitor-details">
+      <div className="monitor-details-detalhes">
         <div className="monitor-profile">
           <div>
             <img src={monitorImage} alt="imagem do monitor" className="monitorImage" />

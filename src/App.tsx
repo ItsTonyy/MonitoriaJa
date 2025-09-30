@@ -6,10 +6,10 @@ import ComentariosAvaliacaoPage from './pages/Login/ComentariosAvaliacao/Comenta
 import ListaMonitores from './components/ListaMonitores';
 import ListaAgendamentos from './components/ListaAgendamentos';
 import CadastroMonitor from './pages/CadastroMonitor';
-import ResponsiveAppBar from './components/login-form/AppBar';
 import Footer from './components/footer';
 import DetalhesMonitor from './components/detalhesMonitor/DetalhesMonitor';
 import AgendamentoMonitor from './components/detalhesMonitor/agendamentoMonitor';
+import LandingPage from './components/landingPage';
 import AppNavbar from './components/appNavBar';
 
 const App = () => {
@@ -17,7 +17,7 @@ const App = () => {
     <BrowserRouter>
       <AppNavbar />
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/recuperar-senha" element={<RecuperarSenhaPage />} />
         <Route path="/avaliacao-pos-aula" element={<AvaliacaoPosAulaPage />} />
         <Route path="/comentarios-avaliacao" element={<ComentariosAvaliacaoPage />} />
