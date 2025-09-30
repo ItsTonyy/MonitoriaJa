@@ -32,7 +32,7 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
   const valor = monitor?.valor || props.valor;
   const duracao = monitor?.duracao || props.duracao;
   const formacao = monitor?.formacao || props.formacao;
-  const horarios = [{day: 'seg', times:["10","14","16","22"]},{day: 'ter', times:["10","14","16"]}, {day: 'qua', times:["10","14","16","20"]}, {day: 'qui', times:["10","14","16","20"]}, {day: 'sex', times:["7","10","20"]},{day: 'sab', times:["10" ]},{day: 'dom', times:["16","20"]}];
+  const horarios = [{day: 'seg', times:["10:00","14:00","16:00","22:00"]},{day: 'ter', times:["10:00","14:00","16:00"]}, {day: 'qua', times:["10:00","14:00","16:00","20:00"]}, {day: 'qui', times:["10:00","14:00","16:00","20:00"]}, {day: 'sex', times:["7:00","10:00","20:00"]},{day: 'sab', times:["10:00" ]},{day: 'dom', times:["16:00","20:00"]}];
 
   const handleTimeSlotClick = (day: string, time: string) => {
     const slotId = `${day}-${time}`;
