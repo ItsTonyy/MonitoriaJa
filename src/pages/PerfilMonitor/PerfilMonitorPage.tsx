@@ -153,7 +153,10 @@ const PerfilMonitorPage: React.FC = () => {
 
 
 
-          <ConfirmationButton className={styles.reusableButton}>
+          <ConfirmationButton
+            className={styles.reusableButton}
+            onClick={() => navigate('/MonitoriaJa/alterar-senha')}
+          >
             Trocar senha
           </ConfirmationButton>
           <ConfirmationButton

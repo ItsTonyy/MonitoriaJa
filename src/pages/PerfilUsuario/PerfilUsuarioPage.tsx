@@ -50,7 +50,10 @@ const PerfilUsuarioPage: React.FC = () => {
 
         {/* Botões */}
         <div className={styles.buttonSection}>
-          <ConfirmationButton className={styles.reusableButton}>
+          <ConfirmationButton
+            className={styles.reusableButton}
+            onClick={() => navigate('/MonitoriaJa/alterar-senha')}
+          >
             Trocar senha
           </ConfirmationButton>
           <ConfirmationButton
