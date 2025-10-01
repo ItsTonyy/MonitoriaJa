@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ConfirmationButton from '../../components/login-form/ConfirmationButton';
 import styles from './PerfilUsuarioPage.module.css';
 import PersonIcon from '@mui/icons-material/Person';
