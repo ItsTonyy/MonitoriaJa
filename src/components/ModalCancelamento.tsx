@@ -25,22 +25,22 @@ const style = {
 
 interface ModalCancelamentoProps {
     open: boolean;
+    /*
     onClose: () => void;
     onConfirm: (motivo: string) => void;
+    */
 }
 
-function ModalCancelamento({ open, onClose, onConfirm }: ModalCancelamentoProps) {
+function ModalCancelamento({ open }: ModalCancelamentoProps) {
     const [motivo, setMotivo] = useState('');
     const theme = useTheme();
     const breakpointMd = useMediaQuery(theme.breakpoints.up('md'));
 
     const handleConfirm = () => {
-        onConfirm(motivo);
         setMotivo('');
     };
 
     const handleClose = () => {
-        onClose();
         setMotivo('');
     };
 
@@ -61,7 +61,12 @@ function ModalCancelamento({ open, onClose, onConfirm }: ModalCancelamentoProps)
                     fullWidth
                 />
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
-                    <Button variant="contained" color="primary" onClick={handleClose}>
+                    <Button 
+                        variant="contained" 
+                        color="primary" 
+                        onClick={handleClose} 
+                        size={ breakpointMd ? 'medium' : 'small' }
+                    >
                         Voltar
                     </Button>
                     <Button
