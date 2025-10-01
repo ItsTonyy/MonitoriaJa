@@ -12,6 +12,10 @@
   display: flex;
   align-items: center;
   padding-top: 130px;
+
+   @media (width <= 760px) {
+    padding-top: 6rem;
+  }
 }
 
 .hero-content {
@@ -111,6 +115,10 @@
 .partner-section {
   padding: 80px;
   background-color: #ffffff;
+
+  @media (width <= 760px) {
+    padding: 0px;
+  }
 }
 
 .partner-content {
@@ -634,11 +642,7 @@ background-color: #ff6b8b;
   .instructor-text h2 {
     font-size: 2rem;
   }
-  
-  .hero-section, .partner-section {
-    padding: 40px 20px;
-  }
-  
+
   .hero-text h1, .partner-text h2 {
     font-size: 2.2rem;
   }

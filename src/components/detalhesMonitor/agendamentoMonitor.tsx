@@ -125,7 +125,7 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
           variant="outlined"
           sx={{ padding: '5px 40px' }}
           onClick={() =>
-            navigate('/detalhes-monitor', {
+            navigate('/MonitoriaJa/detalhes-monitor', {
               state: {
                 monitor: {
                   foto: state.monitorImage,

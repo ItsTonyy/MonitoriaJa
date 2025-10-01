@@ -43,7 +43,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
           <div className="hero-image">
             <div className="image-container">
               <img 
-                src="/estudantes-colaborando.avif" 
+                src="estudantes-colaborando.avif" 
                 alt="Students collaborating around a laptop" 
                 className="main-image" 
               />
@@ -67,14 +67,14 @@ const LandingPage: React.FC<LandingPageProps> = () => {
           <div className="partner-images">
             <div className="image-top">
               <img 
-                src="/estudante1.png" 
+                src="estudante1.png" 
                 alt="Student with laptop" 
                 className="partner-image top-image" 
               />
             </div>
             <div className="image-bottom">
               <img 
-                src="/estudante2.png" 
+                src="estudante2.png" 
                 alt="Student with laptop" 
                 className="partner-image bottom-image" 
               />
@@ -191,7 +191,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
           <div className="instructor-profile">
             <div className="instructor-image-container">
               <img 
-                src="/professor1.png" 
+                src="professor1.png" 
                 alt="Jordan Ellis, Data Analytics Expert" 
                 className="instructor-image" 
               />
@@ -249,7 +249,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
               
               <div className="author-image">
                   <img 
-                    src="/estudante3.png" 
+                    src="estudante3.png" 
                     alt="Emma Carter" 
                   />
               </div>
@@ -278,7 +278,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
               
               <div className="author-image">
                   <img 
-                    src="/professor4.png" 
+                    src="professor4.png" 
                     alt="Priya Kumar" 
                   />
                 </div>
@@ -306,7 +306,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
               
               <div className="author-image">
                   <img 
-                    src="/estudante4.png" 
+                    src="estudante4.png" 
                     alt="Michael Johnson" 
                   />
                 </div>
