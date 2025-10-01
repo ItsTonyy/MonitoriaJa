@@ -1,18 +1,18 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import PersonIcon from '@mui/icons-material/Person';
-
+import React, { useState } from 'react';
 import ConfirmationButton from '../../components/login-form/ConfirmationButton';
-import CampoFormulario from '../PerfilMonitor/CampoFormulario/CampoFormulario';
 import styles from './PerfilUsuarioPage.module.css';
+import PersonIcon from '@mui/icons-material/Person';
+import { useNavigate } from 'react-router-dom';
+import CampoFormulario from '../PerfilMonitor/CampoFormulario/CampoFormulario';
 
-const PerfilMonitorPage: React.FC = () => {
+const PerfilUsuarioPage: React.FC = () => {
   const navigate = useNavigate();
+
+ 
 
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
-
         {/* Cabeçalho com nome e matéria */}
         <div className={styles.profileHeader}>
           <div className={styles.editableGroup}>
@@ -21,7 +21,7 @@ const PerfilMonitorPage: React.FC = () => {
               contentEditable
               suppressContentEditableWarning
               role="textbox"
-              aria-label="Nome do monitor"
+              aria-label="Nome do aluno"
               tabIndex={0}
             >
               Aluno X
@@ -41,6 +41,7 @@ const PerfilMonitorPage: React.FC = () => {
           </div>
         </div>
 
+
         {/* Campos de Telefone e Email */}
         <div className={styles.fieldsContainer}>
           <CampoFormulario label="Telefone" defaultValue="00 00000-0000" />
@@ -49,13 +50,9 @@ const PerfilMonitorPage: React.FC = () => {
 
         {/* Botões */}
         <div className={styles.buttonSection}>
-          <ConfirmationButton
-            className={styles.reusableButton}
-            onClick={() => navigate("/alterar-senha")}
-          >
+          <ConfirmationButton className={styles.reusableButton}>
             Trocar senha
           </ConfirmationButton>
-
           <ConfirmationButton
             className={styles.reusableButton}
             onClick={() => navigate(-1)}
@@ -63,10 +60,9 @@ const PerfilMonitorPage: React.FC = () => {
             Voltar
           </ConfirmationButton>
         </div>
-
       </div>
     </main>
   );
 };
 
-export default PerfilMonitorPage;
+export default PerfilUsuarioPage;
