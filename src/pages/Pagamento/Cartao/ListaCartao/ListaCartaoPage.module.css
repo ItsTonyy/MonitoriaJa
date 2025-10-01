@@ -5,8 +5,6 @@
   --cor-fundo: #ffffff;
   --cor-texto: #050315;
   --cor-texto-claro: #ffffff;
-  --radius-lg: 16px;
-  --radius-md: 12px;
   --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
   --button-padding: 12px 0;
   --input-padding: 10px;
@@ -25,7 +23,6 @@
 
 .profileCard {
   background-color: var(--cor-fundo);
-  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 2rem;
   width: 100%;
@@ -52,7 +49,6 @@
 
 .cartaoCard {
   background-color: var(--cor-fundo);
-  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 1.5rem;
   display: flex;
@@ -92,7 +88,6 @@
   text-transform: none !important;
   font-weight: bold !important;
   padding: var(--button-padding) !important;
-  border-radius: var(--radius-md) !important;
   flex: 1; /* mesmo tamanho */
 }
 

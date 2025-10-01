@@ -32,7 +32,6 @@
 
 .profileCard {
   background-color: var(--cor-fundo);
-  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 2rem;
   width: 100%;
@@ -109,7 +108,6 @@
 .reusableButton {
   background-color: var(--cor-primaria) !important;
   color: var(--cor-texto-claro) !important;
-  border-radius: 15px !important;
   padding: var(--button-padding) !important;
   font-weight: bold !important;
   width: 100%;

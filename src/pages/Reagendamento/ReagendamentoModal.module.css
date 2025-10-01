@@ -23,7 +23,6 @@
   max-width: 500px;
   width: 100%;
   background-color: var(--cor-fundo);
-  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 2rem;
 }
@@ -131,7 +130,6 @@
 .reusableButtonPrimary {
   background-color: var(--cor-primaria);
   color: var(--cor-texto-claro);
-  border-radius: var(--radius-md);
   font-weight: bold;
   padding: var(--button-padding);
 }
@@ -139,7 +137,6 @@
 .reusableButtonSecondary {
   background-color: var(--cor-secundaria);
   color: var(--cor-texto-claro);
-  border-radius: var(--radius-md);
   font-weight: bold;
   padding: var(--button-padding);
 }

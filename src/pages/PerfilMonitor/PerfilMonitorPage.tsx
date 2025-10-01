@@ -5,7 +5,7 @@ import styles from './PerfilMonitorPage.module.css';
 import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
 import CampoFormulario from './CampoFormulario/CampoFormulario';
-import { Button, Menu, MenuItem } from '@mui/material';
+import { Menu, MenuItem } from '@mui/material';
 import Estrela from '../../../public/five-stars-rating-icon-png.webp';
 
 const PerfilMonitorPage: React.FC = () => {
@@ -101,15 +101,14 @@ const PerfilMonitorPage: React.FC = () => {
         <div className={styles.buttonSection}>
           <div className={styles.buttonGroup}>
   {/* Dropdown Atualizar Horários */}
-  <Button
-    variant="contained"
+  <ConfirmationButton
     onClick={handleClickHorarios}
     className={styles.reusableButton}
     fullWidth
     sx={{ flex: 1 }}
   >
     Atualizar horários
-  </Button>
+  </ConfirmationButton>
   <Menu
     anchorEl={anchorHorarios}
     open={openHorarios}
@@ -126,15 +125,14 @@ const PerfilMonitorPage: React.FC = () => {
   </Menu>
 
   {/* Dropdown Atualizar Matérias */}
-  <Button
-    variant="contained"
+  <ConfirmationButton
     onClick={handleClickMaterias}
     className={styles.reusableButton}
     fullWidth
     sx={{ flex: 1 }}
   >
     Atualizar matérias
-  </Button>
+  </ConfirmationButton>
   <Menu
     anchorEl={anchorMaterias}
     open={openMaterias}

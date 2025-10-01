@@ -5,8 +5,6 @@
   --cor-fundo: #ffffff;
   --cor-texto: #050315;
   --cor-texto-claro: #ffffff;
-  --radius-lg: 16px;
-  --radius-md: 12px;
   --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
   --button-padding: 12px 0;
   --input-padding: 10px;
@@ -39,7 +37,6 @@
 
 .profileCard {
   background-color: var(--cor-fundo);
-  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 2rem;
   width: 100%;
@@ -111,15 +108,13 @@
 
 .descriptionBox {
   padding: 1rem;
-  border-radius: var(--radius-md);
-  border: 2px solid var(--cor-primaria);
   background-color: var(--cor-fundo);
   text-align: center;
 }
 
 .editableTextarea {
   width: 100%;
-  border: none;
+  border: none !important;
   background: transparent;
   text-align: center;
   resize: none;
@@ -143,7 +138,6 @@
 .reusableButton {
   background-color: var(--cor-primaria) !important;
   color: var(--cor-texto-claro) !important;
-  border-radius: 15px !important;
   padding: var(--button-padding) !important;
   font-weight: bold !important;
   width: 100%;
