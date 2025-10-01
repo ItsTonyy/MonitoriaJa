@@ -17,12 +17,15 @@
 
 .centralizeContent {
   margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
-
 .name {
-  font-size: 2rem;   /* aumenta o tamanho */
-  font-weight: bold; /* deixa em negrito */
+  font-size: 2rem;
+  font-weight: bold;
   color: var(--cor-texto);
   text-align: center;
 }
@@ -46,7 +49,6 @@
   gap: 1.5rem;
 }
 
-
 .profileHeader {
   display: flex;
   flex-direction: column;
@@ -54,51 +56,19 @@
   gap: 0.5rem;
 }
 
-
-.nameAndEdit,
-.subjectAndEdit {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-
-.editableInput {
-  text-align: center;
-  border: none;
-  background: transparent;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--cor-texto);
-  padding: 0;
-  width: auto;
-  max-width: 100%;
-}
-
-
-.subjectAndEdit .editableInput {
-  font-size: 1rem;
-  font-weight: normal;
-}
-
-
 .photoSection {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* **CÓDIGO ADICIONADO AQUI** */
+  justify-content: center;
   gap: 0.5rem;
 }
 
-
 .photoContainer {
-  /* Outras propriedades de centralização, se houver */
-  border: 5px solid var(--cor-primaria); /* Borda grossa preta para começar, ajuste a cor como quiser */
-  border-radius: 50%; /* Para deixá-lo redondo */
-  background-color: #d4d4d4; /* Fundo cinza claro */
-  width: 120px; /* Ajuste o tamanho conforme a necessidade */
+  border: 5px solid var(--cor-primaria);
+  border-radius: 50%;
+  background-color: #d4d4d4;
+  width: 120px;
   height: 120px;
   display: flex;
   justify-content: center;
@@ -106,31 +76,18 @@
   overflow: hidden;
 }
 
-
-
-
 .profilePhotoIcon {
   color: var(--cor-fundo);
   font-size: 4rem !important;
 }
-
 
 .uploadButtonContainer {
   width: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
   margin: 0 auto;
 }
-
-
-.editIconPhoto {
-  color: var(--cor-primaria);
-  font-size: 1rem !important;
-  cursor: pointer;
-}
-
 
 .ratingAndFormation {
   display: flex;
@@ -139,16 +96,14 @@
   gap: 0.5rem;
 }
 
-
 .rating {
   display: flex;
   align-items: center;
   gap: 0.2rem;
 }
 
-
 .starIcon {
-  width: 100px !important;   /* ou maior, ex: 32px */
+  width: 100px !important;
   height: 24px;
   object-fit: contain;
 }
@@ -161,7 +116,6 @@
   text-align: center;
 }
 
-
 .editableTextarea {
   width: 100%;
   border: none;
@@ -172,38 +126,34 @@
   color: var(--cor-texto);
 }
 
-
 .buttonSection {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-
 .buttonGroup {
   display: flex;
+  flex-direction: row; /* lado a lado */
   gap: 0.5rem;
 }
 
-
+/* Botão reutilizável - agora compatível com MUI Button */
 .reusableButton {
-  background-color: var(--cor-secundaria);
-  color: var(--cor-texto-claro);
-  border-radius: 15px;
-  padding: var(--button-padding);
-  font-weight: bold;
-  border: none;
-  text-align: center;
-  cursor: pointer;
+  background-color: var(--cor-primaria) !important;
+  color: var(--cor-texto-claro) !important;
+  border-radius: 15px !important;
+  padding: var(--button-padding) !important;
+  font-weight: bold !important;
   width: 100%;
+  text-transform: none !important; /* mantém texto normal */
 }
-
 
 .reusableButton:hover {
-  background-color: var(--cor-primaria);
+  background-color: var(--cor-secundaria) !important;
 }
 
-
+/* Responsividade */
 @media (max-width: 640px) {
   .buttonGroup {
     flex-direction: column;
