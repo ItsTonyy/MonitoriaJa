@@ -28,13 +28,14 @@ export type Monitor = {
   servico: string;
   foto: string;
   avaliacao: number;
+  formacao?: string;
 };
 
 const MONITORES: Monitor[] = [
-  { id: 1, nome: "João Silva", materia: "Matemática", valor: "R$ 50/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/men/1.jpg", avaliacao: 4.9 },
-  { id: 2, nome: "Maria Souza", materia: "Física", valor: "R$ 60/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/women/2.jpg", avaliacao: 4.8 },
-  { id: 3, nome: "Carlos Lima", materia: "Química", valor: "R$ 55/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/men/3.jpg", avaliacao: 4.5 },
-  { id: 4, nome: "Ana Paula", materia: "Biologia", valor: "R$ 58/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/women/4.jpg", avaliacao: 4.7 },
+  { id: 1, nome: "João Silva", materia: "Matemática", valor: "R$ 50/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/men/1.jpg", avaliacao: 4.9, formacao: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." },
+  { id: 2, nome: "Maria Souza", materia: "Física", valor: "R$ 60/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/women/2.jpg", avaliacao: 4.8, formacao: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."  },
+  { id: 3, nome: "Carlos Lima", materia: "Química", valor: "R$ 55/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/men/3.jpg", avaliacao: 4.5, formacao: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."  },
+  { id: 4, nome: "Ana Paula", materia: "Biologia", valor: "R$ 58/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/women/4.jpg", avaliacao: 4.7, formacao: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."  },
 ];
 
 const MATERIAS = [
@@ -116,8 +117,14 @@ function ListaMonitores() {
           m: 2,
           borderRadius: 2,
           bgcolor: 'background.default',
-          maxWidth: 1400, // Limita largura máxima
+          maxWidth: 1100, // Limita largura máxima
           margin: '0 auto', // Centraliza na tela
+          marginTop: '130px',
+          '@media (width <= 760px)': {
+            marginTop: '6rem',
+          },
+          marginBottom: '40px',
+          boxShadow: '0 8px 24px rgba(5, 3, 21, 0.08)',
         }}
       >
       <Typography 
