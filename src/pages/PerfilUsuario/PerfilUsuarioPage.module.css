@@ -1,0 +1,203 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto: #050315;
+  --cor-texto-claro: #ffffff;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
+  --button-padding: 12px 0;
+  --input-padding: 10px;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+}
+
+
+.centralizeContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+  padding: 2rem 1rem;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+}
+
+
+.profileCard {
+  background-color: var(--cor-fundo);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+
+.profileHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+
+.nameAndEdit,
+.subjectAndEdit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+
+.editableInput {
+  text-align: center;
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--cor-texto);
+  padding: 0;
+  width: auto;
+  max-width: 100%;
+}
+
+
+.subjectAndEdit .editableInput {
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+
+.photoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* **CÓDIGO ADICIONADO AQUI** */
+  gap: 0.5rem;
+}
+
+
+.photoContainer {
+  /* Outras propriedades de centralização, se houver */
+  border: 5px solid var(--cor-primaria); /* Borda grossa preta para começar, ajuste a cor como quiser */
+  border-radius: 50%; /* Para deixá-lo redondo */
+  background-color: #d4d4d4; /* Fundo cinza claro */
+  width: 120px; /* Ajuste o tamanho conforme a necessidade */
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+
+
+
+.profilePhotoIcon {
+  color: var(--cor-fundo);
+  font-size: 4rem !important;
+}
+
+
+.uploadButtonContainer {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+}
+
+
+.editIconPhoto {
+  color: var(--cor-primaria);
+  font-size: 1rem !important;
+  cursor: pointer;
+}
+
+
+.ratingAndFormation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+
+.starIcon {
+  color: gold !important;
+}
+
+
+.descriptionBox {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--cor-primaria);
+  background-color: var(--cor-fundo);
+  text-align: center;
+}
+
+
+.editableTextarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: center;
+  resize: none;
+  font-family: inherit;
+  color: var(--cor-texto);
+}
+
+
+.buttonSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+
+.reusableButton {
+  background-color: var(--cor-secundaria);
+  color: var(--cor-texto-claro);
+  border-radius: 15px;
+  padding: var(--button-padding);
+  font-weight: bold;
+  border: none;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+}
+
+
+.reusableButton:hover {
+  background-color: var(--cor-primaria);
+}
+
+
+@media (max-width: 640px) {
+  .buttonGroup {
+    flex-direction: column;
+  }
+}

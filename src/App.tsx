@@ -13,6 +13,10 @@ import AppNavBar from "./components/appNavBar";
 import DetalhesNotificao from "./components/DetalhesNotificao/DetalhesNotificao";
 import ModalCancelamento from "./components/ModalCancelamento";
 import LandingPage from "./components/landingPage";
+import PerfilMonitorPage from "./pages/PerfilMonitor/PerfilMonitorPage";
+import PerfilUsuarioPage from "./pages/PerfilUsuario/PerfilUsuarioPage";
+import AlterarSenhaPage from "./pages/AlterarSenha/AlterarSenhaPage";
+import PixPage from "./pages/Pagamento/Pix/PixPage";
 
 const App = () => {
   return (
@@ -31,6 +35,10 @@ const App = () => {
             <Route path="/MonitoriaJa/detalhes-monitor" element={<DetalhesMonitor />} />
             <Route path="/MonitoriaJa/agendamento-monitor" element={<AgendamentoMonitor />} />
             <Route path="/MonitoriaJa/detalhes-notificacao/:id" element={<DetalhesNotificao />}/>
+            <Route path="/MonitoriaJa/perfil-monitor" element={<PerfilMonitorPage/>}/>
+            <Route path="/MonitoriaJa/perfil-usuario" element={<PerfilUsuarioPage/>}/>
+            <Route path="/MonitoriaJa/alterar-senha" element={<AlterarSenhaPage/>}/>
+            <Route path="/MonitoriaJa/pix" element={<PixPage/>}/>
           </Routes>
         <Footer />
       </BrowserRouter>

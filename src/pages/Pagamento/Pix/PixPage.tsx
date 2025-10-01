@@ -1,0 +1,59 @@
+import React from 'react';
+import { Box, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import QrCode2Icon from '@mui/icons-material/QrCode2';
+import ConfirmationButton from '../../../components/login-form/ConfirmationButton';
+import styles from './PixPage.module.css';
+
+const PixPage: React.FC = () => {
+  const orderId = '#0000';
+  const orderValue = 'R$ 00,00';
+  const navigate = useNavigate();
+
+  const handleCopyPixCode = () => {
+    console.log('Código Pix copiado!');
+  };
+
+  const handleCancel = () => {
+    navigate('/agendamento-monitor');
+  };
+
+  return (
+    <main className={styles.centralizeContent}>
+      <Box className={styles.card}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Pix
+        </Typography>
+
+        <Typography className={styles.infoText}>
+          Pedido {orderId}
+        </Typography>
+        <Typography className={styles.infoText}>
+          Valor de compra: {orderValue}
+        </Typography>
+
+        <Box className={styles.qrCodeContainer}>
+          <QrCode2Icon className={styles.qrCodeIcon} />
+        </Box>
+
+        <Box className={styles.buttonGroup}>
+          <ConfirmationButton 
+            className={styles.reusableButton} 
+            onClick={handleCopyPixCode}
+          >
+            Copiar Código Pix
+          </ConfirmationButton>
+
+          <ConfirmationButton 
+            className={styles.reusableButton} 
+            onClick={handleCancel}
+          >
+            Cancelar
+          </ConfirmationButton>
+        </Box>
+      </Box>
+    </main>
+  );
+};
+
+export default PixPage;

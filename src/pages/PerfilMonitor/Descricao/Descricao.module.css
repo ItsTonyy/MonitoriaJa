@@ -1,0 +1,19 @@
+.descriptionBox {
+  width: 100%;
+  padding: 1.2rem;
+  border-radius: var(--radius-md);
+  background-color: var(--cor-fundo);
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.editableTextarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  resize: none;
+  font-family: inherit;
+  color: var(--cor-texto);
+  outline: none;
+}

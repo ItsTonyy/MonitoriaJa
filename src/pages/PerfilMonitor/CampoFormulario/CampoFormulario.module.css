@@ -1,0 +1,5 @@
+.CampoFormulario {
+  width: 100%;          /* ocupa toda a largura do container */
+  margin-bottom: 1rem !important;  /* espaçamento entre campos */
+  display: block;
+}
