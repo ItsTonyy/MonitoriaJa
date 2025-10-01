@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ConfirmationButton from '../../components/login-form/ConfirmationButton';
 import styles from './PerfilUsuarioPage.module.css';
 import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
 import CampoFormulario from '../PerfilMonitor/CampoFormulario/CampoFormulario';
+import ReagendamentoModal from '../Reagendamento/ReagendamentoModal'; // importe o modal
 
 const PerfilUsuarioPage: React.FC = () => {
   const navigate = useNavigate();
-
- 
+  const [openModal, setOpenModal] = useState(false); // estado do modal
 
   return (
     <main className={styles.centralizeContent}>
@@ -35,12 +35,14 @@ const PerfilUsuarioPage: React.FC = () => {
             <PersonIcon className={styles.profilePhotoIcon} />
           </div>
           <div className={styles.uploadButtonContainer}>
-            <ConfirmationButton className={styles.reusableButton}>
+            <ConfirmationButton
+              className={styles.reusableButton}
+              onClick={() => setOpenModal(true)} // abre o modal
+            >
               Upload foto
             </ConfirmationButton>
           </div>
         </div>
-
 
         {/* Campos de Telefone e Email */}
         <div className={styles.fieldsContainer}>
@@ -64,6 +66,12 @@ const PerfilUsuarioPage: React.FC = () => {
           </ConfirmationButton>
         </div>
       </div>
+
+      {/* Modal */}
+      <ReagendamentoModal
+        open={openModal}
+        handleClose={() => setOpenModal(false)}
+      />
     </main>
   );
 };

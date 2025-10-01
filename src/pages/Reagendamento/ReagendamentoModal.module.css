@@ -1,3 +1,20 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto: #050315;
+  --cor-texto-claro: #ffffff;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
+  --button-padding: 12px 0;
+  --input-padding: 10px;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+}
+
 .modalBox {
   position: absolute;
   top: 50%;
@@ -6,7 +23,6 @@
   max-width: 500px;
   width: 100%;
   background-color: var(--cor-fundo);
-  border: 2px solid var(--cor-primaria);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 2rem;
@@ -33,18 +49,30 @@
   gap: 1rem;
 }
 
-.monitorIcon {
-  font-size: 40px;
-  color: var(--cor-primaria);
+.photoContainer {
+  border: 1px solid var(--cor-primaria);
+  border-radius: 50%;
+  background-color: #d4d4d4;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.profilePhotoIcon {
+  color: var(--cor-fundo);
+  font-size: 60px;
 }
 
 .monitorName {
-  font-weight: bold;
+  font-weight: bold !important;
   color: var(--cor-texto);
 }
 
 .monitorSubject {
-  color: var(--cor-texto-claro);
+  color: var(--cor-texto);
 }
 
 .sectionTitle {
@@ -70,7 +98,7 @@
 }
 
 .dateText {
-  color: var(--cor-texto-claro);
+  color: var(--cor-texto);
 }
 
 .fieldsContainer {

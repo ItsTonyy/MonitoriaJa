@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, Modal, IconButton, TextField } from '@mui/material';
+import { Box, Typography, Modal, IconButton, TextField } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
+import ConfirmationButton from '../../components/login-form/ConfirmationButton';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
-
-import styles from './AgendamentoModal.module.css';
+import styles from './ReagendamentoModal.module.css';
 
 interface AgendamentoModalProps {
   open: boolean;
@@ -43,7 +43,12 @@ const ReagendamentoModal: React.FC<AgendamentoModalProps> = ({ open, handleClose
             <>
               {/* Info do monitor */}
               <Box className={styles.monitorInfo}>
-                <PersonIcon className={styles.monitorIcon} />
+
+              <div className={styles.photoContainer}>
+                          <PersonIcon className={styles.profilePhotoIcon} />
+                        </div>
+                
+                
                 <Box>
                   <Typography className={styles.monitorName}>Monitor X</Typography>
                   <Typography className={styles.monitorSubject}>Matéria X</Typography>
@@ -71,29 +76,29 @@ const ReagendamentoModal: React.FC<AgendamentoModalProps> = ({ open, handleClose
 
               {/* Botões */}
               <Box className={styles.buttonGroup}>
-                <Button
+                <ConfirmationButton
                   className={styles.reusableButtonSecondary}
                   fullWidth
                   onClick={handleCancel}
                 >
                   Recusar
-                </Button>
+                </ConfirmationButton>
 
-                <Button
+                <ConfirmationButton
                   className={styles.reusableButtonPrimary}
                   fullWidth
                   onClick={handleAccept}
                 >
                   Aceitar
-                </Button>
+                </ConfirmationButton>
 
-                <Button
+                <ConfirmationButton
                   className={styles.reusableButtonPrimary}
                   fullWidth
                   onClick={handleOpenCounterProposal}
                 >
                   Contra Proposta
-                </Button>
+                </ConfirmationButton>
               </Box>
             </>
           ) : (
@@ -119,19 +124,19 @@ const ReagendamentoModal: React.FC<AgendamentoModalProps> = ({ open, handleClose
               </Box>
 
               <Box className={styles.actionButtons}>
-                <Button
+                <ConfirmationButton
                   className={styles.reusableButtonSecondary}
                   onClick={() => setShowCounterProposal(false)}
                 >
                   Voltar
-                </Button>
+                </ConfirmationButton>
 
-                <Button
+                <ConfirmationButton
                   className={styles.reusableButtonPrimary}
                   onClick={handleSendCounterProposal}
                 >
                   Enviar
-                </Button>
+                </ConfirmationButton>
               </Box>
             </>
           )}
