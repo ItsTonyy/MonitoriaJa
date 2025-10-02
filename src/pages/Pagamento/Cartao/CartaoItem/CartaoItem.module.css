@@ -1,0 +1,58 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto: #050315;
+  --cor-texto-claro: #ffffff;
+  --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
+  --button-padding: 12px 0;
+  --input-padding: 10px;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+}
+
+.cartaoCard {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cartaoInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.numero {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.nome {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.logo {
+  width: 60px;
+  height: auto;
+  object-fit: contain;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+.button {
+  flex: 1; /* opcional, para que os botões ocupem espaço igual */
+}

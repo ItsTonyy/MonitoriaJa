@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import ConfirmationButton from '../../../components/login-form/ConfirmationButton';
 import styles from './PixPage.module.css';
 import Title from '../../AlterarSenha/Titulo/Titulo';
+import StatusModal from '../../AlterarSenha/StatusModal/StatusModal';
 
 const PixPage: React.FC = () => {
   const orderId = '#0000';
   const orderValue = 'R$ 00,00';
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   const handleCopyPixCode = () => {
     console.log('Código Pix copiado!');
@@ -36,13 +38,12 @@ const PixPage: React.FC = () => {
         </Box>
 
         <Box className={styles.buttonGroup}>
-          <ConfirmationButton 
-            className={styles.reusableButton} 
-            onClick={handleCopyPixCode}
+           <ConfirmationButton
+            className={styles.reusableButton}
+            onClick={() => setOpen(true)} 
           >
             Copiar Código Pix
           </ConfirmationButton>
-
           <ConfirmationButton 
             className={styles.reusableButton} 
             onClick={handleCancel}
@@ -51,6 +52,14 @@ const PixPage: React.FC = () => {
           </ConfirmationButton>
         </Box>
       </Box>
+
+      <StatusModal
+        open={open}
+        onClose={() => setOpen(false)}
+        status="sucesso" 
+        mensagem="Pagamento realizado com sucesso!"
+      />
+
     </main>
   );
 };

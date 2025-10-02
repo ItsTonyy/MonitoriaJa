@@ -1,16 +1,18 @@
-import React from 'react';
-import { Box} from '@mui/material';
+import React, { useState } from 'react';
+import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationButton from '../../../../components/login-form/ConfirmationButton';
 import styles from './ConfirmaPagamentoPage.module.css';
-import CartaoTemporario from '../cartaotemporario.webp';
 import Title from '../../../AlterarSenha/Titulo/Titulo';
+import StatusModal from '../../../AlterarSenha/StatusModal/StatusModal';
+import CartaoItem from '../CartaoItem/CartaoItem'; // 🔹 ajuste o caminho conforme sua estrutura
 
-const PixPage: React.FC = () => {
+const ConfirmaPagamento: React.FC = () => {
   const orderId = '#0000';
   const orderValue = 'R$ 00,00';
   const cardNumber = '0000000000';
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   const handleCancel = () => {
     navigate('/agendamento-monitor');
@@ -21,23 +23,23 @@ const PixPage: React.FC = () => {
       <Box className={styles.card}>
         <Title text="Cartão" />
 
-        <div className={styles.infoText}>
-          Pedido {orderId}
-        </div>
-        <div className={styles.infoText}>
-          Valor de compra: {orderValue}
-        </div>
+        <div className={styles.infoText}>Pedido {orderId}</div>
+        <div className={styles.infoText}>Valor de compra: {orderValue}</div>
 
-        <img src={CartaoTemporario} alt="Cartão" />
-        <div className={styles.infoText}>
-          Número do cartao: 000000000{cardNumber}
-        </div>
+        {/* 🔹 Substitui a imagem antiga pelo componente de cartão */}
+        <CartaoItem
+          numero={cardNumber}
+          nome="Rafael Penela"
+          bandeira="Visa"
+          mostrarBotoes={false}
+        />
 
         <Box className={styles.buttonGroup}>
-          <ConfirmationButton 
-            className={styles.reusableButton} 
+          <ConfirmationButton
+            className={styles.reusableButton}
+            onClick={() => setOpen(true)}
           >
-            Confirmar Compra
+            Confirmar Pagamento
           </ConfirmationButton>
 
           <ConfirmationButton 
@@ -48,8 +50,15 @@ const PixPage: React.FC = () => {
           </ConfirmationButton>
         </Box>
       </Box>
+
+      <StatusModal
+        open={open}
+        onClose={() => setOpen(false)}
+        status="sucesso" 
+        mensagem="Pagamento realizado com sucesso!"
+      />
     </main>
   );
 };
 
-export default PixPage;
+export default ConfirmaPagamento;
