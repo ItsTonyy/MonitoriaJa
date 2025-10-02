@@ -2,8 +2,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
-import ModalCadastroMonitor from './ModalCadastroMonitor';
-import ModalEspecialidadeMonitor from './ModalEspecialidadeMonitor';
+import ModalSelect from './ModalSelect';
 
 function CadastroForm() {
   const [nome, setNome] = useState('');
@@ -17,15 +16,31 @@ function CadastroForm() {
   const [erroSenha, setErroSenha] = useState('');
   const [erroConfirmacao, setErroConfirmacao] = useState('');
   const [abrirModalMonitor, setAbrirModalMonitor] = useState(false);
+  const [abrirModalEspecialidade, setAbrirModalEspecialidade] = useState(false);
   const [opcaoMonitor, setOpcaoMonitor] = useState('');
   const [especialidadeMonitor, setEspecialidadeMonitor] = useState('');
 
-  function handleEspecialidadeMonitor(especialidade: string) {
-    setEspecialidadeMonitor(especialidade);
-  }
+  const opcoesEspecialidades = [
+    { label: 'Matemática', value: 'matematica' },
+    { label: 'Física', value: 'fisica' },
+    { label: 'Química', value: 'quimica' },
+    { label: 'Biologia', value: 'biologia' },
+    { label: 'História', value: 'historia' },
+    { label: 'Geografia', value: 'geografia' },
+    { label: 'Português', value: 'portugues' },
+    { label: 'Inglês', value: 'ingles' },
+    { label: 'Programação', value: 'programacao' },
+  ];
 
   function handleOpcaoMonitor(opcao: string) {
     setOpcaoMonitor(opcao);
+    if (opcao.toLowerCase() === "sim") {
+      setAbrirModalEspecialidade(true);
+    }
+  }
+  
+  function handleEspecialidadeMonitor(especialidade: string) {
+    setEspecialidadeMonitor(especialidade);
   }
 
   function aplicarMascaraCpf(cpf: string) {
@@ -205,8 +220,28 @@ function CadastroForm() {
       >
         Cadastrar
       </Button>
-      {abrirModalMonitor && <ModalCadastroMonitor handleOpcaoMonitor={handleOpcaoMonitor} />}
-      {opcaoMonitor.toLowerCase() === "sim" && <ModalEspecialidadeMonitor handleEspecialidadeMonitor={handleEspecialidadeMonitor}/>}
+      
+      <ModalSelect
+        open={abrirModalMonitor}
+        header="Cadastrar-se como monitor?"
+        opcoes={[{label: 'Sim', value: 'sim'}, {label: 'Não', value: 'não'}]}
+        onClose={() => setAbrirModalMonitor(false)}
+        onConfirm={(opcao) => {
+          handleOpcaoMonitor(opcao);
+          setAbrirModalMonitor(false);
+        }}
+      />
+
+      <ModalSelect
+        open={abrirModalEspecialidade}
+        header="Selecione sua especialidade"
+        opcoes={opcoesEspecialidades}
+        onClose={() => setAbrirModalEspecialidade(false)}
+        onConfirm={(especialidade) => {
+          handleEspecialidadeMonitor(especialidade);
+          setAbrirModalEspecialidade(false);
+        }}
+      />
     </Box>
   );
 }

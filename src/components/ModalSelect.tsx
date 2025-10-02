@@ -25,65 +25,77 @@ const style = {
     gap: 2,
 };
 
-interface ModalCadastroMonitorProps {
-    //open: boolean;
-    /*
-    onClose: () => void;
-    onConfirm: (motivo: string) => void;
-    */
-   handleOpcaoMonitor: (opcao: string) => void;
+interface Opcao {
+    label: string;
+    value: string;
 }
 
-function ModalCadastroMonitor({ handleOpcaoMonitor }: ModalCadastroMonitorProps) {
-    const [opcao, setOpcao] = useState('');
-    const [open, setOpen] = useState(true);
+interface ModalSelectGenericoProps {
+    open: boolean;
+    header: string;
+    opcoes: Opcao[];
+    onClose: () => void;
+    onConfirm: (selectedValue: string) => void;
+    buttonText?: string;
+}
+
+function ModalSelect({
+    open,
+    header,
+    opcoes,
+    onClose,
+    onConfirm,
+    buttonText = 'Continuar',
+}: ModalSelectGenericoProps) {
+    const [selected, setSelected] = useState('');
     const [submit, setSubmit] = useState(false);
     const theme = useTheme();
     const breakpointMd = useMediaQuery(theme.breakpoints.up('md'));
 
-    function handleContinuar() {
+    const handleConfirm = () => {
         setSubmit(true);
-        if (opcaoValida(opcao)) {
-            handleOpcaoMonitor(opcao);
-            setOpen(false);
+        if (selected) {
+            onConfirm(selected);
+            onClose();
         }
     };
-    
-    function handleChange(event: SelectChangeEvent) {
-      setOpcao(event.target.value as string);
-    }
 
-    function opcaoValida(opcao: string) : boolean {
-        return opcao !== null && opcao !== '';
-    }
+    const handleChange = (event: SelectChangeEvent) => {
+        setSelected(event.target.value);
+    };
 
     return (
-        <Modal open={open}>
+        <Modal open={open} onClose={onClose}>
             <Box sx={style}>
                 <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-                    Cadastrar-se como monitor?
+                    {header}
                 </Typography>
 
-                <FormControl error={submit && !opcaoValida(opcao)}>                
-                     <Select
-                        value={opcao}
+                <FormControl error={submit && !selected}>
+                    <Select
+                        value={selected}
                         onChange={handleChange}
-                        required={true}
+                        required
                     >
-                        <MenuItem value={'sim'}>Sim</MenuItem>
-                        <MenuItem value={'nao'}>Não</MenuItem>
+                        {opcoes.map((opt) => (
+                            <MenuItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                            </MenuItem>
+                        ))}
                     </Select>
-                    {submit && (<FormHelperText>Selecione uma opção</FormHelperText> )}
+                    {submit && !selected && (
+                        <FormHelperText>Selecione uma opção</FormHelperText>
+                    )}
                 </FormControl>
 
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
-                    <Button 
-                        variant="contained" 
-                        color="primary" 
-                        onClick={handleContinuar}
-                        size={ breakpointMd ? 'medium' : 'small' }
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleConfirm}
+                        size={breakpointMd ? 'medium' : 'small'}
                     >
-                        Continuar
+                        {buttonText}
                     </Button>
                 </Box>
             </Box>
@@ -91,4 +103,4 @@ function ModalCadastroMonitor({ handleOpcaoMonitor }: ModalCadastroMonitorProps)
     );
 }
 
-export default ModalCadastroMonitor;
+export default ModalSelect;
