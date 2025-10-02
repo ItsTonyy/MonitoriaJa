@@ -25,16 +25,11 @@ const style = {
     gap: 2,
 };
 
-interface ModalCadastroMonitorProps {
-    //open: boolean;
-    /*
-    onClose: () => void;
-    onConfirm: (motivo: string) => void;
-    */
-   handleOpcaoMonitor: (opcao: string) => void;
+interface ModalEspecialidadeMonitorProps {
+   handleEspecialidadeMonitor: (opcao: string) => void;
 }
 
-function ModalCadastroMonitor({ handleOpcaoMonitor }: ModalCadastroMonitorProps) {
+function ModalEspecialidadeMonitor({handleEspecialidadeMonitor}: ModalEspecialidadeMonitorProps) {
     const [opcao, setOpcao] = useState('');
     const [open, setOpen] = useState(true);
     const [submit, setSubmit] = useState(false);
@@ -44,11 +39,11 @@ function ModalCadastroMonitor({ handleOpcaoMonitor }: ModalCadastroMonitorProps)
     function handleContinuar() {
         setSubmit(true);
         if (opcaoValida(opcao)) {
-            handleOpcaoMonitor(opcao);
+            handleEspecialidadeMonitor(opcao);
             setOpen(false);
         }
     };
-    
+
     function handleChange(event: SelectChangeEvent) {
       setOpcao(event.target.value as string);
     }
@@ -61,7 +56,7 @@ function ModalCadastroMonitor({ handleOpcaoMonitor }: ModalCadastroMonitorProps)
         <Modal open={open}>
             <Box sx={style}>
                 <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-                    Cadastrar-se como monitor?
+                    Selecione sua especialidade
                 </Typography>
 
                 <FormControl error={submit && !opcaoValida(opcao)}>                
@@ -70,8 +65,15 @@ function ModalCadastroMonitor({ handleOpcaoMonitor }: ModalCadastroMonitorProps)
                         onChange={handleChange}
                         required={true}
                     >
-                        <MenuItem value={'sim'}>Sim</MenuItem>
-                        <MenuItem value={'nao'}>Não</MenuItem>
+                        <MenuItem value={'matematica'}>Matemática</MenuItem>
+                        <MenuItem value={'fisica'}>Física</MenuItem>
+                        <MenuItem value={'quimica'}>Química</MenuItem>
+                        <MenuItem value={'biologia'}>Biologia</MenuItem>
+                        <MenuItem value={'historia'}>História</MenuItem>
+                        <MenuItem value={'geografia'}>Geografia</MenuItem>
+                        <MenuItem value={'portugues'}>Português</MenuItem>
+                        <MenuItem value={'ingles'}>Inglês</MenuItem>
+                        <MenuItem value={'programacao'}>Programação</MenuItem>
                     </Select>
                     {submit && (<FormHelperText>Selecione uma opção</FormHelperText> )}
                 </FormControl>
@@ -91,4 +93,4 @@ function ModalCadastroMonitor({ handleOpcaoMonitor }: ModalCadastroMonitorProps)
     );
 }
 
-export default ModalCadastroMonitor;
+export default ModalEspecialidadeMonitor;

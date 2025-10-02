@@ -2,6 +2,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
+import ModalCadastroMonitor from './ModalCadastroMonitor';
+import ModalEspecialidadeMonitor from './ModalEspecialidadeMonitor';
 
 function CadastroForm() {
   const [nome, setNome] = useState('');
@@ -14,6 +16,17 @@ function CadastroForm() {
   const [confirmacaoSenha, setConfirmacaoSenha] = useState('');
   const [erroSenha, setErroSenha] = useState('');
   const [erroConfirmacao, setErroConfirmacao] = useState('');
+  const [abrirModalMonitor, setAbrirModalMonitor] = useState(false);
+  const [opcaoMonitor, setOpcaoMonitor] = useState('');
+  const [especialidadeMonitor, setEspecialidadeMonitor] = useState('');
+
+  function handleEspecialidadeMonitor(especialidade: string) {
+    setEspecialidadeMonitor(especialidade);
+  }
+
+  function handleOpcaoMonitor(opcao: string) {
+    setOpcaoMonitor(opcao);
+  }
 
   function aplicarMascaraCpf(cpf: string) {
     cpf = cpf.replace(/\D/g, '');
@@ -55,7 +68,7 @@ function CadastroForm() {
   }
 
   function onSubmit(e: React.FormEvent) {
-    // e.preventDefault();
+    e.preventDefault();
     let valido = true;
 
     if (!validarNome(nome)) {
@@ -93,10 +106,10 @@ function CadastroForm() {
       setErroConfirmacao('');
     }
 
-    if (!valido) 
-      e.preventDefault();
-    else {
+    if (!valido) { 
       
+    } else {
+      setAbrirModalMonitor(true);
     }
   }
 
@@ -192,6 +205,8 @@ function CadastroForm() {
       >
         Cadastrar
       </Button>
+      {abrirModalMonitor && <ModalCadastroMonitor handleOpcaoMonitor={handleOpcaoMonitor} />}
+      {opcaoMonitor.toLowerCase() === "sim" && <ModalEspecialidadeMonitor handleEspecialidadeMonitor={handleEspecialidadeMonitor}/>}
     </Box>
   );
 }
