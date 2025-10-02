@@ -21,11 +21,35 @@
   min-height: 100vh;
 }
 
+.profileHeader {
+  display: flex;
+  flex-direction: column; /* empilha verticalmente */
+  align-items: center;    /* centraliza horizontalmente */
+  gap: 0.5rem;            /* espaço entre name e subject */
+}
+
 .name {
   font-size: 2rem;
   font-weight: bold;
   color: var(--cor-texto);
   text-align: center;
+  border: 1px solid var(--cor-fundo);
+  border-radius: 4px !important;
+  padding: 0.5rem 1rem !important;
+  outline: none !important;
+  min-width: 200px;
+  transition: all 0.2s ease;
+  cursor: text;
+  background-color: var(--cor-fundo);
+}
+
+.name:hover {
+  border-color: #000 !important;
+}
+
+.name:focus-visible {
+  border-color: #1976d2 !important;
+  box-shadow: 0 0 0 2px rgba(16, 76, 145, 0.3) !important;
 }
 
 .subject {
@@ -33,7 +57,24 @@
   font-weight: normal;
   color: var(--cor-texto);
   text-align: center;
+  border: 1px solid var(--cor-fundo);
+  border-radius: 4px !important;
+  padding: 0.3rem 0.8rem !important;
+  outline: none !important;
+  transition: all 0.2s ease;
+  cursor: text;
+  background-color: var(--cor-fundo);
 }
+
+.subject:hover {
+  border-color: #000 !important;
+}
+
+.subject:focus-visible {
+  border-color: #1976d2 !important;
+  box-shadow: 0 0 0 2px rgba(16, 76, 145, 0.3) !important;
+}
+
 
 .profileCard {
   background-color: var(--cor-fundo);
@@ -44,13 +85,6 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-}
-
-.profileHeader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .photoSection {
@@ -106,12 +140,6 @@
   object-fit: contain;
 }
 
-.descriptionBox {
-  padding: 1rem;
-  background-color: var(--cor-fundo);
-  text-align: center;
-}
-
 .editableTextarea {
   width: 100%;
   border: none !important;
@@ -126,27 +154,44 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
 }
 
 .buttonGroup {
   display: flex;
-  flex-direction: row; /* lado a lado */
   gap: 0.5rem;
+  width: 100%;
 }
 
-/* Botão reutilizável - agora compatível com MUI Button */
 .reusableButton {
   background-color: var(--cor-primaria) !important;
   color: var(--cor-texto-claro) !important;
-  padding: var(--button-padding) !important;
+  padding: 12px 20px !important;
   font-weight: bold !important;
-  width: 100%;
-  text-transform: none !important; /* mantém texto normal */
+  border-radius: 12px !important;
+  text-transform: none !important;
+  flex: 1;
 }
 
 .reusableButton:hover {
   background-color: var(--cor-secundaria) !important;
 }
+
+.reusableButtonFull {
+  background-color: var(--cor-primaria) !important;
+  color: var(--cor-texto-claro) !important;
+  padding: 12px 20px !important;
+  font-weight: bold !important;
+  border-radius: 12px !important;
+  text-transform: none !important;
+  width: 100%;
+}
+
+.reusableButtonFull:hover {
+  background-color: var(--cor-secundaria) !important;
+}
+
+
 
 /* Responsividade */
 @media (max-width: 640px) {

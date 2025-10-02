@@ -1,0 +1,9 @@
+.paper {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.listBox {
+  max-height: 200px;
+  overflow-y: auto;
+}

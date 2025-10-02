@@ -23,13 +23,6 @@
   min-height: 100vh;
 }
 
-.name {
-  font-size: 2rem;
-  font-weight: bold;
-  color: var(--cor-texto);
-  text-align: center;
-}
-
 .profileCard {
   background-color: var(--cor-fundo);
   box-shadow: var(--shadow);
@@ -43,9 +36,33 @@
 
 .profileHeader {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column; 
+  align-items: center;    
+  gap: 0.5rem;            
+}
+
+.name {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--cor-texto);
+  text-align: center;
+  border: 1px solid var(--cor-fundo);
+  border-radius: 4px !important;
+  padding: 0.5rem 1rem !important;
+  outline: none !important;
+  min-width: 200px;
+  transition: all 0.2s ease;
+  cursor: text;
+  background-color: var(--cor-fundo);
+}
+
+.name:hover {
+  border-color: #000 !important;
+}
+
+.name:focus-visible {
+  border-color: #1976d2 !important;
+  box-shadow: 0 0 0 2px rgba(16, 76, 145, 0.3) !important;
 }
 
 .photoSection {

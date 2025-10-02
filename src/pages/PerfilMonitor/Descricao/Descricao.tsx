@@ -1,4 +1,5 @@
 import React from 'react';
+import TextField from '@mui/material/TextField';
 import styles from './Descricao.module.css';
 
 interface DescriptionBoxProps {
@@ -8,14 +9,22 @@ interface DescriptionBoxProps {
   rows?: number;
 }
 
-const DescriptionBox: React.FC<DescriptionBoxProps> = ({ value, onChange, placeholder = '', rows = 4 }) => {
+const DescriptionBox: React.FC<DescriptionBoxProps> = ({ 
+  value, 
+  onChange, 
+  placeholder = '', 
+  rows = 4 
+}) => {
   return (
-    <textarea
+    <TextField
       className={styles.editableTextarea}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      multiline
       rows={rows}
+      variant="outlined"
+      fullWidth
     />
   );
 };

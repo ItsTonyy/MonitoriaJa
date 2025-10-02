@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import CampoFormulario from './CampoFormulario/CampoFormulario';
 import { Menu, MenuItem } from '@mui/material';
 import Estrela from '../../../public/five-stars-rating-icon-png.webp';
+import AtualizarMateria from './AtualizarMateria/AtualizarMateria';
+
 
 const PerfilMonitorPage: React.FC = () => {
   const [description, setDescription] = useState('');
@@ -21,16 +23,13 @@ const PerfilMonitorPage: React.FC = () => {
   const handleCloseHorarios = () => {
     setAnchorHorarios(null);
   };
+ 
+  const [buscaMateria, setBuscaMateria] = useState('');
+  const MATERIAS = [
+    "Matemática", "Física", "Química", "Biologia", "História",
+    "Geografia", "Português", "Inglês", "Programação"
+  ];
 
-  // Dropdown Matérias
-  const [anchorMaterias, setAnchorMaterias] = useState<null | HTMLElement>(null);
-  const openMaterias = Boolean(anchorMaterias);
-  const handleClickMaterias = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorMaterias(event.currentTarget);
-  };
-  const handleCloseMaterias = () => {
-    setAnchorMaterias(null);
-  };
 
   return (
     <main className={styles.centralizeContent}>
@@ -95,70 +94,49 @@ const PerfilMonitorPage: React.FC = () => {
         <div className={styles.fieldsContainer}>
           <CampoFormulario label="Telefone" defaultValue="00 00000-0000" />
           <CampoFormulario label="Email" defaultValue="email@exemplo.com" />
+          <AtualizarMateria
+          value={buscaMateria}
+          onChange={setBuscaMateria}
+          options={MATERIAS}
+          />
+
+
+
         </div>
 
         {/* Botões */}
         <div className={styles.buttonSection}>
+          {/* Linha 1: dois botões lado a lado */}
           <div className={styles.buttonGroup}>
-  {/* Dropdown Atualizar Horários */}
-  <ConfirmationButton
-    onClick={handleClickHorarios}
-    className={styles.reusableButton}
-    fullWidth
-    sx={{ flex: 1 }}
-  >
-    Atualizar horários
-  </ConfirmationButton>
-  <Menu
-    anchorEl={anchorHorarios}
-    open={openHorarios}
-    onClose={handleCloseHorarios}
-    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-    PaperProps={{
-      style: { minWidth: anchorHorarios?.getBoundingClientRect().width }
-    }}
-  >
-    <MenuItem onClick={handleCloseHorarios}>Segunda-feira</MenuItem>
-    <MenuItem onClick={handleCloseHorarios}>Terça-feira</MenuItem>
-    <MenuItem onClick={handleCloseHorarios}>Quarta-feira</MenuItem>
-  </Menu>
+            <ConfirmationButton
+              onClick={handleClickHorarios}
+              className={styles.reusableButton}
+            >
+              Atualizar horários
+            </ConfirmationButton>
+            <Menu
+              anchorEl={anchorHorarios}
+              open={openHorarios}
+              onClose={handleCloseHorarios}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+            >
+              <MenuItem onClick={handleCloseHorarios}>Segunda-feira</MenuItem>
+              <MenuItem onClick={handleCloseHorarios}>Terça-feira</MenuItem>
+              <MenuItem onClick={handleCloseHorarios}>Quarta-feira</MenuItem>
+            </Menu>
 
-  {/* Dropdown Atualizar Matérias */}
-  <ConfirmationButton
-    onClick={handleClickMaterias}
-    className={styles.reusableButton}
-    fullWidth
-    sx={{ flex: 1 }}
-  >
-    Atualizar matérias
-  </ConfirmationButton>
-  <Menu
-    anchorEl={anchorMaterias}
-    open={openMaterias}
-    onClose={handleCloseMaterias}
-    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-    PaperProps={{
-      style: { minWidth: anchorMaterias?.getBoundingClientRect().width }
-    }}
-  >
-    <MenuItem onClick={handleCloseMaterias}>Matemática</MenuItem>
-    <MenuItem onClick={handleCloseMaterias}>Física</MenuItem>
-    <MenuItem onClick={handleCloseMaterias}>Química</MenuItem>
-  </Menu>
-</div>
+            <ConfirmationButton
+              className={styles.reusableButton}
+              onClick={() => navigate('/MonitoriaJa/alterar-senha')}
+            >
+              Trocar senha
+            </ConfirmationButton>
+          </div>
 
-
-
+          {/* Linha 2: botão Voltar ocupando 100% */}
           <ConfirmationButton
-            className={styles.reusableButton}
-            onClick={() => navigate('/MonitoriaJa/alterar-senha')}
-          >
-            Trocar senha
-          </ConfirmationButton>
-          <ConfirmationButton
-            className={styles.reusableButton}
+            className={styles.reusableButtonFull}
             onClick={() => navigate(-1)}
           >
             Voltar
