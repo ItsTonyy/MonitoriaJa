@@ -4,6 +4,7 @@ import styles from './PerfilUsuarioPage.module.css';
 import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
 import CampoFormulario from '../PerfilMonitor/CampoFormulario/CampoFormulario';
+import UploadButton from '../PerfilMonitor/UploadButton/UploadButton';
 
 const PerfilUsuarioPage: React.FC = () => {
   const navigate = useNavigate();
@@ -35,9 +36,10 @@ const PerfilUsuarioPage: React.FC = () => {
             <PersonIcon className={styles.profilePhotoIcon} />
           </div>
           <div className={styles.uploadButtonContainer}>
-            <ConfirmationButton className={styles.reusableButton}>
-              Upload foto
-            </ConfirmationButton>
+            <UploadButton
+              className={styles.uploadButton}
+              onFileSelect={(file) => console.log('Arquivo selecionado:', file)}
+            />
           </div>
         </div>
 

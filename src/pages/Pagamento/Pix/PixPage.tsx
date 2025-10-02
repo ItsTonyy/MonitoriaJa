@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import ConfirmationButton from '../../../components/login-form/ConfirmationButton';
 import styles from './PixPage.module.css';
+import Title from '../../AlterarSenha/Titulo/Titulo';
 
 const PixPage: React.FC = () => {
   const orderId = '#0000';
@@ -21,9 +22,7 @@ const PixPage: React.FC = () => {
   return (
     <main className={styles.centralizeContent}>
       <Box className={styles.card}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Pix
-        </Typography>
+        <Title text="Pix" />
 
         <Typography className={styles.infoText}>
           Pedido {orderId}

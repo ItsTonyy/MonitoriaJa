@@ -114,11 +114,22 @@
 }
 
 .uploadButtonContainer {
-  width: 50%;
+  width: 100%; /* ocupa largura total do container pai */
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0 auto;
+}
+
+.uploadButton {
+  background-color: var(--cor-primaria) !important;
+  color: var(--cor-texto-claro) !important;
+  font-weight: bold !important;
+  text-transform: none !important;
+  padding: var(--button-padding) !important;
+  width: 50% !important;       /* ocupa todo o container */
+  max-width: 250px;  /* opcional: não esticar demais */
+  cursor: pointer;
 }
 
 .ratingAndFormation {

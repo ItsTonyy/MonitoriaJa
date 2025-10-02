@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ConfirmationButton from '../../../../components/login-form/ConfirmationButton';
 import styles from './ConfirmaPagamentoPage.module.css';
 import CartaoTemporario from '../cartaotemporario.webp';
+import Title from '../../../AlterarSenha/Titulo/Titulo';
 
 const PixPage: React.FC = () => {
   const orderId = '#0000';
@@ -18,15 +19,7 @@ const PixPage: React.FC = () => {
   return (
     <main className={styles.centralizeContent}>
       <Box className={styles.card}>
-        <div className={styles.name} 
-            contentEditable
-              suppressContentEditableWarning
-              role="textbox"
-              aria-label="Nome do aluno"
-              tabIndex={0}
-        >
-          Cartão
-        </div>
+        <Title text="Cartão" />
 
         <div className={styles.infoText}>
           Pedido {orderId}

@@ -4,6 +4,7 @@ import styles from './ListaCartaoPage.module.css';
 import VisaLogo from '../cartaoTesteUm.png'; // Exemplo de logo
 import MastercardLogo from '../cartaoTesteDois.png';
 import EloLogo from '../cartaoTesteTres.png';
+import Title from '../../../AlterarSenha/Titulo/Titulo';
 
 type Cartao = {
   id: number;
@@ -40,7 +41,7 @@ const ListaCartaoPage: React.FC = () => {
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
       <div className={styles.cardContainer}>
-        <h2 className={styles.title}>Cartões Cadastrados</h2>
+        <Title text="Cartões Cadastrados" />
         {cartoesExemplo.map((cartao) => (
           <div key={cartao.id} className={styles.cartaoCard}>
             <div className={styles.cartaoInfo}>

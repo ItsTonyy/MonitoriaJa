@@ -9,6 +9,7 @@ import {
   FormControl,
   Box,
 } from "@mui/material";
+import Title from '../../../AlterarSenha/Titulo/Titulo';
 
 const CadastraCartaoPage: React.FC = () => {
   const [numero, setNumero] = useState("");
@@ -27,7 +28,7 @@ const CadastraCartaoPage: React.FC = () => {
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.card}>
-        <h2 className={styles.title}>Cadastro de Cartão</h2>
+        <Title text="Cadastro de Cartão" />
 
         <form onSubmit={handleSubmit} className={styles.formContainer}>
           <TextField

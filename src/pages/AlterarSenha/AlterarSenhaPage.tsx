@@ -3,6 +3,7 @@ import ConfirmationButton from '../../components/login-form/ConfirmationButton';
 import styles from './AlterarSenhaPage.module.css'; 
 import { useNavigate } from 'react-router-dom'; 
 import CampoFormulario from '../PerfilMonitor/CampoFormulario/CampoFormulario';
+import Title from './Titulo/Titulo';
 
 const AlterarSenhaPage: React.FC = () => { 
     const navigate = useNavigate();
@@ -10,7 +11,8 @@ const AlterarSenhaPage: React.FC = () => {
     return (
         <main className={styles.centralizeContent}>
             <div className={styles.profileCard}>
-                <h1 className={styles.cardTitle}>Alterar senha</h1>
+                <Title text="Alterar Senha" />
+
                 
                 <div className={styles.fieldsContainer}>
                     <CampoFormulario label="Senha anterior" defaultValue="123" />

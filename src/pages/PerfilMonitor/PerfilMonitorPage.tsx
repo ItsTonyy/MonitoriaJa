@@ -8,6 +8,7 @@ import CampoFormulario from './CampoFormulario/CampoFormulario';
 import { Menu, MenuItem } from '@mui/material';
 import Estrela from '../../../public/five-stars-rating-icon-png.webp';
 import AtualizarMateria from './AtualizarMateria/AtualizarMateria';
+import UploadButton from './UploadButton/UploadButton';
 
 
 const PerfilMonitorPage: React.FC = () => {
@@ -66,9 +67,10 @@ const PerfilMonitorPage: React.FC = () => {
             <PersonIcon className={styles.profilePhotoIcon} />
           </div>
           <div className={styles.uploadButtonContainer}>
-            <ConfirmationButton className={styles.reusableButton}>
-              Upload foto
-            </ConfirmationButton>
+            <UploadButton
+              className={styles.uploadButton}
+              onFileSelect={(file) => console.log('Arquivo selecionado:', file)}
+            />
           </div>
         </div>
 
