@@ -15,6 +15,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 // @ts-ignore
 import ColorModeIconDropdown from '../templates/ColorModeIconDropdown.jsx';
+import NotificacaoCard from './Notificacoes/NotificacaoCard';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -34,6 +35,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 
 export default function AppNavBar() {
   const [open, setOpen] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   const navigate = useNavigate();
 
@@ -52,6 +54,14 @@ export default function AppNavBar() {
   function handleClickLogin() {
     navigate('/MonitoriaJa/login');
   }
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
@@ -160,27 +170,43 @@ export default function AppNavBar() {
               alignItems: 'center',
             }}
           >
-            <Button
-              color="primary"
-              variant="text"
-              size="small"
-              sx={{ ':hover': { transform: 'none' } }}
-              onClick={handleClickLogin}
-            >
-              Sign in
-            </Button>
-            <Button
-              color="primary"
-              variant="contained"
-              size="small"
-              sx={{ ':hover': { transform: 'none' } }}
-              onClick={handleClickLogin}
-            >
-              Sign up
-            </Button>
+            {isLoggedIn && <NotificacaoCard />}
+            {!isLoggedIn ? (
+              <>
+                <Button
+                  color="primary"
+                  variant="text"
+                  size="small"
+                  sx={{ ':hover': { transform: 'none' } }}
+                  onClick={handleLogin}
+                >
+                  Sign in
+                </Button>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  size="small"
+                  sx={{ ':hover': { transform: 'none' } }}
+                  onClick={handleClickLogin}
+                >
+                  Sign up
+                </Button>
+              </>
+            ) : (
+              <Button
+                color="primary"
+                variant="outlined"
+                size="small"
+                sx={{ ':hover': { transform: 'none' } }}
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            )}
             <ColorModeIconDropdown />
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
+            {isLoggedIn && <NotificacaoCard />}
             <ColorModeIconDropdown size="medium" />
             <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
               <MenuIcon />
@@ -213,16 +239,26 @@ export default function AppNavBar() {
                 <MenuItem>Dashboard</MenuItem>
                 <MenuItem>Sobre Nós</MenuItem>
                 <Divider sx={{ my: 3 }} />
-                <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth onClick={handleClickLogin}>
-                    Sign up
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth  onClick={handleClickLogin}>
-                    Sign in
-                  </Button>
-                </MenuItem>
+                {!isLoggedIn ? (
+                  <>
+                    <MenuItem>
+                      <Button color="primary" variant="contained" fullWidth onClick={handleLogin}>
+                        Sign up
+                      </Button>
+                    </MenuItem>
+                    <MenuItem>
+                      <Button color="primary" variant="outlined" fullWidth onClick={handleLogin}>
+                        Sign in
+                      </Button>
+                    </MenuItem>
+                  </>
+                ) : (
+                  <MenuItem>
+                    <Button color="primary" variant="outlined" fullWidth onClick={handleLogout}>
+                      Logout
+                    </Button>
+                  </MenuItem>
+                )}
               </Box>
             </Drawer>
           </Box>

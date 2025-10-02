@@ -14,7 +14,7 @@ import {
   Grid,
   Paper,
   Box,
-  Fade
+  Fade,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import StarIcon from "@mui/icons-material/Star";
@@ -31,27 +31,78 @@ export type Monitor = {
   formacao?: string;
 };
 
-const MONITORES: Monitor[] = [
-  { id: 1, nome: "João Silva", materia: "Matemática", valor: "R$ 50/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/men/1.jpg", avaliacao: 4.9, formacao: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." },
-  { id: 2, nome: "Maria Souza", materia: "Física", valor: "R$ 60/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/women/2.jpg", avaliacao: 4.8, formacao: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."  },
-  { id: 3, nome: "Carlos Lima", materia: "Química", valor: "R$ 55/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/men/3.jpg", avaliacao: 4.5, formacao: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."  },
-  { id: 4, nome: "Ana Paula", materia: "Biologia", valor: "R$ 58/h", servico: "Serviço X", foto: "https://randomuser.me/api/portraits/women/4.jpg", avaliacao: 4.7, formacao: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."  },
+export const MONITORES: Monitor[] = [
+  {
+    id: 1,
+    nome: "João Silva",
+    materia: "Matemática",
+    valor: "R$ 50/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/men/1.jpg",
+    avaliacao: 4.9,
+    formacao:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+  },
+  {
+    id: 2,
+    nome: "Maria Souza",
+    materia: "Física",
+    valor: "R$ 60/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/women/2.jpg",
+    avaliacao: 4.8,
+    formacao:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+  },
+  {
+    id: 3,
+    nome: "Carlos Lima",
+    materia: "Química",
+    valor: "R$ 55/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/men/3.jpg",
+    avaliacao: 4.5,
+    formacao:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+  },
+  {
+    id: 4,
+    nome: "Ana Paula",
+    materia: "Biologia",
+    valor: "R$ 58/h",
+    servico: "Serviço X",
+    foto: "https://randomuser.me/api/portraits/women/4.jpg",
+    avaliacao: 4.7,
+    formacao:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+  },
 ];
 
 const MATERIAS = [
-  "Matemática","Física","Química","Biologia","História","Geografia","Português","Inglês","Programação",
+  "Matemática",
+  "Física",
+  "Química",
+  "Biologia",
+  "História",
+  "Geografia",
+  "Português",
+  "Inglês",
+  "Programação",
 ];
 
 function matchStartOfWords(text: string, search: string) {
   if (!search) return true;
   const s = search.trim().toLowerCase();
-  return text.toLowerCase().split(/\s+/).some((w) => w.startsWith(s));
+  return text
+    .toLowerCase()
+    .split(/\s+/)
+    .some((w) => w.startsWith(s));
 }
 
 function getGridCols() {
   if (typeof window === "undefined") return 2;
   const width = window.innerWidth;
-  if (width >= 1200) return 3; 
+  if (width >= 1200) return 3;
   if (width >= 771) return 2;
   return 1;
 }
@@ -61,14 +112,12 @@ function getGridRows() {
   const alturaCard = 180; // altura fixa do card
   const espacamentoVertical = 24; // spacing do Grid (3 * 8px)
   const alturaTotal = alturaCard + espacamentoVertical;
-  
-  const alturaDisponivel = typeof window !== "undefined" 
-    ? window.innerHeight - alturaReservada 
-    : 600;
+
+  const alturaDisponivel =
+    typeof window !== "undefined" ? window.innerHeight - alturaReservada : 600;
 
   return Math.max(1, Math.floor(alturaDisponivel / alturaTotal));
 }
-
 
 function getCardsPerPage() {
   const cols = getGridCols();
@@ -95,11 +144,16 @@ function ListaMonitores() {
   }, []);
   const monitoresFiltrados = useMemo(() => {
     return MONITORES.filter(
-      (m) => matchStartOfWords(m.nome, buscaNome) && matchStartOfWords(m.materia, buscaMateria)
+      (m) =>
+        matchStartOfWords(m.nome, buscaNome) &&
+        matchStartOfWords(m.materia, buscaMateria)
     );
   }, [buscaNome, buscaMateria]);
 
-  const totalPaginas = Math.max(1, Math.ceil(monitoresFiltrados.length / cardsPorPagina));
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(monitoresFiltrados.length / cardsPorPagina)
+  );
   useEffect(() => {
     if (pagina > totalPaginas) setPagina(1);
   }, [totalPaginas, pagina]);
@@ -109,32 +163,32 @@ function ListaMonitores() {
     pagina * cardsPorPagina
   );
 
- return (
-    <Paper 
-        elevation={0}
-        sx={{
-          p: 3,
-          m: 2,
-          borderRadius: 2,
-          bgcolor: 'background.default',
-          maxWidth: 1100, // Limita largura máxima
-          margin: '0 auto', // Centraliza na tela
-          marginTop: '130px',
-          '@media (width <= 760px)': {
-            marginTop: '6rem',
-          },
-          marginBottom: '40px',
-          boxShadow: '0 8px 24px rgba(5, 3, 21, 0.08)',
-        }}
-      >
-      <Typography 
-        variant="h4" 
-        align="center" 
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 3,
+        m: 2,
+        borderRadius: 2,
+        bgcolor: "background.default",
+        maxWidth: 1100, // Limita largura máxima
+        margin: "0 auto", // Centraliza na tela
+        marginTop: "130px",
+        "@media (width <= 760px)": {
+          marginTop: "6rem",
+        },
+        marginBottom: "40px",
+        boxShadow: "0 8px 24px rgba(5, 3, 21, 0.08)",
+      }}
+    >
+      <Typography
+        variant="h4"
+        align="center"
         gutterBottom
-        sx={{ 
+        sx={{
           fontWeight: 500,
-          color: 'primary.main',
-          mb: 4
+          color: "primary.main",
+          mb: 4,
         }}
       >
         Lista de Monitores
@@ -145,13 +199,14 @@ function ListaMonitores() {
         spacing={2}
         alignItems="center"
         justifyContent="center" // Adiciona centralização
-        sx={{ 
+        sx={{
           mb: 3,
           width: "100%", // Garante largura total
           display: "flex",
-          "& > *": { // Aplica aos filhos diretos
-            width: { xs: "100%", sm: "auto" } // Responsivo
-          }
+          "& > *": {
+            // Aplica aos filhos diretos
+            width: { xs: "100%", sm: "auto" }, // Responsivo
+          },
         }}
       >
         <TextField
@@ -194,12 +249,7 @@ function ListaMonitores() {
         />
       </Stack>
 
-      <Stack
-        direction="row"
-        spacing={1}
-        justifyContent="center"
-        sx={{ mb: 3 }}
-      >
+      <Stack direction="row" spacing={1} justifyContent="center" sx={{ mb: 3 }}>
         {buscaMateria && (
           <Chip
             label={`Matéria: ${buscaMateria}`}
@@ -221,68 +271,64 @@ function ListaMonitores() {
         spacing={3}
         justifyContent="center"
         sx={{
-          width: '100%',
-          margin: '0 auto',
+          width: "100%",
+          margin: "0 auto",
         }}
       >
         {monitoresPagina.length === 0 ? (
-          <Grid 
-                item 
-                xs={12} // Sempre ocupará 100% da largura
-                component={"div" as unknown as React.ElementType}
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center' // Centraliza o card dentro do Grid item
-                }}
-              >
-            <Typography
-              align="center"
-              color="text.secondary"
-              sx={{ my: 4 }}
-            >
+          <Grid
+            item
+            xs={12} // Sempre ocupará 100% da largura
+            component={"div" as unknown as React.ElementType}
+            sx={{
+              display: "flex",
+              justifyContent: "center", // Centraliza o card dentro do Grid item
+            }}
+          >
+            <Typography align="center" color="text.secondary" sx={{ my: 4 }}>
               Nenhum monitor encontrado.
             </Typography>
           </Grid>
         ) : (
           monitoresPagina.map((monitor) => (
-           <Grid 
-                item 
-                xs={12} // Sempre ocupará 100% da largura
-                component={"div" as unknown as React.ElementType}
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center' // Centraliza o card dentro do Grid item
-                }}
-              >
+            <Grid
+              item
+              xs={12} // Sempre ocupará 100% da largura
+              component={"div" as unknown as React.ElementType}
+              sx={{
+                display: "flex",
+                justifyContent: "center", // Centraliza o card dentro do Grid item
+              }}
+            >
               <Fade in timeout={500}>
-              <Card
-                    elevation={2}
+                <Card
+                  elevation={2}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    height: "180px",
+                    width: "100%",
+                    maxWidth: "800px", // Largura máxima fixa
+                    minWidth: "330px", // ADICIONE ESTA LINHA - Garante largura mínima igual à máxima
+                    margin: "0 auto",
+                    "&:hover": {
+                      elevation: 4,
+                      transform: "translateY(-2px)",
+                      transition: "all 0.2s ease-in-out",
+                    },
+                  }}
+                >
+                  <Box
                     sx={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      height: '180px',
-                      width: '100%',
-                      maxWidth: '800px', // Largura máxima fixa
-                      minWidth: '330px', // ADICIONE ESTA LINHA - Garante largura mínima igual à máxima
-                      margin: '0 auto',
-                      '&:hover': {
-                        elevation: 4,
-                        transform: 'translateY(-2px)',
-                        transition: 'all 0.2s ease-in-out'
-                      }
+                      p: 1.5,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100px", // Largura fixa para a seção da foto
+                      minWidth: "100px", // Evita encolhimento
                     }}
                   >
-                  <Box 
-                      sx={{ 
-                        p: 1.5,
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        alignItems: 'center',
-                        justifyContent: 'center', 
-                        width: '100px', // Largura fixa para a seção da foto
-                        minWidth: '100px', // Evita encolhimento
-                      }}
-                    >
                     <CardMedia
                       component="img"
                       image={monitor.foto}
@@ -290,95 +336,127 @@ function ListaMonitores() {
                       sx={{
                         width: { xs: 70, sm: 80 },
                         height: { xs: 70, sm: 80 },
-                        borderRadius: '50%',
+                        borderRadius: "50%",
                         border: 2,
-                        borderColor: 'primary.main'
+                        borderColor: "primary.main",
                       }}
                     />
-                      <div>
-                    <StarIcon sx={{ color: "#f5b301", verticalAlign: "middle" }} />
-                   <Typography variant="body2" component="span" color="text.secondary" sx={{ fontSize: '0.9rem',overflow: 'hidden',textOverflow: 'ellipsis' }}>{monitor.avaliacao}</Typography>
-                      </div>
+                    <div>
+                      <StarIcon
+                        sx={{ color: "#f5b301", verticalAlign: "middle" }}
+                      />
+                      <Typography
+                        variant="body2"
+                        component="span"
+                        color="text.secondary"
+                        sx={{
+                          fontSize: "0.9rem",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {monitor.avaliacao}
+                      </Typography>
+                    </div>
                   </Box>
 
-                <CardContent 
-                    sx={{ 
+                  <CardContent
+                    sx={{
                       flex: 1,
                       p: 1.5,
-                      overflow: 'hidden',
-                      '&:last-child': { pb: 1.5 },
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center'
+                      overflow: "hidden",
+                      "&:last-child": { pb: 1.5 },
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
                     }}
                   >
-                    <Typography 
-                      variant="h6" 
-                      color="primary.main" 
-                      sx={{ 
-                        fontSize: '1.1rem',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
+                    <Typography
+                      variant="h6"
+                      color="primary.main"
+                      sx={{
+                        fontSize: "1.1rem",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                     >
                       {monitor.nome}
                     </Typography>
-                   <Typography variant="body2" color="text.secondary" 
-                      sx={{ fontSize: '0.9rem', whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis' }}>
-                        {monitor.materia}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" 
-                      sx={{ fontSize: '0.9rem', whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis' }}>
-                        {monitor.valor}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" 
-                      sx={{ fontSize: '0.9rem', whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis' }}>
-                        {monitor.servico}
-                      </Typography>
-                    </CardContent>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        fontSize: "0.9rem",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {monitor.materia}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        fontSize: "0.9rem",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {monitor.valor}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        fontSize: "0.9rem",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {monitor.servico}
+                    </Typography>
+                  </CardContent>
 
-                 <CardActions 
-                  sx={{ 
-                    p: 1.5,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 1,
-                    minWidth: '110px',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <Stack
-                    spacing={1}
-                    sx={{ 
-                      width: '100%',
-                      minWidth: '110px',
-                       '& .MuiButton-root': { // Estilo comum para todos os botões
-                        padding: '8px 16px',
-                        fontSize: '0.875rem'
-                      }
+                  <CardActions
+                    sx={{
+                      p: 1.5,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 1,
+                      minWidth: "110px",
+                      justifyContent: "center",
                     }}
                   >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="medium"
-                      onClick={() =>
-                        navigate("/MonitoriaJa/detalhes-monitor", {
-                          state: { monitor }
-                        })
-                      }
+                    <Stack
+                      spacing={1}
+                      sx={{
+                        width: "100%",
+                        minWidth: "110px",
+                        "& .MuiButton-root": {
+                          // Estilo comum para todos os botões
+                          padding: "8px 16px",
+                          fontSize: "0.875rem",
+                        },
+                      }}
                     >
-                      Acessar
-                    </Button>
-                  </Stack>
-                </CardActions>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="medium"
+                        onClick={() =>
+                          navigate("/MonitoriaJa/detalhes-monitor", {
+                            state: { monitor },
+                          })
+                        }
+                      >
+                        Acessar
+                      </Button>
+                    </Stack>
+                  </CardActions>
                 </Card>
               </Fade>
             </Grid>
@@ -386,12 +464,7 @@ function ListaMonitores() {
         )}
       </Grid>
 
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent="center"
-        sx={{ mt: 4 }}
-      >
+      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
         <Button
           variant="contained"
           onClick={() => setPagina((p) => Math.max(1, p - 1))}
@@ -402,9 +475,9 @@ function ListaMonitores() {
         <Typography
           variant="body1"
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            px: 2
+            display: "flex",
+            alignItems: "center",
+            px: 2,
           }}
         >
           {pagina} de {totalPaginas}
