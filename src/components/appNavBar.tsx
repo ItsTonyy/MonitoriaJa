@@ -15,6 +15,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 // @ts-ignore
 import ColorModeIconDropdown from '../templates/ColorModeIconDropdown.jsx';
+import Menu from '@mui/material/Menu';
+import Tooltip from '@mui/material/Tooltip';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -32,8 +36,12 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   padding: '8px 12px',
 }));
 
+const settings = ['Perfil', 'Histórico', 'Logout'];
+
 export default function AppNavBar() {
   const [open, setOpen] = React.useState(false);
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const navigate = useNavigate();
 
@@ -53,8 +61,29 @@ export default function AppNavBar() {
     navigate('/MonitoriaJa/login');
   }
 
+  function handleClickPerfil() {}
+
+  function handleClickHistorico() {}
+
+  function handleClickLogout() {}
+
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
+  };
+
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   return (
@@ -178,7 +207,39 @@ export default function AppNavBar() {
             >
               Sign up
             </Button>
-            <ColorModeIconDropdown />
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Anonymous User" src="public/anon-user.avif" />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem onClick={handleClickPerfil}>
+                  <Typography sx={{ textAlign: 'center' }}>Perfil</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleClickHistorico}>
+                  <Typography sx={{ textAlign: 'center' }}>Histórico</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleClickLogout}>
+                  <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
+                </MenuItem>
+              </Menu>
+            </Box>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
             <ColorModeIconDropdown size="medium" />
@@ -219,7 +280,7 @@ export default function AppNavBar() {
                   </Button>
                 </MenuItem>
                 <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth  onClick={handleClickLogin}>
+                  <Button color="primary" variant="outlined" fullWidth onClick={handleClickLogin}>
                     Sign in
                   </Button>
                 </MenuItem>
