@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   TextField,
   Box,
@@ -9,29 +9,29 @@ import {
   Link,
   Avatar,
   Alert,
-} from '@mui/material';
-import { Link as LinkRouter, useNavigate } from 'react-router-dom';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import PersonIcon from '@mui/icons-material/Person';
-import { styled } from '@mui/material/styles';
-import './LoginForm.css';
-import CustomLoginButton from './ConfirmationButton';
+} from "@mui/material";
+import { Link as LinkRouter, useNavigate } from "react-router-dom";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import PersonIcon from "@mui/icons-material/Person";
+import { styled } from "@mui/material/styles";
+import "./LoginForm.css";
+import CustomLoginButton from "./ConfirmationButton";
 
 const LoginCard = styled(Card)({
-  width: '90%',
+  width: "90%",
   maxWidth: 350,
-  padding: '2rem',
-  textAlign: 'center',
+  padding: "2rem",
+  textAlign: "center",
   borderRadius: 10,
-  boxShadow: 'none',
+  boxShadow: "none",
 });
 
 const UserAvatar = styled(Avatar)({
   width: 100,
   height: 100,
-  margin: '20px auto 30px auto',
-  border: '5px solid var(--cor-primaria)',
+  margin: "20px auto 30px auto",
+  border: "5px solid var(--cor-primaria)",
 });
 
 interface FormData {
@@ -47,19 +47,21 @@ interface FormErrors {
 const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<FormData>({
-    email: '',
-    senha: '',
+    email: "",
+    senha: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [loginError, setLoginError] = useState('');
+  const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
 
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
   };
 
@@ -82,15 +84,15 @@ const LoginForm: React.FC = () => {
     const newErrors: FormErrors = {};
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email é obrigatório';
+      newErrors.email = "Email é obrigatório";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email inválido';
+      newErrors.email = "Email inválido";
     }
 
     if (!formData.senha.trim()) {
-      newErrors.senha = 'Senha é obrigatória';
+      newErrors.senha = "Senha é obrigatória";
     } else if (formData.senha.length < 6) {
-      newErrors.senha = 'Senha deve ter pelo menos 6 caracteres';
+      newErrors.senha = "Senha deve ter pelo menos 6 caracteres";
     }
 
     setErrors(newErrors);
@@ -99,7 +101,7 @@ const LoginForm: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoginError('');
+    setLoginError("");
 
     if (!validateForm()) {
       return;
@@ -109,38 +111,38 @@ const LoginForm: React.FC = () => {
 
     setTimeout(() => {
       setIsLoading(false);
-      navigate('MonitoriaJa/lista-monitores');
+      navigate("MonitoriaJa/lista-monitores");
     }, 800);
   };
 
   return (
     <Box
       sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '60vh',
-        boxShadow: 'grey 2px 2px 5px',
-        backgroundColor: 'var(--cor-fundo)',
-        borderRadius: '5px',
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "60vh",
+        boxShadow: "grey 2px 2px 5px",
+        backgroundColor: "var(--cor-fundo)",
+        borderRadius: "5px",
       }}
     >
-      <LoginCard sx={{ width: '100%' }}>
+      <LoginCard sx={{ width: "100%" }}>
         <Typography
           variant="h4"
           component="h1"
           gutterBottom
-          sx={{ fontWeight: 'bold', color: '#104C91' }}
+          sx={{ fontWeight: "bold", color: "#104C91" }}
         >
           Login
         </Typography>
 
         <UserAvatar>
-          <PersonIcon sx={{ fontSize: 60, color: 'white' }} />
+          <PersonIcon sx={{ fontSize: 60, color: "white" }} />
         </UserAvatar>
 
         {loginError && (
-          <Alert severity="error" sx={{ mb: 2, textAlign: 'left' }}>
+          <Alert severity="error" sx={{ mb: 2, textAlign: "left" }}>
             {loginError}
           </Alert>
         )}
@@ -163,9 +165,9 @@ const LoginForm: React.FC = () => {
             helperText={errors.email}
             disabled={isLoading}
             sx={{
-              '& .MuiOutlinedInput-root': {
-                '&:hover fieldset': { borderColor: '#1f8ac0' },
-                '&.Mui-focused fieldset': { borderColor: '#104C91' },
+              "& .MuiOutlinedInput-root": {
+                "&:hover fieldset": { borderColor: "#1f8ac0" },
+                "&.Mui-focused fieldset": { borderColor: "#104C91" },
               },
             }}
           />
@@ -176,7 +178,7 @@ const LoginForm: React.FC = () => {
             fullWidth
             name="senha"
             label="Senha"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             id="outlined-basic"
             value={formData.senha}
             onChange={handleInputChange}
@@ -186,9 +188,9 @@ const LoginForm: React.FC = () => {
             helperText={errors.senha}
             disabled={isLoading}
             sx={{
-              '& .MuiOutlinedInput-root': {
-                '&:hover fieldset': { borderColor: '#1f8ac0' },
-                '&.Mui-focused fieldset': { borderColor: '#104C91' },
+              "& .MuiOutlinedInput-root": {
+                "&:hover fieldset": { borderColor: "#1f8ac0" },
+                "&.Mui-focused fieldset": { borderColor: "#104C91" },
               },
             }}
             InputProps={{
@@ -200,7 +202,7 @@ const LoginForm: React.FC = () => {
                     onMouseDown={handleMouseDownPassword}
                     edge="end"
                     disabled={isLoading}
-                    sx={{ color: '#888' }}
+                    sx={{ color: "#888" }}
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
@@ -209,14 +211,14 @@ const LoginForm: React.FC = () => {
             }}
           />
 
-          <Box sx={{ textAlign: 'center', mt: 2, mb: 1 }}>
-            <LinkRouter to="/recuperar-senha">
+          <Box sx={{ textAlign: "center", mt: 2, mb: 1 }}>
+            <LinkRouter to="/MonitoriaJa/recuperar-senha">
               <Link
                 variant="body2"
                 color="primary"
                 sx={{
-                  textDecoration: 'none',
-                  '&:hover': { textDecoration: 'underline' },
+                  textDecoration: "none",
+                  "&:hover": { textDecoration: "underline" },
                 }}
               >
                 Esqueceu a senha?
@@ -233,7 +235,7 @@ const LoginForm: React.FC = () => {
             disabled={isLoading}
             sx={{ mt: 2, mb: 2 }}
           >
-            {isLoading ? 'ENTRANDO...' : 'LOGAR'}
+            {isLoading ? "ENTRANDO..." : "LOGAR"}
           </CustomLoginButton>
         </Box>
       </LoginCard>

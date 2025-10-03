@@ -4,10 +4,10 @@ import { styled } from "@mui/material/styles";
 import "./ConfirmationButton.module.css";
 
 const CustomLoginButton = styled(Button)({
-  backgroundColor: "var(--cor-primaria)",
+  backgroundColor: "primary",
   color: "white",
   fontWeight: "bold",
-  borderRadius: "15px",
+  borderRadius: "none",
   padding: "12px 0",
   "&:hover": {
     backgroundColor: "var(--cor-secundaria)",

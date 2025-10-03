@@ -6,7 +6,6 @@ import RecuperarSenha from "../../../components/recuperarSenha/RecuperarSenhaFor
 const RecuperarSenhaPage: React.FC = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <ResponsiveAppBar></ResponsiveAppBar>
       <Container
         sx={{
           display: "flex",
