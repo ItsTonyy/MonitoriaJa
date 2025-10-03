@@ -13,7 +13,6 @@ import {
   TextField,
   Rating,
   Divider,
-  IconButton,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -25,10 +24,11 @@ import SchoolIcon from "@mui/icons-material/School";
 import PersonIcon from "@mui/icons-material/Person";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import LinkIcon from "@mui/icons-material/Link";
+
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import InfoIcon from "@mui/icons-material/Info";
 import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Monitor, MONITORES } from "../ListaMonitores";
 
 interface FormData {
   rating: number | null;
@@ -36,8 +36,7 @@ interface FormData {
   comentario: string;
 }
 
-
-const MONITORES = [
+const MONITORES_ALTERNATIVOS = [
   {
     id: 2,
     nome: "Ana Silva",
@@ -56,12 +55,11 @@ const MONITORES = [
   },
 ];
 
-/*const MATERIAIS_PREPARATORIOS = [
+const MATERIAIS_PREPARATORIOS = [
   { titulo: "Lista de Exercícios - Integrais", tipo: "PDF", tamanho: "2.1 MB" },
   { titulo: "Resumo Teórico - Cálculo II", tipo: "PDF", tamanho: "1.8 MB" },
   { titulo: "Formulário Básico", tipo: "PDF", tamanho: "0.5 MB" },
-];*/
-
+];
 
 const DADOS_REAGENDAMENTO = {
   monitor: {
@@ -97,12 +95,6 @@ export default function DetalhesNotificao() {
     comentario: "",
   });
 
-  const [showSecondCard, setShowSecondCard] = useState(false);
-
-  const hasSecondCard = (tipo: string) => {
-    return ["agendamento", "agendamentoConfirmado", "reagendamento", "avaliacao"].includes(tipo);
-  };
-
   const getIconeByTipo = (tipo: string) => {
     switch (tipo) {
       case "cancelamento":
@@ -130,7 +122,6 @@ export default function DetalhesNotificao() {
     setFormData({ rating: null, titulo: "", comentario: "" });
     alert("Avaliação enviada com sucesso!");
   };
-
 
   if (!notificacao) {
     return (
@@ -174,7 +165,7 @@ export default function DetalhesNotificao() {
             >
               {getIconeByTipo(notificacao.tipo)}
             </Avatar>
-            <Box sx={{ flex: 1 }}>
+            <Box>
               <Typography
                 variant="h6"
                 component="h2"
@@ -183,19 +174,6 @@ export default function DetalhesNotificao() {
                 {notificacao.titulo}
               </Typography>
             </Box>
-            {isMobile && hasSecondCard(notificacao.tipo) && (
-              <IconButton
-                onClick={() => setShowSecondCard(!showSecondCard)}
-                sx={{ ml: 1 }}
-              >
-                <ExpandMoreIcon
-                  sx={{
-                    transform: showSecondCard ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 0.3s ease",
-                  }}
-                />
-              </IconButton>
-            )}
           </Box>
           <Typography variant="body1">{notificacao.descricao}</Typography>
           <Box sx={{ mt: 2 }}></Box>
@@ -208,7 +186,7 @@ export default function DetalhesNotificao() {
                 variant="contained"
                 color="primary"
                 size="medium"
-                onClick={() => navigate("/lista-agendamentos")}
+                onClick={() => navigate("/MonitoriaJa/lista-agendamentos")}
               >
                 Visualizar agendamentos
               </Button>
@@ -217,7 +195,7 @@ export default function DetalhesNotificao() {
         </CardContent>
       </Card>
 
-      {((!isMobile) || (isMobile && showSecondCard)) && notificacao.tipo === "agendamento" && (
+      {!isMobile && notificacao.tipo === "agendamento" && (
         <Card sx={{ mb: 3, p: 2 }}>
           <CardContent>
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
@@ -277,7 +255,7 @@ export default function DetalhesNotificao() {
         </Card>
       )}
 
-      {((!isMobile) || (isMobile && showSecondCard)) && notificacao.tipo === "agendamentoConfirmado" && (
+      {!isMobile && notificacao.tipo === "agendamentoConfirmado" && (
         <Card sx={{ mb: 3, p: 2 }}>
           <CardContent>
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
@@ -325,7 +303,7 @@ export default function DetalhesNotificao() {
         </Card>
       )}
 
-      {((!isMobile) || (isMobile && showSecondCard)) &&
+      {!isMobile &&
         notificacao.tipo === "reagendamento" &&
         notificacao.titulo.includes("realizado") && (
           <Card sx={{ mb: 3, p: 2 }}>
@@ -450,7 +428,7 @@ export default function DetalhesNotificao() {
           </Card>
         )}
 
-      {((!isMobile) || (isMobile && showSecondCard)) &&
+      {!isMobile &&
         notificacao.tipo === "reagendamento" &&
         notificacao.titulo.includes("confirmado") && (
           <Card sx={{ mb: 3, p: 2 }}>
@@ -551,7 +529,89 @@ export default function DetalhesNotificao() {
           </Card>
         )}
 
-      {((!isMobile) || (isMobile && showSecondCard)) && notificacao.tipo == "avaliacao" && (
+      {!isMobile &&
+        notificacao.tipo === "cancelamento" &&
+        notificacao.titulo.includes("cancelada") && (
+          <Card sx={{ mb: 3, p: 2 }}>
+            <CardContent>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                <Avatar sx={{ bgcolor: "error.main", mr: 2 }}>
+                  <CancelIcon />
+                </Avatar>
+                <Box>
+                  <Typography
+                    variant="h6"
+                    component="h2"
+                    sx={{ fontWeight: "bold" }}
+                  >
+                    Sessão cancelada - Próximos passos
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Informações sobre o cancelamento e ações necessárias
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Divider sx={{ mb: 3 }} />
+
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 2, fontWeight: "bold" }}
+              >
+                Dados da Sessão Cancelada
+              </Typography>
+              <Box
+                sx={{
+                  p: 2,
+                  borderRadius: 1,
+                  mb: 3,
+                  bgcolor: "action.hover",
+                  opacity: 0.8,
+                }}
+              >
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  <strong>Aluno:</strong> {DADOS_REAGENDAMENTO.aluno.nome}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  <strong>Contato:</strong> {DADOS_REAGENDAMENTO.aluno.contato}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  <strong>Data/Hora:</strong>{" "}
+                  {DADOS_REAGENDAMENTO.sessaoAnterior.data} às{" "}
+                  {DADOS_REAGENDAMENTO.sessaoAnterior.horario.split(" - ")[0]}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>Motivo:</strong> Cancelamento por parte do aluno
+                </Typography>
+              </Box>
+
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 2, fontWeight: "bold" }}
+              >
+                Recomendações para o Monitor
+              </Typography>
+              <Box
+                sx={{ p: 2, bgcolor: "action.hover", borderRadius: 1, mb: 3 }}
+              >
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  • Esse horário agora está disponível para outros alunos
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  • Considere entrar em contato com o aluno para reagendar
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  • Mantenha seu material preparado para futuras sessões
+                </Typography>
+                <Typography variant="body2">
+                  • Não será descontado valor por esse cancelamento
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        )}
+
+      {!isMobile && notificacao.tipo == "avaliacao" && (
         <Card sx={{ mb: 3, p: 2 }}>
           <CardContent>
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
