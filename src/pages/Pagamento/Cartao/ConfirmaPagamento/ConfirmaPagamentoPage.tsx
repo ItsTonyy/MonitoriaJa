@@ -10,13 +10,14 @@ import CartaoItem from '../CartaoItem/CartaoItem'; // 🔹 ajuste o caminho conf
 const ConfirmaPagamento: React.FC = () => {
   const orderId = '#0000';
   const orderValue = 'R$ 00,00';
-  const cardNumber = '0000000000';
+  const cardNumber = '0000005678';
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
-  const handleCancel = () => {
-    navigate('/agendamento-monitor');
-  };
+const handleCancel = () => {
+  navigate(-1);
+};
+
 
   return (
     <main className={styles.centralizeContent}>

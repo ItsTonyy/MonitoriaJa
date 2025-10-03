@@ -9,11 +9,47 @@ import { Menu, MenuItem } from '@mui/material';
 import Estrela from '../../../public/five-stars-rating-icon-png.webp';
 import AtualizarMateria from './AtualizarMateria/AtualizarMateria';
 import UploadButton from './UploadButton/UploadButton';
+import StatusModal from '../AlterarSenha/StatusModal/StatusModal';
 
 
 const PerfilMonitorPage: React.FC = () => {
   const [description, setDescription] = useState('');
   const navigate = useNavigate();
+
+  // Estados para inputs e modal
+  const [telefone, setTelefone] = useState('');
+  const [email, setEmail] = useState('');
+  const [erros, setErros] = useState<{ telefone?: string; email?: string }>({});
+  const [open, setOpen] = useState(false);
+
+  // Regex para telefone e email
+  const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/; // (XX) 9XXXX-XXXX
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const validarCampos = () => {
+    const novosErros: { telefone?: string; email?: string } = {};
+
+    if (!telefoneRegex.test(telefone)) {
+      novosErros.telefone = 'Telefone inválido. Use o formato (XX) 9XXXX-XXXX';
+    }
+
+    if (!emailRegex.test(email)) {
+      novosErros.email = 'Email inválido';
+    }
+
+    setErros(novosErros);
+
+    return Object.keys(novosErros).length === 0;
+  };
+
+  const handleSalvar = () => {
+    if (validarCampos()) {
+      console.log('Dados salvos:', { telefone, email });
+      setOpen(true);
+    }
+  };
+
+
 
   // Dropdown Horários
   const [anchorHorarios, setAnchorHorarios] = useState<null | HTMLElement>(null);
@@ -25,7 +61,8 @@ const PerfilMonitorPage: React.FC = () => {
     setAnchorHorarios(null);
   };
  
-  const [buscaMateria, setBuscaMateria] = useState('');
+  const [buscaMateriaMultiplas, setBuscaMateriaMultiplas] = useState<string[]>([]);
+
   const MATERIAS = [
     "Matemática", "Física", "Química", "Biologia", "História",
     "Geografia", "Português", "Inglês", "Programação"
@@ -94,13 +131,32 @@ const PerfilMonitorPage: React.FC = () => {
 
         {/* Campos de Telefone e Email */}
         <div className={styles.fieldsContainer}>
-          <CampoFormulario label="Telefone" defaultValue="00 00000-0000" />
-          <CampoFormulario label="Email" defaultValue="email@exemplo.com" />
-          <AtualizarMateria
-          value={buscaMateria}
-          onChange={setBuscaMateria}
-          options={MATERIAS}
+          <CampoFormulario
+            label="Telefone"
+            value={telefone}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setTelefone(e.target.value)
+            }
           />
+          {erros.telefone && (
+            <span className={styles.error}>{erros.telefone}</span>
+          )}
+
+          <CampoFormulario
+            label="Email"
+            value={email}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setEmail(e.target.value)
+            }
+          />
+          {erros.email && (
+            <span className={styles.error}>{erros.email}</span>
+          )}
+<AtualizarMateria
+  value={buscaMateriaMultiplas}
+  onChange={setBuscaMateriaMultiplas}
+  options={MATERIAS}
+/>
 
 
 
@@ -138,6 +194,12 @@ const PerfilMonitorPage: React.FC = () => {
 
           {/* Linha 2: botão Voltar ocupando 100% */}
           <ConfirmationButton
+            className={styles.reusableButton}
+            onClick={handleSalvar}
+          >
+            Confirmar Mudanças
+          </ConfirmationButton>                    
+          <ConfirmationButton
             className={styles.reusableButtonFull}
             onClick={() => navigate(-1)}
           >
@@ -145,6 +207,14 @@ const PerfilMonitorPage: React.FC = () => {
           </ConfirmationButton>
         </div>
       </div>
+
+      <StatusModal
+        open={open}
+        onClose={() => setOpen(false)}
+        status="sucesso"
+        mensagem="Alterações salvas com sucesso!"
+      />
+
     </main>
   );
 };

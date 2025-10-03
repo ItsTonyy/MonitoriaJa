@@ -147,7 +147,9 @@
   cursor: pointer;
 }
 
-
+.uploadButton:hover {
+  background-color: var(--cor-secundaria) !important;
+}
 
 /* Responsividade */
 @media (max-width: 640px) {

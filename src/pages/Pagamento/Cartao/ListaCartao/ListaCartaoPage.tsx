@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './ListaCartaoPage.module.css';
 import Title from '../../../AlterarSenha/Titulo/Titulo';
 import CartaoItem from '../CartaoItem/CartaoItem';
+import { useNavigate } from 'react-router-dom';
 
 type Cartao = {
   id: number;
@@ -16,6 +17,7 @@ const cartoesExemplo: Cartao[] = [
 ];
 
 const ListaCartaoPage: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
@@ -28,7 +30,7 @@ const ListaCartaoPage: React.FC = () => {
               nome={cartao.nome}
               bandeira={cartao.bandeira}
               mostrarBotoes={true}   // 🔹 botões aparecem
-              onEscolher={() => console.log('Escolher', cartao.id)}
+              onEscolher={() => navigate('/MonitoriaJa/confirma-pagamento')}
               onRemover={() => console.log('Remover', cartao.id)}
             />
           ))}

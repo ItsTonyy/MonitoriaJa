@@ -11,6 +11,12 @@
   --cor-borda-input: #ccc;
   --cor-input-fundo: #2b3a55;
   --cor-background-escuro: rgb(240, 240, 240);
+  --font-principal: 'Roboto', sans-serif;
+}
+
+/* Aplica Roboto globalmente */
+body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
+  font-family: var(--font-principal);
 }
 
 .centralizeContent {
@@ -32,15 +38,13 @@
   gap: 1.5rem;
 }
 
-
 .cardContainer {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  align-items: center; /* centraliza os cartões horizontalmente */
+  align-items: center;
 }
-
 
 .title {
   text-align: center;
@@ -56,8 +60,8 @@
   border-radius: var(--radius-md);
   box-shadow: var(--shadow);
   padding: 1rem 1.5rem;
-  width: 100%;       /* ocupa toda a largura do container pai */
-  max-width: 400px;  /* limite máximo opcional */
+  width: 100%;
+  max-width: 400px;
   margin-bottom: 1rem;
 }
 
@@ -91,9 +95,8 @@
 }
 
 .button {
-  flex: 1; /* opcional: faz os botões terem largura igual */
+  flex: 1;
 }
-
 
 @media (max-width: 640px) {
   .cartaoInfo {

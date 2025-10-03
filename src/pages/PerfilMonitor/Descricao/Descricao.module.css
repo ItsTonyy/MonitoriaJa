@@ -12,26 +12,32 @@
   --cor-borda-input: #ccc;
   --cor-input-fundo: #2b3a55;
   --cor-background-escuro: rgb(240, 240, 240);
+  --font-principal: 'Roboto', sans-serif;
+}
+
+/* Aplica Roboto globalmente */
+body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
+  font-family: var(--font-principal);
 }
 
 .descriptionBox {
   width: 100%;
   padding: 1.2rem;
-  border-radius: var(--radius-md); /* borda arredondada */
+  border-radius: var(--radius-md);
   background-color: var(--cor-fundo);
   text-align: left;
   box-sizing: border-box;
-  border: 1px solid var(--cor-borda-input); /* adiciona uma borda */
+  border: 1px solid var(--cor-borda-input);
 }
 
 .editableTextarea {
   width: 100%;
-  border-radius: var(--radius-md); /* mesma borda arredondada da box */
-  border: 1px solid var(--cor-borda-input); /* define a borda */
+  border-radius: var(--radius-md);
+  border: 1px solid var(--cor-borda-input);
   background: transparent;
   text-align: left;
   resize: none;
-  font-family: inherit;
+  font-family: inherit; /* herda Roboto */
   color: var(--cor-texto);
   outline: none;
   padding: 0.5rem;

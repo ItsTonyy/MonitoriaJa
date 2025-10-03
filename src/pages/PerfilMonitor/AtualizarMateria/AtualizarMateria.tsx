@@ -1,40 +1,28 @@
 import React from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import styles from './AtualizarMateria.module.css';
 
 interface AtualizarMateriaProps {
-  value: string;
-  onChange: (value: string) => void;
-  label?: string;
+  value: string[];
+  onChange: (value: string[]) => void;
   options: string[];
-  sx?: object; // permite passar estilo externo
 }
 
-const AtualizarMateria: React.FC<AtualizarMateriaProps> = ({
-  value,
-  onChange,
-  label = "Adicionar Disciplina",
-  options,
-  sx = {}, // padrão vazio
-}) => {
+const AtualizarMateria: React.FC<AtualizarMateriaProps> = ({ value, onChange, options }) => {
   return (
     <Autocomplete
-      freeSolo
+      multiple
       options={options}
       value={value}
-      onInputChange={(_, newValue) => onChange(newValue)}
+      onChange={(event, newValue) => onChange(newValue)}
+      filterSelectedOptions
       renderInput={(params) => (
-        <TextField {...params} label={label} variant="outlined" fullWidth />
+        <TextField
+          {...params}
+          variant="outlined"
+          label="Adicionar disciplinas"
+          placeholder="Pesquisar disciplinas"
+        />
       )}
-      sx={{ width: '100%', ...sx }} // ocupa 100% do container e aceita overrides
-      slotProps={{
-        paper: {
-          className: styles.paper,
-        },
-        listbox: {
-          className: styles.listBox,
-        },
-      }}
     />
   );
 };

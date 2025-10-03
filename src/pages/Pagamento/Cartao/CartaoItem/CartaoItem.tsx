@@ -33,6 +33,8 @@ const CartaoItem: React.FC<CartaoProps> = ({
     }
   };
 
+  
+
   return (
     <div className={styles.cartaoCard}>
       <div className={styles.cartaoInfo}>
@@ -43,16 +45,17 @@ const CartaoItem: React.FC<CartaoProps> = ({
         <img src={getBandeiraLogo()} alt={bandeira} className={styles.logo} />
       </div>
 
-      {mostrarBotoes && (
-        <div className={styles.buttonGroup}>
-          <ConfirmationButton className={styles.button} onClick={onEscolher}>
-            Escolher
-          </ConfirmationButton>
-          <ConfirmationButton className={styles.button} onClick={onRemover}>
-            Remover
-          </ConfirmationButton>
-        </div>
-      )}
+{mostrarBotoes && (
+  <div className={styles.buttonGroup}>
+    <ConfirmationButton className={styles.button} onClick={onEscolher}>
+      Escolher
+    </ConfirmationButton>
+    <ConfirmationButton className={styles.button} onClick={onRemover}>
+      Remover
+    </ConfirmationButton>
+  </div>
+)}
+
     </div>
   );
 };

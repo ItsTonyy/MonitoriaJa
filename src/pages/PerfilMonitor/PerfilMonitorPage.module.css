@@ -7,11 +7,20 @@
   --cor-texto-claro: #ffffff;
   --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
   --button-padding: 12px 0;
+  --radius-md: 12px;
   --input-padding: 10px;
   --cor-borda-input: #ccc;
   --cor-input-fundo: #2b3a55;
   --cor-background-escuro: rgb(240, 240, 240);
+  --font-principal: 'Roboto', sans-serif;
 }
+
+/* Aplica Roboto globalmente */
+body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
+  font-family: var(--font-principal);
+}
+
+/* ----- restante do CSS original ajustado ----- */
 
 .centralizeContent {
   margin: 0 auto;
@@ -23,9 +32,9 @@
 
 .profileHeader {
   display: flex;
-  flex-direction: column; /* empilha verticalmente */
-  align-items: center;    /* centraliza horizontalmente */
-  gap: 0.5rem;            /* espaço entre name e subject */
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .name {
@@ -75,7 +84,6 @@
   box-shadow: 0 0 0 2px rgba(16, 76, 145, 0.3) !important;
 }
 
-
 .profileCard {
   background-color: var(--cor-fundo);
   box-shadow: var(--shadow);
@@ -114,7 +122,7 @@
 }
 
 .uploadButtonContainer {
-  width: 100%; /* ocupa largura total do container pai */
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -127,9 +135,13 @@
   font-weight: bold !important;
   text-transform: none !important;
   padding: var(--button-padding) !important;
-  width: 50% !important;       /* ocupa todo o container */
-  max-width: 250px;  /* opcional: não esticar demais */
+  width: 50% !important;
+  max-width: 250px;
   cursor: pointer;
+}
+
+.uploadButton:hover {
+  background-color: var(--cor-secundaria) !important;
 }
 
 .ratingAndFormation {
@@ -201,8 +213,6 @@
 .reusableButtonFull:hover {
   background-color: var(--cor-secundaria) !important;
 }
-
-
 
 /* Responsividade */
 @media (max-width: 640px) {

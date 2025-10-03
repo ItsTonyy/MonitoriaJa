@@ -11,6 +11,12 @@
   --cor-borda-input: #ccc;
   --cor-input-fundo: #2b3a55;
   --cor-background-escuro: rgb(240, 240, 240);
+  --font-principal: 'Roboto', sans-serif;
+}
+
+/* Aplica Roboto globalmente */
+body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
+  font-family: var(--font-principal);
 }
 
 .centralizeContent {
@@ -85,7 +91,7 @@
   background: transparent;
   text-align: center;
   resize: none;
-  font-family: inherit;
+  font-family: inherit; /* já herda Roboto */
   color: var(--cor-texto);
 }
 
@@ -101,7 +107,7 @@
   gap: 0.5rem;
 }
 
-/* Botão reutilizável - agora compatível com MUI Button */
+/* Botão reutilizável - compatível com MUI Button */
 .reusableButton {
   background-color: var(--cor-primaria) !important;
   color: var(--cor-texto-claro) !important;
