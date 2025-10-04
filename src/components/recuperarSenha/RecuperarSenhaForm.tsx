@@ -24,29 +24,27 @@ const RecuperarSenhaForm = () => {
             />
           </div>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             variant="contained"
             color="primary"
             size="medium"
             fullWidth
             sx={{
-              borderRadius: "15px",
-              backgroundColor: "var(--cor-primaria)",
+              backgroundColor: "primary",
               "&:hover": {
                 backgroundColor: "var(--cor-secundaria)",
               },
               py: 1.5,
               fontSize: "1rem",
-              fontWeight: 600
+              fontWeight: 600,
             }}
           >
             Enviar
           </Button>
           <div className="link-wrapper">
-            <Link to="/MonitoriaJa" className="back-link">
+            <Link to="/MonitoriaJa/login" className="back-link">
               {" "}
-      
               Voltar para o Login
             </Link>
           </div>

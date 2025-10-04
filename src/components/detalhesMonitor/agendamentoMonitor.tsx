@@ -72,7 +72,7 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
               <div className="agendamento-details-row-2">
                 <div className="agendamento-details-attributes">
                   <AccessTimeIcon />
-                  <p>12:00 - 13:00</p>
+                  <p>{props.horario}</p>
                 </div>
 
                 <div className="agendamento-details-attributes">
@@ -101,7 +101,6 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
 
       <div className="pagamento">
         <h1 className="titulo">Formas de Pagamento</h1>
-        <hr />
         <div className="checkboxes">
           <label className="checkboxes-box" htmlFor="pix">
             <input type="radio" name="pagamento" id="pix" />
@@ -126,7 +125,7 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
           variant="outlined"
           sx={{ padding: '5px 40px' }}
           onClick={() =>
-            navigate('/detalhes-monitor', {
+            navigate('/MonitoriaJa/detalhes-monitor', {
               state: {
                 monitor: {
                   foto: state.monitorImage,

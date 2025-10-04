@@ -17,9 +17,9 @@ import StarIcon from "@mui/icons-material/Star";
 import { Monitor } from "../ListaMonitores";
 
 
-interface NotificacaoCardProps {
+/*interface NotificacaoCardProps {
   color: "primary";
-}
+}*/
 
 interface Notificacao {
   id: string;

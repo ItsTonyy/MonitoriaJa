@@ -14,6 +14,7 @@ import DetalhesNotificao from "./components/DetalhesNotificao/DetalhesNotificao"
 import ModalCancelamento from "./components/ModalCancelamento";
 import DisciplinaModal from "./components/disciplina/DisciplinaModal";
 import MainLayout from "./components/MainLayout/MainLayout";
+import LandingPage from "./components/landingPage";
 
 const App = () => {
   return (
@@ -21,7 +22,8 @@ const App = () => {
       <AppNavBar />
       <MainLayout>
       <Routes>
-        <Route path="/MonitoriaJa" element={<LoginPage />} />
+        <Route path="/MonitoriaJa" element={<LandingPage />} />
+            <Route path="/MonitoriaJa/login" element={<LoginPage />} />
         <Route
           path="/MonitoriaJa/recuperar-senha"
           element={<RecuperarSenhaPage />}

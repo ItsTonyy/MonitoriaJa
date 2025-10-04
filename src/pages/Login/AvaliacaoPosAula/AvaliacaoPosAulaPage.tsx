@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Container } from "@mui/material";
-import ResponsiveAppBar from "../../../components/login-form/AppBar";
 import Footer from "../../../components/footer";
 import AvaliacaoPosAula from "../../../components/AvaliacaoPosAula/AvaliacaoPosAula";
 import "./AvaliacaoPosAulaPage.css";

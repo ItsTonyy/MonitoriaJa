@@ -212,12 +212,11 @@ const ComentariosAvaliacao: React.FC = () => {
                 size="medium"
                 onClick={handleModalOpen}
                 sx={{
-                  backgroundColor: "var(--cor-primaria)",
+                  backgroundColor: "primary",
                   "&:hover": { backgroundColor: "var(--cor-secundaria)" },
                   alignSelf: { xs: "flex-start", sm: "auto" },
                   px: 3,
                   py: 1,
-                  borderRadius: "15px",
                 }}
               >
                 Quero avaliar
@@ -544,8 +543,8 @@ const ComentariosAvaliacao: React.FC = () => {
             />
 
             <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
-              <Button 
-                variant="outlined" 
+              <Button
+                variant="outlined"
                 color="primary"
                 size="medium"
                 onClick={handleModalClose}
