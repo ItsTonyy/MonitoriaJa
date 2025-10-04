@@ -184,11 +184,9 @@ function ListaAgendamentos() {
       elevation={0}
       sx={{
         p: 3,
-        m: 2,
         borderRadius: 2,
         bgcolor: "background.default",
-        maxWidth: 1400,
-        margin: "0 auto",
+        maxWidth: 1200,
       }}
     >
       <Typography
@@ -198,7 +196,7 @@ function ListaAgendamentos() {
         sx={{
           fontWeight: 500,
           color: "primary.main",
-          mb: 4,
+          mb: 2,
         }}
       >
         Lista de Agendamentos

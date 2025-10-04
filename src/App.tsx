@@ -13,11 +13,13 @@ import AppNavBar from "./components/appNavBar";
 import DetalhesNotificao from "./components/DetalhesNotificao/DetalhesNotificao";
 import ModalCancelamento from "./components/ModalCancelamento";
 import DisciplinaModal from "./components/disciplina/DisciplinaModal";
+import MainLayout from "./components/MainLayout/MainLayout";
 
 const App = () => {
   return (
     <BrowserRouter>
       <AppNavBar />
+      <MainLayout>
       <Routes>
         <Route path="/MonitoriaJa" element={<LoginPage />} />
         <Route
@@ -83,6 +85,7 @@ const App = () => {
           }
         />
       </Routes>
+      </MainLayout>
       <Footer />
     </BrowserRouter>
   );
