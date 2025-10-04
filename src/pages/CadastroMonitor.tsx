@@ -11,7 +11,6 @@ function CadastroMonitor() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        py: { xs: 2, sm: 4 },
       }}
     >
       <Paper
