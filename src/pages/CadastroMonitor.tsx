@@ -8,11 +8,9 @@ function CadastroMonitor() {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: { xs: '#f5f8ff' },
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        py: { xs: 2, sm: 4 },
       }}
     >
       <Paper
