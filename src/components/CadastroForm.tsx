@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import ModalSelect from './ModalSelect';
+import { useNavigate } from 'react-router-dom';
 
 function CadastroForm() {
   const [nome, setNome] = useState('');
@@ -19,6 +20,7 @@ function CadastroForm() {
   const [abrirModalEspecialidade, setAbrirModalEspecialidade] = useState(false);
   const [opcaoMonitor, setOpcaoMonitor] = useState('');
   const [especialidadeMonitor, setEspecialidadeMonitor] = useState('');
+  const navigate = useNavigate();
 
   const opcoesEspecialidades = [
     { label: 'Matemática', value: 'matematica' },
@@ -229,6 +231,8 @@ function CadastroForm() {
         onConfirm={(opcao) => {
           handleOpcaoMonitor(opcao);
           setAbrirModalMonitor(false);
+          if (opcao.toLowerCase() === "não")
+            navigate('/MonitoriaJa/login');
         }}
       />
 
@@ -240,8 +244,10 @@ function CadastroForm() {
         onConfirm={(especialidade) => {
           handleEspecialidadeMonitor(especialidade);
           setAbrirModalEspecialidade(false);
+          navigate('/MonitoriaJa/login');
         }}
-      />
+        />
+        
     </Box>
   );
 }
