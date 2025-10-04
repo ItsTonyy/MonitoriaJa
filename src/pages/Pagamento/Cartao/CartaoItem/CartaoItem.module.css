@@ -1,0 +1,87 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto: #050315;
+  --cor-texto-claro: #ffffff;
+  --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
+  --button-padding: 12px 0;
+  --input-padding: 10px;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+  --font-principal: 'Roboto', sans-serif;
+}
+
+/* Aplica Roboto globalmente */
+body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
+  font-family: var(--font-principal);
+}
+
+.cartaoCard {
+  background-color: var(--cor-fundo);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.cartaoInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.numero {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+  word-break: break-word;
+}
+
+.nome {
+  font-size: 1rem;
+  margin: 0;
+  word-break: break-word;
+}
+
+.logo {
+  width: 60px;
+  height: auto;
+  max-width: 25%;
+  object-fit: contain;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.button {
+  flex: 1;
+  min-width: 100px;
+}
+
+@media (max-width: 480px) {
+  .cartaoInfo {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    width: 100%;
+  }
+}

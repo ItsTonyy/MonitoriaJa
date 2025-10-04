@@ -1,0 +1,57 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto: #050315;
+  --cor-texto-claro: #ffffff;
+  --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
+  --button-padding: 12px 0;
+  --input-padding: 10px;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+  --font-principal: 'Roboto', sans-serif;
+}
+
+/* Aplica Roboto globalmente */
+body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
+  font-family: var(--font-principal);
+}
+
+.centralizeContent {
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.card {
+  background-color: var(--cor-fundo);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.infoText {
+  color: var(--cor-texto);
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.name {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--cor-primaria);
+  text-align: center;
+}

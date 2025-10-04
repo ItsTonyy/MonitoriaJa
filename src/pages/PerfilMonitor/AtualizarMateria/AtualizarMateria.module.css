@@ -1,0 +1,18 @@
+:root {
+  --font-principal: 'Roboto', sans-serif;
+}
+
+/* Aplica Roboto globalmente */
+body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
+  font-family: var(--font-principal);
+}
+
+.paper {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.listBox {
+  max-height: 200px;
+  overflow-y: auto;
+}

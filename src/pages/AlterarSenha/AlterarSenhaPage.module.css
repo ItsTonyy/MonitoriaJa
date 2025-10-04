@@ -1,0 +1,129 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto: #050315;
+  --cor-texto-claro: #ffffff;
+  --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
+  --button-padding: 12px 0;
+  --input-padding: 10px;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+  --font-principal: 'Roboto', sans-serif;
+}
+
+/* Aplica Roboto globalmente */
+body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
+  font-family: var(--font-principal);
+}
+
+.centralizeContent {
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.name {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--cor-texto);
+  text-align: center;
+}
+
+.profileCard {
+  background-color: var(--cor-fundo);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.profileHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.photoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.photoContainer {
+  border: 5px solid var(--cor-primaria);
+  border-radius: 50%;
+  background-color: #d4d4d4;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.profilePhotoIcon {
+  color: var(--cor-fundo);
+  font-size: 4rem !important;
+}
+
+.uploadButtonContainer {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.editableTextarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: center;
+  resize: none;
+  font-family: inherit; /* já herda Roboto */
+  color: var(--cor-texto);
+}
+
+.buttonSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: row; /* lado a lado */
+  gap: 0.5rem;
+}
+
+/* Botão reutilizável - compatível com MUI Button */
+.reusableButton {
+  background-color: var(--cor-primaria) !important;
+  color: var(--cor-texto-claro) !important;
+  padding: var(--button-padding) !important;
+  font-weight: bold !important;
+  width: 100%;
+  text-transform: none !important; /* mantém texto normal */
+}
+
+.reusableButton:hover {
+  background-color: var(--cor-secundaria) !important;
+}
+
+/* Responsividade */
+@media (max-width: 640px) {
+  .buttonGroup {
+    flex-direction: column;
+  }
+}

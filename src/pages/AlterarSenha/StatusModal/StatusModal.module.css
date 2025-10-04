@@ -1,0 +1,55 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto: #050315;
+  --cor-texto-claro: #ffffff;
+  --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
+  --button-padding: 12px 0;
+  --input-padding: 10px;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+}
+
+
+.modal {
+  text-align: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.successText {
+  color: var(--cor-primaria);
+  font-weight: bold;
+}
+
+.errorText {
+  color: var(--cor-primaria);
+  font-weight: bold;
+}
+
+.messageText {
+  color: #333;
+}
+
+.actions {
+  display: flex;
+  justify-content: center !important;
+  padding: 16px;
+}
+
+.closeButton {
+  background-color: var(--cor-primaria) !important;
+  color: var(--cor-texto-claro) !important;
+  font-weight: bold !important;
+  text-transform: none !important;
+  padding: 10px 24px !important;
+  width: auto; /* deixa o botão mais largo */
+  min-width: 150px; /* evita ficar estreito */
+}

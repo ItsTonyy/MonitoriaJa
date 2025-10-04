@@ -1,0 +1,45 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto: #050315;
+  --cor-texto-claro: #ffffff;
+  --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
+  --button-padding: 12px 0;
+  --radius-md: 12px;
+  --input-padding: 10px;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+  --font-principal: 'Roboto', sans-serif;
+}
+
+/* Aplica Roboto globalmente */
+body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
+  font-family: var(--font-principal);
+}
+
+.descriptionBox {
+  width: 100%;
+  padding: 1.2rem;
+  border-radius: var(--radius-md);
+  background-color: var(--cor-fundo);
+  text-align: left;
+  box-sizing: border-box;
+  border: 1px solid var(--cor-borda-input);
+}
+
+.editableTextarea {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--cor-borda-input);
+  background: transparent;
+  text-align: left;
+  resize: none;
+  font-family: inherit; /* herda Roboto */
+  color: var(--cor-texto);
+  outline: none;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}

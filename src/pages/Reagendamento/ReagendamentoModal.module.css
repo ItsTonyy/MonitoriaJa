@@ -1,0 +1,142 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto: #050315;
+  --cor-texto-claro: #ffffff;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
+  --button-padding: 12px 0;
+  --input-padding: 10px;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+}
+
+.modalBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 500px;
+  width: 100%;
+  background-color: var(--cor-fundo);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--cor-background-escuro);
+}
+
+.modalContent {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.monitorInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.photoContainer {
+  border: 1px solid var(--cor-primaria);
+  border-radius: 50%;
+  background-color: #d4d4d4;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.profilePhotoIcon {
+  color: var(--cor-fundo);
+  font-size: 60px;
+}
+
+.monitorName {
+  font-weight: bold !important;
+  color: var(--cor-texto);
+}
+
+.monitorSubject {
+  color: var(--cor-texto);
+}
+
+.sectionTitle {
+  font-weight: bold;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.dateSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dateRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dateIcon {
+  color: var(--cor-secundaria);
+}
+
+.dateText {
+  color: var(--cor-texto);
+}
+
+.fieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.sectionText {
+  margin-bottom: 1rem;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--cor-background-escuro);
+  padding-top: 1rem;
+}
+
+.reusableButtonPrimary {
+  background-color: var(--cor-primaria);
+  color: var(--cor-texto-claro);
+  font-weight: bold;
+  padding: var(--button-padding);
+}
+
+.reusableButtonSecondary {
+  background-color: var(--cor-secundaria);
+  color: var(--cor-texto-claro);
+  font-weight: bold;
+  padding: var(--button-padding);
+}
