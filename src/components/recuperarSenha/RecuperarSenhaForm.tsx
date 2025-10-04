@@ -19,6 +19,7 @@ const RecuperarSenhaForm = () => {
               variant="outlined"
               name="email"
               className="form-control"
+              
               placeholder="Digite seu email"
               required
             />

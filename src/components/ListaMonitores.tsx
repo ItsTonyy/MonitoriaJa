@@ -30,7 +30,7 @@ export type Monitor = {
   avaliacao: number;
 };
 
-const MONITORES: Monitor[] = [
+export const MONITORES: Monitor[] = [
   {
     id: 1,
     nome: 'João Silva',

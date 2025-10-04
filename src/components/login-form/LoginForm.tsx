@@ -1,245 +1,178 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  TextField,
   Box,
+  Button,
+  TextField,
   Typography,
-  IconButton,
-  InputAdornment,
-  Card,
+  Container,
+  Paper,
   Link,
-  Avatar,
-  Alert,
-} from "@mui/material";
-import { Link as LinkRouter, useNavigate } from "react-router-dom";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import PersonIcon from "@mui/icons-material/Person";
-import { styled } from "@mui/material/styles";
-import "./LoginForm.css";
-import CustomLoginButton from "./ConfirmationButton";
-
-const LoginCard = styled(Card)({
-  width: "90%",
-  maxWidth: 350,
-  padding: "2rem",
-  textAlign: "center",
-  borderRadius: 10,
-  boxShadow: "none",
-});
-
-const UserAvatar = styled(Avatar)({
-  width: 100,
-  height: 100,
-  margin: "20px auto 30px auto",
-  border: "5px solid var(--cor-primaria)",
-});
-
-interface FormData {
-  email: string;
-  senha: string;
-}
-
-interface FormErrors {
-  email?: string;
-  senha?: string;
-}
+  FormControl,
+  FormLabel,
+} from '@mui/material';
+import './LoginForm.css';
 
 const LoginForm: React.FC = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    email: "",
-    senha: "",
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
+  const [emailError, setEmailError] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
-  const handleClickShowPassword = () => {
-    setShowPassword((prev) => !prev);
+  const validateInputs = () => {
+    const email = document.getElementById('email') as HTMLInputElement;
+    const password = document.getElementById('password') as HTMLInputElement;
+
+    let isValid = true;
+
+    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+      setEmailError(true);
+      setEmailErrorMessage('Por favor, insira um endereço de email válido.');
+      isValid = false;
+    } else {
+      setEmailError(false);
+      setEmailErrorMessage('');
+    }
+
+    if (!password.value || password.value.length < 6) {
+      setPasswordError(true);
+      setPasswordErrorMessage('A senha deve ter pelo menos 6 caracteres.');
+      isValid = false;
+    } else {
+      setPasswordError(false);
+      setPasswordErrorMessage('');
+    }
+
+    return isValid;
   };
 
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: undefined,
-      }));
-    }
-  };
-
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email é obrigatório";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email inválido";
-    }
-
-    if (!formData.senha.trim()) {
-      newErrors.senha = "Senha é obrigatória";
-    } else if (formData.senha.length < 6) {
-      newErrors.senha = "Senha deve ter pelo menos 6 caracteres";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoginError("");
-
-    if (!validateForm()) {
+    if (!validateInputs()) {
       return;
     }
+    const data = new FormData(event.currentTarget);
+    console.log({
+      email: data.get('email'),
+      password: data.get('password'),
+    });
+  };
 
-    setIsLoading(true);
-
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate("MonitoriaJa/lista-monitores");
-    }, 800);
+  const handleForgotPassword = () => {
+    navigate('/MonitoriaJa/recuperar-senha');
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "60vh",
-        boxShadow: "grey 2px 2px 5px",
-        backgroundColor: "var(--cor-fundo)",
-        borderRadius: "5px",
-      }}
-    >
-      <LoginCard sx={{ width: "100%" }}>
-        <Typography
-          variant="h4"
-          component="h1"
-          gutterBottom
-          sx={{ fontWeight: "bold", color: "#104C91" }}
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '70vh',
+        }}
+      >
+        <Paper
+          elevation={3}
+          className="loginCard"
+          sx={{
+            p: 4,
+            borderRadius: 2,
+            width: '100%',
+            maxWidth: '700px'
+          }}
         >
-          Login
-        </Typography>
-
-        <UserAvatar>
-          <PersonIcon sx={{ fontSize: 60, color: "white" }} />
-        </UserAvatar>
-
-        {loginError && (
-          <Alert severity="error" sx={{ mb: 2, textAlign: "left" }}>
-            {loginError}
-          </Alert>
-        )}
-
-        <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="outlined-basic"
-            label="Email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            autoComplete="email"
-            autoFocus
-            variant="outlined"
-            error={!!errors.email}
-            helperText={errors.email}
-            disabled={isLoading}
+          <Typography
+            component="h1"
+            variant="h4"
+            className="cardTitle"
             sx={{
-              "& .MuiOutlinedInput-root": {
-                "&:hover fieldset": { borderColor: "#1f8ac0" },
-                "&.Mui-focused fieldset": { borderColor: "#104C91" },
-              },
+              textAlign: 'center',
+              mb: 3,
+              fontWeight: 600,
+              color:"primary"
             }}
-          />
+          >
+            Login
+          </Typography>
 
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="senha"
-            label="Senha"
-            type={showPassword ? "text" : "password"}
-            id="outlined-basic"
-            value={formData.senha}
-            onChange={handleInputChange}
-            autoComplete="current-password"
-            variant="outlined"
-            error={!!errors.senha}
-            helperText={errors.senha}
-            disabled={isLoading}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                "&:hover fieldset": { borderColor: "#1f8ac0" },
-                "&.Mui-focused fieldset": { borderColor: "#104C91" },
-              },
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="alternar visibilidade da senha"
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                    disabled={isLoading}
-                    sx={{ color: "#888" }}
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
+          <Box component="form" onSubmit={handleSubmit} noValidate>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <TextField
+                error={emailError}
+                helperText={emailErrorMessage}
+                id="outlined-basic"
+                type="email"
+                label="Email"
+                name="email"
+                placeholder="seu@email.com"
+                autoComplete="email"
+                autoFocus
+                required
+                fullWidth
+                variant="outlined"
+              />
+            </FormControl>
 
-          <Box sx={{ textAlign: "center", mt: 2, mb: 1 }}>
-            <LinkRouter to="/MonitoriaJa/recuperar-senha">
-              <Link
-                variant="body2"
-                color="primary"
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <TextField
+                error={passwordError}
+                helperText={passwordErrorMessage}
+                name="password"
+                label="Senha"
+                placeholder="••••••"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                required
+                fullWidth
+                variant="outlined"
+              />
+            </FormControl>
+
+            <Box sx={{textAlign: 'center'}}>
+              <Button
+                type="submit"
+                variant="contained"
                 sx={{
-                  textDecoration: "none",
-                  "&:hover": { textDecoration: "underline" },
+                  mt: 2,
+                  mb: 2,
+                  py: 1.5,
+                  px: 6,
+                  backgroundColor: 'primary',
+                  '&:hover': {
+                    backgroundColor: 'var(--cor-secundaria)',
+                  },
                 }}
               >
-                Esqueceu a senha?
-              </Link>
-            </LinkRouter>
-          </Box>
+                Entrar
+              </Button>
+            </Box>
 
-          <CustomLoginButton
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            size="medium"
-            disabled={isLoading}
-            sx={{ mt: 2, mb: 2 }}
-          >
-            {isLoading ? "ENTRANDO..." : "LOGAR"}
-          </CustomLoginButton>
-        </Box>
-      </LoginCard>
-    </Box>
+            <Box sx={{ textAlign: 'center' }}>
+              <Link
+                component="button"
+                type="button"
+                onClick={handleForgotPassword}
+                variant="body2"
+                sx={{
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                  color: 'var(--cor-secundaria)',
+                  '&:hover': {
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                Esqueceu sua senha?
+              </Link>
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
+    </Container>
   );
 };
 
