@@ -36,31 +36,6 @@ interface FormData {
   comentario: string;
 }
 
-const MONITORES_ALTERNATIVOS = [
-  {
-    id: 2,
-    nome: 'Ana Silva',
-    materia: 'Cálculo II',
-    nota: 4.8,
-    preco: 'R$ 35/h',
-    especialidades: ['Derivadas', 'Integrais', 'Limites'],
-  },
-  {
-    id: 3,
-    nome: 'Pedro Santos',
-    materia: 'Cálculo II',
-    nota: 4.7,
-    preco: 'R$ 30/h',
-    especialidades: ['Funções', 'Equações Diferenciais'],
-  },
-];
-
-const MATERIAIS_PREPARATORIOS = [
-  { titulo: 'Lista de Exercícios - Integrais', tipo: 'PDF', tamanho: '2.1 MB' },
-  { titulo: 'Resumo Teórico - Cálculo II', tipo: 'PDF', tamanho: '1.8 MB' },
-  { titulo: 'Formulário Básico', tipo: 'PDF', tamanho: '0.5 MB' },
-];
-
 const DADOS_REAGENDAMENTO = {
   monitor: {
     nome: 'João Silva',
