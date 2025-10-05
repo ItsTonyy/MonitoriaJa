@@ -19,6 +19,8 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import StarIcon from "@mui/icons-material/Star";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../redux/hooks";
+import { setSelectedMonitor } from "../redux/features/monitor/monitorSlice";
 
 export type Monitor = {
   id: number;
@@ -28,6 +30,7 @@ export type Monitor = {
   servico: string;
   foto: string;
   avaliacao: number;
+  formacao?: string;
 };
 
 export const MONITORES: Monitor[] = [
@@ -39,6 +42,8 @@ export const MONITORES: Monitor[] = [
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/men/1.jpg",
     avaliacao: 4.9,
+    formacao:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
   },
   {
     id: 2,
@@ -189,6 +194,7 @@ function getCardsPerPage() {
 }
 
 function ListaMonitores() {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [buscaNome, setBuscaNome] = useState("");
   const [buscaMateria, setBuscaMateria] = useState("");
@@ -233,7 +239,7 @@ function ListaMonitores() {
         p: 3,
         borderRadius: 2,
         bgcolor: "background.default",
-        maxWidth: 1200
+        maxWidth: 1200,
       }}
     >
       <Typography
@@ -516,11 +522,10 @@ function ListaMonitores() {
                         variant="contained"
                         color="primary"
                         size="medium"
-                        onClick={() =>
-                          navigate("/MonitoriaJa/detalhes-monitor", {
-                            state: { monitor },
-                          })
-                        }
+                        onClick={() => {
+                          dispatch(setSelectedMonitor(monitor));
+                          navigate("/MonitoriaJa/detalhes-monitor");
+                        }}
                       >
                         Acessar
                       </Button>

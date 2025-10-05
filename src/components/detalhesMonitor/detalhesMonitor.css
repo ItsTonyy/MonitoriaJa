@@ -39,7 +39,7 @@ body {
 
   @media (width <= 640px) {
     margin: 0;
-    padding-top: 6rem;
+    padding-top: 0rem;
     width: auto;
     border-radius: 0;
   }
