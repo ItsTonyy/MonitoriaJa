@@ -14,7 +14,7 @@ import {
   Alert,
 } from '@mui/material';
 import './LoginForm.css';
-import { loginUser } from '../../redux/login/actions';
+import { fetchLogin } from '../../redux/login/fetch';
 import { AppDispatch, RootState } from '../../redux/store';
 
 const LoginForm: React.FC = () => {
@@ -67,7 +67,7 @@ const LoginForm: React.FC = () => {
     }
     const data = new FormData(event.currentTarget);
     
-    await dispatch(loginUser({
+    await dispatch(fetchLogin({
       email: data.get('email') as string,
       password: data.get('password') as string,
     }));

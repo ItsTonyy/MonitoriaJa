@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./RecuperarSenha.css";
 import { TextField, Box, Button, CircularProgress, Alert } from "@mui/material";
-import { resetPassword } from "../../redux/login/actions";
+import { fetchResetPassword } from "../../redux/login/fetch";
 import { clearResetPasswordState } from "../../redux/login/slice";
 import { AppDispatch, RootState } from "../../redux/store";
 
@@ -48,7 +48,7 @@ const RecuperarSenhaForm = () => {
     e.preventDefault();
     if (!validateEmail()) return;
     
-    await dispatch(resetPassword(email));
+    await dispatch(fetchResetPassword(email));
   };
 
   return (

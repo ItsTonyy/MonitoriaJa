@@ -10,32 +10,19 @@ import {
   Chip,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CancelIcon from "@mui/icons-material/Cancel";
 import StarIcon from "@mui/icons-material/Star";
 import { Monitor } from "../ListaMonitores";
-
+import { RootState, AppDispatch } from "../../redux/store";
+import { fetchNotificacoes, fetchMarkAsRead } from "../../redux/notificacoes/fetch";
+import { type Notificacao } from "../../services/notificacoesService";
 
 /*interface NotificacaoCardProps {
   color: "primary";
 }*/
-
-interface Notificacao {
-  id: string;
-  tipo:
-    | "cancelamento"
-    | "reagendamento"
-    | "agendamento"
-    | "avaliacao"
-    | "agendamentoConfirmado";
-  titulo: string;
-  previa: string;
-  descricao: string;
-  tempo: string;
-  lida: boolean;
-  icone?: React.ReactNode;
-}
 
 const monitorMock: Monitor[] = [
   {
@@ -76,90 +63,46 @@ const monitorMock: Monitor[] = [
   },
 ];
 
-const notificacoesMock: Notificacao[] = [
-  {
-    id: "1",
-    tipo: "reagendamento",
-    previa:
-      "Olá, Aluno x! Passando pra avisar que sua aula com " +
-      monitorMock[0].nome +
-      " foi reagendada.",
-    titulo: "Reagendamento realizado com sucesso",
-    descricao:
-      "Sua aula com " +
-      monitorMock[0].nome +
-      ' foi reagendada com sucesso. Clique em "Visualizar Agendamentos" para mais informacoes.',
-    tempo: "há 2 min",
-    lida: false,
-    icone: <CalendarMonthIcon color="primary" />,
-  },
-  {
-    id: "2",
-    tipo: "reagendamento",
-    previa:
-      "Olá, " +
-      monitorMock[0].nome +
-      "! Passando pra avisar que sua aula com Aluno x foi reagendada.",
-    titulo: "Reagendamento confirmado",
-    descricao:
-      'A aula de Aluno x foi reagendada. Clique em "Visualizar Agendamentos" para mais informacoes.',
-    tempo: "há 1 hora",
-    lida: false,
-    icone: <CalendarMonthIcon color="primary" />,
-  },
-  {
-    id: "3",
-    tipo: "agendamentoConfirmado",
-    previa:
-      "Olá, Aluno y! Passando pra avisar que sua aula com " +
-      monitorMock[2].nome +
-      " foi reagendada.",
-    titulo: "Aula confirmada",
-    descricao:
-      "Sua aula com " +
-      monitorMock[2].nome +
-      'foi confirmada. Clique em "Visualizar Agendamentos" para mais informacoes.',
-    tempo: "há 3 horas",
-    lida: true,
-    icone: <CalendarMonthIcon color="primary" />,
-  },
-  {
-    id: "4",
-    tipo: "avaliacao",
-    previa:
-      "Fala, Aluno y! Conta com a gente um pouco da sua experiência com " +
-      monitorMock[2].nome +
-      "!",
-    titulo: "Avalie sua experiência",
-    descricao:
-      "Conta pra gente como foi o serviço com " +
-      monitorMock[2].nome +
-      '! Clique em "Avaliar" para deixar seu feedback!',
-    tempo: "há 1 dia",
-    lida: true,
-    icone: <StarIcon color="warning" />,
-  },
-  {
-    id: "5",
-    tipo: "cancelamento",
-    previa:
-      "Olá," +
-      monitorMock[2].nome +
-      "! Passando pra avisar que sua aula com Aluno y foi cancelada.",
-    titulo: "Aula cancelada",
-    descricao: "Sua aula com Aluno y foi cancelada",
-    tempo: "há 2 dias",
-    lida: false,
-    icone: <CancelIcon color="error" />,
-  },
-];
 
 export default function NotificacaoCard() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [notificacoes, setNotificacoes] = React.useState(notificacoesMock);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  
+  // Estados do Redux
+  const { notificacoes, loading, error } = useSelector((state: RootState) => state.notificacoes);
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  
   const open = Boolean(anchorEl);
   const notificacaoNaoLidas = notificacoes.filter((n) => !n.lida).length;
-  const navigate = useNavigate();
+
+  // Função para mapear ícones por tipo
+  const getIconeByTipo = (tipo: string) => {
+    switch (tipo) {
+      case "cancelamento":
+        return <CancelIcon color="error" />;
+      case "reagendamento":
+        return <CalendarMonthIcon color="primary" />;
+      case "agendamento":
+        return <CalendarMonthIcon color="primary" />;
+      case "agendamentoConfirmado":
+        return <CalendarMonthIcon color="success" />;
+      case "avaliacao":
+        return <StarIcon color="warning" />;
+      default:
+        return <CalendarMonthIcon />;
+    }
+  };
+
+  // Carregar notificações quando o usuário estiver autenticado
+  React.useEffect(() => {
+    if (isAuthenticated && user) {
+      dispatch(fetchNotificacoes({ 
+        userId: user.id, 
+        userRole: user.role 
+      }));
+    }
+  }, [isAuthenticated, user, dispatch]);
 
   // Ordenar notificações: não lidas primeiro, depois por data mais recente
   const notificacoesOrdenadas = React.useMemo(() => {
@@ -186,9 +129,7 @@ export default function NotificacaoCard() {
 
     // Marcar notificação como lida se não estiver lida
     if (!notificacao.lida) {
-      setNotificacoes((prev) =>
-        prev.map((n) => (n.id === notificacao.id ? { ...n, lida: true } : n))
-      );
+      dispatch(fetchMarkAsRead(notificacao.id));
     }
 
     // Passar apenas dados serializáveis (sem o ícone)
@@ -296,7 +237,7 @@ export default function NotificacaoCard() {
                     mr: 2,
                   }}
                 >
-                  {notificacao.icone}
+                  {getIconeByTipo(notificacao.tipo)}
                 </Avatar>
 
                 <Box sx={{ flex: 1 }}>
