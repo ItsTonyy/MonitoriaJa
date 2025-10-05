@@ -20,6 +20,8 @@ import Menu from '@mui/material/Menu';
 import Tooltip from '@mui/material/Tooltip';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import logo from '../../public/logoMonitoriaJá.png';
+import anonUser from '../../public/anon-user.avif';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -116,7 +118,7 @@ export default function AppNavBar() {
             >
               <Box>
                 <img
-                  src="src/assets/logoMonitoriaJá-SomenteGlobo.png"
+                  src={logo}
                   alt="logoMonitoriaJá"
                   className="logo-img"
                 />
@@ -231,11 +233,13 @@ export default function AppNavBar() {
               >
                 Logout
               </Button>
+
+              
             )}
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Anonymous User" src="public/anon-user.avif" />
+                  <Avatar alt="Anonymous User" src={anonUser} />
                 </IconButton>
               </Tooltip>
               <Menu
