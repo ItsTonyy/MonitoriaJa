@@ -5,6 +5,8 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { clearAgendamento } from '../../redux/features/agendamento/agendamentoSlice';
 
 interface AgendamentoMonitorProps {
   linkImagem?: string;
@@ -17,9 +19,11 @@ interface AgendamentoMonitorProps {
 }
 
 function AgendamentoMonitor(props: AgendamentoMonitorProps) {
+  const dispatch = useAppDispatch();
+  const agendamento = useAppSelector((state) => state.agendamento);
   const navigate = useNavigate();
-  const location = useLocation();
-  const state = location.state || {};
+  /*const location = useLocation();
+  const state = location.state || {};/*/
   let materiasTeste = ['matemática', 'inglês', 'português'];
 
   return (
@@ -29,7 +33,7 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
       <div className="monitorDetails">
         <div className="monitorProfile">
           <div>
-            <img src={state.monitorImage} alt="imagem do monitor" className="monitorImage" />
+            <img src={agendamento.monitorImage} alt="imagem do monitor" className="monitorImage" />
           </div>
 
           <div className="avaliacao">
@@ -43,7 +47,7 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
         </div>
         <div className="monitor-data">
           <div className="monitor-data-specific">
-            <h1 className="titulo-monitor">{state.monitorName}</h1>
+            <h1 className="titulo-monitor">{agendamento.monitorName}</h1>
             <div className="monitor-materia-valor">
               <h2>
                 {materiasTeste.map((materia, index) => (
@@ -120,26 +124,14 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
         </div>
       </div>
 
-      <div className="botoes">
+     <div className="botoes">
         <Button
           variant="outlined"
           sx={{ padding: '5px 40px' }}
-          onClick={() =>
-            navigate('/MonitoriaJa/detalhes-monitor', {
-              state: {
-                monitor: {
-                  foto: state.monitorImage,
-                  nome: state.monitorName,
-                  materia: state.materia,
-                  valor: state.valor,
-                  duracao: state.duracao,
-                  formacao: state.formacao,
-                  horarios: state.horarios,
-                  // adicione outros campos se necessário
-                },
-              },
-            })
-          }
+          onClick={() => {
+            dispatch(clearAgendamento());
+            navigate('/MonitoriaJa/detalhes-monitor');
+          }}
         >
           Voltar
         </Button>
