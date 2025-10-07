@@ -5,13 +5,13 @@ import CalculateIcon from '@mui/icons-material/Calculate';
 import PublicIcon from '@mui/icons-material/Public';
 import MicExternalOnIcon from '@mui/icons-material/MicExternalOn';
 import { useNavigate } from 'react-router-dom';
-import estudantesColaborando from '../../public/estudantes-colaborando.avif'
-import estudante1 from '../../public/estudante1.png'
-import estudante2 from '../../public/estudante2.png'
-import estudante3 from '../../public/estudante3.png'
-import estudante4 from '../../public/estudante4.png'
-import professor1 from '../../public/professor1.png'
-import professor4 from '../../public/professor4.png'
+import estudantesColaborando from '/estudantes-colaborando.avif'
+import estudante1 from '/estudante1.png'
+import estudante2 from '/estudante2.png'
+import estudante3 from '/estudante3.png'
+import estudante4 from '/estudante4.png'
+import professor1 from '/professor1.png'
+import professor4 from '/professor4.png'
 
 
 

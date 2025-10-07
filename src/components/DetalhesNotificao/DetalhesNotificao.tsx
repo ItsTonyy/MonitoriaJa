@@ -35,7 +35,7 @@ interface FormData {
   comentario: string;
 }
 
-const MONITORES_ALTERNATIVOS = [
+const MONITORES = [
   {
     id: 2,
     nome: 'Ana Silva',

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
   Button,
@@ -9,16 +10,28 @@ import {
   Paper,
   Link,
   FormControl,
-  FormLabel,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import './LoginForm.css';
+import { loginUserServer } from '../../redux/login/fetch';
+import { AppDispatch, RootState } from '../../redux/store';
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  
   const [emailError, setEmailError] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState('');
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/MonitoriaJa/lista-monitores');
+    }
+  }, [isAuthenticated, navigate]);
 
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
@@ -47,16 +60,17 @@ const LoginForm: React.FC = () => {
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validateInputs()) {
       return;
     }
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    
+    await dispatch(loginUserServer({
+      email: data.get('email') as string,
+      password: data.get('password') as string,
+    }));
   };
 
   const handleForgotPassword = () => {
@@ -98,12 +112,18 @@ const LoginForm: React.FC = () => {
             Login
           </Typography>
 
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <FormControl fullWidth sx={{ mb: 2 }}>
               <TextField
                 error={emailError}
                 helperText={emailErrorMessage}
-                id="outlined-basic"
+                id="email"
                 type="email"
                 label="Email"
                 name="email"
@@ -136,6 +156,7 @@ const LoginForm: React.FC = () => {
               <Button
                 type="submit"
                 variant="contained"
+                disabled={loading}
                 sx={{
                   mt: 2,
                   mb: 2,
@@ -147,7 +168,7 @@ const LoginForm: React.FC = () => {
                   },
                 }}
               >
-                Entrar
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Entrar'}
               </Button>
             </Box>
 

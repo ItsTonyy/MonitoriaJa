@@ -2,6 +2,8 @@ import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import './appNavBar.css';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store.js';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -20,8 +22,8 @@ import Menu from '@mui/material/Menu';
 import Tooltip from '@mui/material/Tooltip';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import logo from '../../public/logoMonitoriaJá.png';
-import anonUser from '../../public/anon-user.avif';
+import logo from '/logoMonitoriaJá.png';
+import anonUser from '/anon-user.avif';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -43,11 +45,11 @@ const settings = ['Perfil', 'Histórico', 'Logout'];
 
 export default function AppNavBar() {
   const [open, setOpen] = React.useState(false);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   function handleClickHome() {
     navigate('/MonitoriaJa');
@@ -65,13 +67,7 @@ export default function AppNavBar() {
     navigate('/MonitoriaJa/login');
   }
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
 
   function handleClickPerfil() {}
 
@@ -201,15 +197,15 @@ export default function AppNavBar() {
               alignItems: 'center',
             }}
           >
-            {isLoggedIn && <NotificacaoCard />}
-            {!isLoggedIn ? (
+            {isAuthenticated && <NotificacaoCard />}
+            {!isAuthenticated ? (
               <>
                 <Button
                   color="primary"
                   variant="text"
                   size="small"
                   sx={{ ':hover': { transform: 'none' } }}
-                  onClick={handleLogin}
+                  onClick={handleClickLogin}
                 >
                   Sign in
                 </Button>
@@ -229,12 +225,10 @@ export default function AppNavBar() {
                 variant="outlined"
                 size="small"
                 sx={{ ':hover': { transform: 'none' } }}
-                onClick={handleLogout}
+                onClick={handleClickLogout}
               >
                 Logout
               </Button>
-
-              
             )}
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
@@ -272,42 +266,8 @@ export default function AppNavBar() {
           </Box>
 
           <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
-            {isLoggedIn && <NotificacaoCard />}
-
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Anonymous User" src="public/anon-user.avif" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                <MenuItem onClick={handleClickPerfil}>
-                  <Typography sx={{ textAlign: 'center' }}>Perfil</Typography>
-                </MenuItem>
-                <MenuItem onClick={handleClickHistorico}>
-                  <Typography sx={{ textAlign: 'center' }}>Histórico</Typography>
-                </MenuItem>
-                <MenuItem onClick={handleClickLogout}>
-                  <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-
+            <NotificacaoCard />
+            <ColorModeIconDropdown size="medium" />
             <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
               <MenuIcon />
             </IconButton>
@@ -339,25 +299,19 @@ export default function AppNavBar() {
                 <MenuItem>Dashboard</MenuItem>
                 <MenuItem>Sobre Nós</MenuItem>
                 <Divider sx={{ my: 3 }} />
-                {!isLoggedIn ? (
+                {!isAuthenticated && (
                   <>
                     <MenuItem>
-                      <Button color="primary" variant="contained" fullWidth onClick={handleLogin}>
+                      <Button color="primary" variant="contained" fullWidth onClick={handleClickLogin}>
                         Sign up
                       </Button>
                     </MenuItem>
                     <MenuItem>
-                      <Button color="primary" variant="outlined" fullWidth onClick={handleLogin}>
+                      <Button color="primary" variant="outlined" fullWidth onClick={handleClickLogin}>
                         Sign in
                       </Button>
                     </MenuItem>
                   </>
-                ) : (
-                  <MenuItem>
-                    <Button color="primary" variant="outlined" fullWidth onClick={handleLogout}>
-                      Logout
-                    </Button>
-                  </MenuItem>
                 )}
               </Box>
             </Drawer>
