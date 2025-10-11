@@ -3,7 +3,7 @@ import { styled, alpha } from '@mui/material/styles';
 import './appNavBar.css';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store.js';
+import type { RootState } from '../redux/root-reducer';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -49,7 +49,7 @@ export default function AppNavBar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const navigate = useNavigate();
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated } = useSelector((state: RootState) => state.login);
 
   function handleClickHome() {
     navigate('/MonitoriaJa');

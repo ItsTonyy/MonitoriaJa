@@ -14,13 +14,15 @@ import {
   Alert,
 } from '@mui/material';
 import './LoginForm.css';
-import { loginUserServer } from '../../redux/login/fetch';
-import { AppDispatch, RootState } from '../../redux/store';
+import { loginUserServer } from '../../redux/features/login/fetch';
+import type { RootState } from '../../redux/root-reducer';
+import type { AppDispatch } from '../../redux/store';
+import {Link as LinkRouter } from "react-router-dom"
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.login);
   
   const [emailError, setEmailError] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState('');
@@ -171,25 +173,44 @@ const LoginForm: React.FC = () => {
                 {loading ? <CircularProgress size={24} color="inherit" /> : 'Entrar'}
               </Button>
             </Box>
-
-            <Box sx={{ textAlign: 'center' }}>
-              <Link
-                component="button"
-                type="button"
-                onClick={handleForgotPassword}
-                variant="body2"
-                sx={{
-                  cursor: 'pointer',
-                  textDecoration: 'none',
-                  color: 'var(--cor-secundaria)',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                Esqueceu sua senha?
-              </Link>
-            </Box>
+<Box sx={{ textAlign: 'center' }}>
+  <Link
+    component="button"
+    type="button"
+    onClick={handleForgotPassword}
+    variant="body2"
+    sx={{
+      cursor: 'pointer',
+      textDecoration: 'none',
+      color: 'var(--cor-secundaria)',
+      '&:hover': {
+        textDecoration: 'underline',
+      },
+    }}
+  >
+    Esqueceu sua senha?
+  </Link>
+  <Typography component="span" sx={{ mx: 2 }}>
+    ou
+  </Typography>
+  <LinkRouter to="/MonitoriaJa/cadastro-monitor" type="button">
+    <Link
+      component="button"
+      type="button"
+      variant="body2"
+      sx={{
+        cursor: 'pointer',
+        textDecoration: 'none',
+        color: 'var(--cor-secundaria)',
+        '&:hover': {
+          textDecoration: 'underline',
+        },
+      }}
+    >
+      Não tenho uma conta.
+    </Link>
+  </LinkRouter>
+</Box>
           </Box>
         </Paper>
       </Box>

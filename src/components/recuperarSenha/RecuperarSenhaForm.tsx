@@ -3,15 +3,15 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./RecuperarSenha.css";
 import { TextField, Box, Button, CircularProgress, Alert } from "@mui/material";
-import { resetPasswordServer } from "../../redux/login/fetch";
-import { clearResetPasswordState } from "../../redux/login/slice";
-import { AppDispatch, RootState } from "../../redux/store";
-
+import { resetPasswordServer } from "../../redux/features/login/fetch";
+import { clearResetPasswordState } from "../../redux/features/login/slice";
+import type { RootState } from "../../redux/root-reducer";
+import type { AppDispatch } from "../../redux/store";
 const RecuperarSenhaForm = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { resetPasswordLoading, resetPasswordSuccess, resetPasswordError } = useSelector(
-    (state: RootState) => state.auth
+    (state: RootState) => state.login
   );
   
   const [email, setEmail] = useState("");
@@ -26,12 +26,13 @@ const RecuperarSenhaForm = () => {
 
   useEffect(() => {
     if (resetPasswordSuccess) {
+      localStorage.setItem('resetEmail', email);
       setTimeout(() => {
         dispatch(clearResetPasswordState());
-        navigate("/MonitoriaJa/login");
-      }, 3000);
+        navigate("/MonitoriaJa/redefinir-senha");
+      }, 2000);
     }
-  }, [resetPasswordSuccess, dispatch, navigate]);
+  }, [resetPasswordSuccess, dispatch, navigate, email]);
 
   const validateEmail = () => {
     if (!email || !/\S+@\S+\.\S+/.test(email)) {

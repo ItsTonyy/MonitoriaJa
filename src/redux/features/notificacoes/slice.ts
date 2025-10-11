@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
-import type { RootState } from "../store";
+import type { RootState } from "../../root-reducer";
 import { fetchNotificacoes, markAsReadServer } from "./fetch";
 
 export interface Notificacao {
@@ -61,10 +61,12 @@ const notificacoesSlice = createSlice({
   }
 });
 
-export const notificacoesReducer = notificacoesSlice.reducer;
+const notificacoesReducer = notificacoesSlice.reducer;
+
+export default notificacoesReducer;
 
 export const {
   selectAll: selectAllNotificacoes,
   selectById: selectNotificacaoById,
   selectIds: selectNotificacaoIds
-} = notificacaoAdapter.getSelectors((state: RootState) => state.notificacoesReducer);
+} = notificacaoAdapter.getSelectors((state: RootState) => state.notificacoes);

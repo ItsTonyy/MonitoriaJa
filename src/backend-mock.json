@@ -1,55 +1,55 @@
 {
-    "avaliacoes": [
-        {
-            "id": 0,
-            "aluno_id": 1,
-            "monitor_id": 1,
-            "avaliacao": 5,
-            "curtido": true,
-            "comentario": "Ótimo monitor, muito atencioso e sempre disposto a ajudar."
-        },
-        {
-            "id": 1,
-            "aluno_id": 2,
-            "monitor_id": 1,
-            "avaliacao": 4,
-            "curtido": false,
-            "comentario": "Monitor bem atencioso, mas poderia melhorar na organização."
-        },
-        {
-            "id": 2,
-            "aluno_id": 3,
-            "monitor_id": 1,
-            "avaliacao": 3,
-            "curtido": true,
-            "comentario": "Monitor interessante, mas não foi bem organizado."
-        },
-        {
-            "id": 3,
-            "aluno_id": 4,
-            "monitor_id": 1,
-            "avaliacao": 2,
-            "curtido": false,
-            "comentario": "Monitor não foi bem atencioso."
-        }
-    ],
+  "avaliacoes": [
+    {
+      "id": "0",
+      "aluno_id": 1,
+      "monitor_id": 1,
+      "avaliacao": 5,
+      "curtido": true,
+      "comentario": "Ótimo monitor, muito atencioso e sempre disposto a ajudar."
+    },
+    {
+      "id": "1",
+      "aluno_id": 2,
+      "monitor_id": 1,
+      "avaliacao": 4,
+      "curtido": false,
+      "comentario": "Monitor bem atencioso, mas poderia melhorar na organização."
+    },
+    {
+      "id": "2",
+      "aluno_id": 3,
+      "monitor_id": 1,
+      "avaliacao": 3,
+      "curtido": true,
+      "comentario": "Monitor interessante, mas não foi bem organizado."
+    },
+    {
+      "id": "3",
+      "aluno_id": 4,
+      "monitor_id": 1,
+      "avaliacao": 2,
+      "curtido": false,
+      "comentario": "Monitor não foi bem atencioso."
+    }
+  ],
   "usuarios": [
     {
-      "id": 1,
+      "id": "1",
       "name": "adminTeste",
       "email": "admin@teste.com",
       "password": "123456",
       "role": "admin"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "monitorTeste",
       "email": "monitor@teste.com",
       "password": "123456",
       "role": "monitor"
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "userTeste",
       "email": "user@teste.com",
       "password": "123456",
@@ -120,7 +120,7 @@
       "previa": "Olá, userTeste! Sua aula com Maria Souza foi agendada com sucesso.",
       "descricao": "Sua aula de Física com Maria Souza foi agendada para amanhã às 14h. Clique em 'Visualizar Agendamentos' para mais informações.",
       "tempo": "há 30 min",
-      "lida": false,
+      "lida": true,
       "role": "user"
     },
     {
@@ -131,7 +131,7 @@
       "previa": "Olá, aluno! Que tal avaliar sua experiência com Carlos Lima?",
       "descricao": "Sua aula com João Silva foi concluída. Clique em 'Avaliar' para deixar seu feedback e nos ajudar a melhorar!",
       "tempo": "há 1 hora",
-      "lida": false,
+      "lida": true,
       "role": "user"
     },
     {
@@ -153,7 +153,7 @@
       "previa": "Olá, userTeste! Sua aula com Carlos Lima foi reagendada.",
       "descricao": "Sua aula de Química com Carlos Lima foi reagendada para segunda-feira às 10h. Clique em 'Visualizar Agendamentos' para mais informações.",
       "tempo": "há 4 horas",
-      "lida": false,
+      "lida": true,
       "role": "user"
     }
   ]

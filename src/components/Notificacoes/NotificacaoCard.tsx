@@ -11,9 +11,10 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "../../redux/store";
-import { fetchNotificacoes, markAsReadServer } from "../../redux/notificacoes/fetch";
-import { selectAllNotificacoes } from "../../redux/notificacoes/slice";
+import type { RootState } from "../../redux/root-reducer";
+import type { AppDispatch } from "../../redux/store";
+import { fetchNotificacoes, markAsReadServer } from "../../redux/features/notificacoes/fetch";
+import { selectAllNotificacoes } from "../../redux/features/notificacoes/slice";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -44,13 +45,18 @@ export default function NotificacaoCard() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state: RootState) => state.login.user);
+  const isAuthenticated = useSelector((state: RootState) => state.login.isAuthenticated);
   const notificacoes = useSelector(selectAllNotificacoes);
   const open = Boolean(anchorEl);
   const notificacaoNaoLidas = notificacoes.filter((n) => !n.lida).length;
 
   React.useEffect(() => {
-    if (user) {
+    console.log('NotificacaoCard - user:', user);
+    console.log('user.id:', user?.id, 'user.role:', user?.role);
+    console.log('NotificacaoCard - notificacoes:', notificacoes);
+    if (user && user.id && user.role) {
+      console.log('Dispatching fetchNotificacoes with:', { userId: user.id, userRole: user.role });
       dispatch(fetchNotificacoes({ userId: user.id, userRole: user.role }));
     }
   }, [user, dispatch]);
@@ -97,6 +103,10 @@ export default function NotificacaoCard() {
     });
     handleClose();
   };
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div>

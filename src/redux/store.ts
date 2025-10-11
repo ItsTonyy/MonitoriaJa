@@ -1,17 +1,9 @@
-import { configureStore } from '@reduxjs/toolkit';
-import loginReducer from './login/slice.ts';
-import { notificacoesReducer } from './notificacoes/slice.ts';
-
+import { configureStore } from "@reduxjs/toolkit";
+import rootReducer from './root-reducer';
 
 export const store = configureStore({
-  reducer:{
-      auth: loginReducer,
-      notificacoesReducer: notificacoesReducer,
-  }
-})
-
-
-
-export type RootState = ReturnType<typeof store.getState>;
+  reducer: rootReducer
+});
 
 export type AppDispatch = typeof store.dispatch;
+export default store;
