@@ -25,8 +25,7 @@ const AvaliacaoCard = styled(Card)({
   maxWidth: "none",
   padding: "3rem",
   textAlign: "left",
-  borderRadius: "10px",
-  boxShadow: "grey 5px 5px 10px",
+  borderRadius: "10px",	
   minHeight: "70vh",
   "@media (max-width: 768px)": {
     padding: "2rem",
