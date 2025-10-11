@@ -573,7 +573,7 @@ input[type='radio']:focus {
 
   main {
     padding: 16px;
-    margin-top: 50px;
+    margin-top: 0px;
   }
 
   .titulo {

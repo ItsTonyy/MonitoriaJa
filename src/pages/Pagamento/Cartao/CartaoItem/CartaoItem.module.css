@@ -72,6 +72,11 @@ body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
 .button {
   flex: 1;
   min-width: 100px;
+  background-color: var(--cor-primaria) !important;
+}
+
+.button:hover{
+  background-color: var(--cor-secundaria) !important;
 }
 
 @media (max-width: 480px) {

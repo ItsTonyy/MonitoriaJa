@@ -37,14 +37,14 @@ const handleCancel = () => {
 
         <Box className={styles.buttonGroup}>
           <ConfirmationButton
-            className={styles.reusableButton}
+            className={styles.button}
             onClick={() => setOpen(true)}
           >
             Confirmar Pagamento
           </ConfirmationButton>
 
           <ConfirmationButton 
-            className={styles.reusableButton} 
+            className={styles.button} 
             onClick={handleCancel}
           >
             Cancelar

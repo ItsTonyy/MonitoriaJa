@@ -20,6 +20,8 @@ import Menu from '@mui/material/Menu';
 import Tooltip from '@mui/material/Tooltip';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import logo from '../../public/logoMonitoriaJá.png';
+import anonUser from '../../public/anon-user.avif';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -116,7 +118,7 @@ export default function AppNavBar() {
             >
               <Box>
                 <img
-                  src="src/assets/logoMonitoriaJá-SomenteGlobo.png"
+                  src={logo}
                   alt="logoMonitoriaJá"
                   className="logo-img"
                 />
@@ -231,7 +233,47 @@ export default function AppNavBar() {
               >
                 Logout
               </Button>
+
+              
             )}
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Anonymous User" src={anonUser} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem onClick={handleClickPerfil}>
+                  <Typography sx={{ textAlign: 'center' }}>Perfil</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleClickHistorico}>
+                  <Typography sx={{ textAlign: 'center' }}>Histórico</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleClickLogout}>
+                  <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Box>
+
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
+            {isLoggedIn && <NotificacaoCard />}
+
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -265,10 +307,7 @@ export default function AppNavBar() {
                 </MenuItem>
               </Menu>
             </Box>
-          </Box>
-          <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
-            {isLoggedIn && <NotificacaoCard />}
-            <ColorModeIconDropdown size="medium" />
+
             <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
               <MenuIcon />
             </IconButton>

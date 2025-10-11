@@ -49,6 +49,14 @@ body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
   gap: 0.75rem;
 }
 
+.button{
+  background-color: var(--cor-primaria) !important;
+}
+
+.button:hover{
+  background-color: var(--cor-secundaria) !important;
+}
+
 .name {
   font-size: 2rem;
   font-weight: bold;

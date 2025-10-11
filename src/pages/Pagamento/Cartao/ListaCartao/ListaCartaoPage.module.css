@@ -96,6 +96,7 @@ body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
 
 .button {
   flex: 1;
+  background-color: var(--cor-primaria) !important;
 }
 
 @media (max-width: 640px) {
