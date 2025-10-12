@@ -1,30 +1,66 @@
-import './agendamentoMonitor.css';
-import Button from '@mui/material/Button';
-import { useLocation, useNavigate } from 'react-router-dom';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import VideocamIcon from '@mui/icons-material/Videocam';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { clearAgendamento } from '../../redux/features/agendamento/agendamentoSlice';
+import "./agendamentoMonitor.css";
+import Button from "@mui/material/Button";
+import { useNavigate } from "react-router-dom";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import VideocamIcon from "@mui/icons-material/Videocam";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import {
+  updateAgendamentoStatus,
+  updateAgendamentoPagamento,
+} from "../../redux/features/agendamento/agendamentoSlice";
+import { useState } from "react";
 
-interface AgendamentoMonitorProps {
-  linkImagem?: string;
-  nomeMonitor?: string;
-  materias?: string[];
-  data?: string; // xx/yy/zz
-  horario?: string; // xx:00 - xx:00
-  valor?: number; // x,00
-  nota?: string; // x.0
-}
-
-function AgendamentoMonitor(props: AgendamentoMonitorProps) {
+function AgendamentoMonitor() {
   const dispatch = useAppDispatch();
-  const agendamento = useAppSelector((state) => state.agendamento);
   const navigate = useNavigate();
-  /*const location = useLocation();
-  const state = location.state || {};/*/
-  let materiasTeste = ['matemática', 'inglês', 'português'];
+  const currentAgendamento = useAppSelector(
+    (state) => state.agendamento.currentAgendamento
+  );
+  const [servicoSelecionado, setServicoSelecionado] = useState<string[]>([]);
+  const [formaPagamento, setFormaPagamento] = useState<"CARTAO" | "PIX" | "">(
+    ""
+  );
+  const [topicos, setTopicos] = useState("");
+
+  // Redirect if no agendamento is selected
+  if (!currentAgendamento) {
+    navigate("/MonitoriaJa/");
+    return null;
+  }
+
+  const handleServicoChange = (servico: string) => {
+    setServicoSelecionado((prev) => {
+      if (prev.includes(servico)) {
+        return prev.filter((s) => s !== servico);
+      }
+      return [...prev, servico];
+    });
+  };
+
+  const handleAgendar = () => {
+    if (!currentAgendamento.id || !formaPagamento) return;
+
+    // Update payment status
+    dispatch(
+      updateAgendamentoPagamento({
+        agendamentoId: currentAgendamento.id,
+        statusPagamento: "PENDENTE",
+        formaPagamento: formaPagamento,
+      })
+    );
+
+    // Update agendamento status
+    dispatch(
+      updateAgendamentoStatus({
+        agendamentoId: currentAgendamento.id,
+        status: "AGUARDANDO",
+      })
+    );
+
+    navigate("/MonitoriaJa/lista-agendamentos");
+  };
 
   return (
     <main className="main">
@@ -33,13 +69,17 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
       <div className="monitorDetails">
         <div className="monitorProfile">
           <div>
-            <img src={agendamento.monitorImage} alt="imagem do monitor" className="monitorImage" />
+            <img
+              src={currentAgendamento.monitor?.foto}
+              alt="imagem do monitor"
+              className="monitorImage"
+            />
           </div>
 
           <div className="avaliacao">
-            <p className="nota">{props.nota}</p>
+            <p className="nota">{currentAgendamento.monitor?.avaliacao}</p>
             <img
-              src="./public/five-stars-rating-icon-png.webp"
+              src="/public/five-stars-rating-icon-png.webp"
               alt="avaliação do monitor"
               className="avaliação-monitor"
             />
@@ -47,15 +87,11 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
         </div>
         <div className="monitor-data">
           <div className="monitor-data-specific">
-            <h1 className="titulo-monitor">{agendamento.monitorName}</h1>
+            <h1 className="titulo-monitor">
+              {currentAgendamento.monitor?.nome}
+            </h1>
             <div className="monitor-materia-valor">
-              <h2>
-                {materiasTeste.map((materia, index) => (
-                  <span key={index} className="materia">
-                    {materia}
-                  </span>
-                ))}
-              </h2>
+              <h2>{currentAgendamento.monitor?.materia}</h2>
             </div>
           </div>
 
@@ -64,24 +100,24 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
               <div className="agendamento-details-row-1">
                 <div className="agendamento-details-attributes">
                   <CalendarTodayIcon />
-                  <p>{props.data}</p>
+                  <p>{currentAgendamento.data}</p>
                 </div>
 
                 <div className="agendamento-details-attributes">
                   <AttachMoneyIcon />
-                  <p>{props.valor}</p>
+                  <p>R$ {currentAgendamento.valor}/hora</p>
                 </div>
               </div>
 
               <div className="agendamento-details-row-2">
                 <div className="agendamento-details-attributes">
                   <AccessTimeIcon />
-                  <p>{props.horario}</p>
+                  <p>{currentAgendamento.hora}</p>
                 </div>
 
                 <div className="agendamento-details-attributes">
                   <VideocamIcon />
-                  <p>Teams</p>
+                  <p>Google Meet</p>
                 </div>
               </div>
             </div>
@@ -93,11 +129,25 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
         <h1 className="titulo">Tipo de Serviço</h1>
         <div className="checkboxes">
           <label className="checkboxes-box" htmlFor="aula">
-            <input type="checkbox" name="servico" id="aula" className="checkbox" />
+            <input
+              type="checkbox"
+              name="servico"
+              id="aula"
+              className="checkbox"
+              checked={servicoSelecionado.includes("aula")}
+              onChange={() => handleServicoChange("aula")}
+            />
             <span className="checkbox-names">aula</span>
           </label>
           <label className="checkboxes-box" htmlFor="exercicio">
-            <input type="checkbox" name="servico" id="exercicio" className="checkbox" />
+            <input
+              type="checkbox"
+              name="servico"
+              id="exercicio"
+              className="checkbox"
+              checked={servicoSelecionado.includes("exercicio")}
+              onChange={() => handleServicoChange("exercicio")}
+            />
             <span className="checkbox-names">exercício</span>
           </label>
         </div>
@@ -107,11 +157,23 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
         <h1 className="titulo">Formas de Pagamento</h1>
         <div className="checkboxes">
           <label className="checkboxes-box" htmlFor="pix">
-            <input type="radio" name="pagamento" id="pix" />
+            <input
+              type="radio"
+              name="pagamento"
+              id="pix"
+              checked={formaPagamento === "PIX"}
+              onChange={() => setFormaPagamento("PIX")}
+            />
             <span className="checkbox-names">pix</span>
           </label>
           <label className="checkboxes-box" htmlFor="cartão">
-            <input type="radio" name="pagamento" id="cartão" />
+            <input
+              type="radio"
+              name="pagamento"
+              id="cartão"
+              checked={formaPagamento === "CARTAO"}
+              onChange={() => setFormaPagamento("CARTAO")}
+            />
             <span className="checkbox-names">cartão</span>
           </label>
         </div>
@@ -120,22 +182,31 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
       <div className="formação">
         <h1 className="titulo">Tópicos da Reunião</h1>
         <div className="text-box">
-          <textarea name="text" id="text" maxLength={1500} className="topicos-input" />
+          <textarea
+            name="text"
+            id="text"
+            maxLength={1500}
+            className="topicos-input"
+            value={topicos}
+            onChange={(e) => setTopicos(e.target.value)}
+          />
         </div>
       </div>
 
-     <div className="botoes">
+      <div className="botoes">
         <Button
           variant="outlined"
-          sx={{ padding: '5px 40px' }}
-          onClick={() => {
-            dispatch(clearAgendamento());
-            navigate('/MonitoriaJa/detalhes-monitor');
-          }}
+          sx={{ padding: "5px 40px" }}
+          onClick={() => navigate("/MonitoriaJa/detalhes-monitor")}
         >
           Voltar
         </Button>
-        <Button variant="contained" sx={{ padding: '5px 40px' }}>
+        <Button
+          variant="contained"
+          sx={{ padding: "5px 40px" }}
+          onClick={handleAgendar}
+          disabled={!formaPagamento || servicoSelecionado.length === 0}
+        >
           Agendar
         </Button>
       </div>

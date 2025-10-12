@@ -1,42 +1,26 @@
 import React from "react";
-import {
-  Modal,
-  Box,
-  Typography,
-  Avatar,
-  TextField,
-  Button,
-  Stack,
-} from "@mui/material";
+import { Modal, Box, Typography, Avatar, TextField, Button, Stack } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
+import { useAppSelector } from "../redux/hooks";
+
 interface ModalAcessarProps {
   open: boolean;
   onClose: () => void;
-  agendamento: {
-    foto: string;
-    nome: string;
-    materia: string;
-    data: string;
-    hora: string;
-    link: string;
-  };
 }
 
-const ModalAcessar: React.FC<ModalAcessarProps> = ({
-  open,
-  onClose,
-  agendamento,
-}) => {
+const ModalAcessar: React.FC<ModalAcessarProps> = ({ open, onClose }) => {
   const [copied, setCopied] = React.useState(false);
+  const agendamento = useAppSelector((state) => state.agendamento.currentAgendamento);
+
+  if (!agendamento) return null;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(agendamento.link);
+    navigator.clipboard.writeText(agendamento.link || "");
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
-
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="modal-acessar-title">
       <Box
@@ -58,8 +42,8 @@ const ModalAcessar: React.FC<ModalAcessarProps> = ({
       >
         <Stack spacing={2} alignItems="center">
           <Avatar
-            src={agendamento.foto}
-            alt={agendamento.nome}
+            src={agendamento.monitor!.foto}
+            alt={agendamento.monitor!.nome}
             sx={{
               width: 80,
               height: 80,
@@ -69,10 +53,10 @@ const ModalAcessar: React.FC<ModalAcessarProps> = ({
           />
 
           <Typography variant="h6" color="primary.main" align="center">
-            {agendamento.nome}
+            {agendamento.monitor!.nome}
           </Typography>
           <Typography variant="body1" color="text.secondary" align="center">
-            Disciplina: {agendamento.materia}
+            Disciplina: {agendamento.monitor!.materia}
           </Typography>
           <Typography variant="body1" color="text.secondary" align="center">
             Data: {agendamento.data}
@@ -127,7 +111,7 @@ const ModalAcessar: React.FC<ModalAcessarProps> = ({
                 minWidth: 120,
                 px: 3,
               }}
-              href={agendamento.link}
+              href={agendamento.link!}
               target="_blank"
               rel="noopener noreferrer"
             >

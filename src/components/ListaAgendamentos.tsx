@@ -18,6 +18,8 @@ import ModalRemarcar from "./ModalRemarcar";
 import ModalCancelamento from "./ModalCancelamento";
 import { Agendamento } from "../models/agendamento.model";
 import { MONITORES } from "./ListaMonitores";
+import { useAppDispatch } from "../redux/hooks";
+import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
 
 const AGENDAMENTOS: Agendamento[] = [
   {
@@ -123,6 +125,7 @@ function getCardsPerPage() {
 function ListaAgendamentos() {
   const [pagina, setPagina] = useState(1);
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
+  const dispatch = useAppDispatch();
   const [modalCancelamentoOpen, setModalCancelamentoOpen] = useState(false);
   const [modalRemarcarOpen, setModalRemarcarOpen] = useState(false);
   const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
@@ -340,7 +343,7 @@ function ListaAgendamentos() {
                         size="medium"
                         variant="contained"
                         onClick={() => {
-                          setAgendamentoSelecionado(agendamento);
+                          dispatch(setCurrentAgendamento(agendamento));
                           setModalCancelamentoOpen(true);
                         }}
                         sx={{
@@ -350,11 +353,12 @@ function ListaAgendamentos() {
                       >
                         Cancelar
                       </Button>
+
                       <Button
                         size="medium"
                         variant="contained"
                         onClick={() => {
-                          setAgendamentoSelecionado(agendamento);
+                          dispatch(setCurrentAgendamento(agendamento));
                           setModalRemarcarOpen(true);
                         }}
                         sx={{
@@ -364,14 +368,17 @@ function ListaAgendamentos() {
                       >
                         Reagendar
                       </Button>
+
                       <Button
                         size="medium"
                         variant="contained"
                         onClick={() => {
-                          setAgendamentoSelecionado({
-                            ...agendamento,
-                            link: "https://meet.google.com/zyw-jymr-ipg", // Substitua pelo link real
-                          });
+                          dispatch(
+                            setCurrentAgendamento({
+                              ...agendamento,
+                              link: "https://meet.google.com/zyw-jymr-ipg",
+                            })
+                          );
                           setModalAcessarOpen(true);
                         }}
                         sx={{
@@ -417,37 +424,18 @@ function ListaAgendamentos() {
         </Button>
       </Stack>
       {/* Modais */}
-      {/*agendamentoSelecionado && (
-        <>
-          <ModalCancelamento
-            open={modalCancelamentoOpen}
-            onClose={() => setModalCancelamentoOpen(false)}
-            onConfirm={(motivo) => {
-              // Lógica para cancelar o agendamento
-              setModalCancelamentoOpen(false);
-            }}
-          />
-          <ModalRemarcar
-            open={modalRemarcarOpen}
-            onClose={() => setModalRemarcarOpen(false)}
-            agendamento={agendamentoSelecionado}
-            onRemarcar={(novaData, novoHorario) => {
-              // Lógica para remarcar o agendamento
-              setModalRemarcarOpen(false);
-            }}
-          />
-          <ModalAcessar
-            open={modalAcessarOpen}
-            onClose={() => setModalAcessarOpen(false)}
-            agendamento={{
-              ...agendamentoSelecionado,
-              link:
-                agendamentoSelecionado.link ??
-                "https://meet.google.com/zyw-jymr-ipg",
-            }}
-          />
-        </>
-      )*/}
+     <ModalCancelamento
+    open={modalCancelamentoOpen}
+    onClose={() => setModalCancelamentoOpen(false)}
+  />
+  <ModalRemarcar
+    open={modalRemarcarOpen}
+    onClose={() => setModalRemarcarOpen(false)}
+  />
+  <ModalAcessar
+    open={modalAcessarOpen}
+    onClose={() => setModalAcessarOpen(false)}
+  />
     </Paper>
   );
 }

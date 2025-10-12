@@ -1,25 +1,11 @@
 import React, { useState } from "react";
-import {
-  Modal,
-  Box,
-  Typography,
-  Avatar,
-  TextField,
-  Button,
-  Stack,
-} from "@mui/material";
+import { Modal, Box, Typography, Avatar, TextField, Button, Stack } from "@mui/material";
+import { useAppSelector, useAppDispatch } from "../redux/hooks";
+import { updateAgendamentoStatus } from "../redux/features/agendamento/agendamentoSlice";
 
 interface ModalRemarcarProps {
   open: boolean;
   onClose: () => void;
-  agendamento: {
-    foto: string;
-    nome: string;
-    materia: string;
-    data: string;
-    hora: string;
-  };
-  onRemarcar: (novaData: string, novoHorario: string) => void;
 }
 
 function formatHora(hora: string) {
@@ -29,28 +15,41 @@ function formatHora(hora: string) {
   return h.padStart(2, "0") + ":00";
 }
 
-const ModalRemarcar: React.FC<ModalRemarcarProps> = ({
-  open,
-  onClose,
-  agendamento,
-  onRemarcar,
-}) => {
+const ModalRemarcar: React.FC<ModalRemarcarProps> = ({ open, onClose }) => {
+  const dispatch = useAppDispatch();
+  const agendamento = useAppSelector((state) => state.agendamento.currentAgendamento);
   const [novaData, setNovaData] = useState("");
   const [novoHorario, setNovoHorario] = useState("");
+
+  if (!agendamento) return null;
 
   // Validação: nova data/hora deve ser pelo menos 2 dias após agora
   const isValidDateTime = () => {
     if (!novaData || !novoHorario) return false;
     // Data/hora atuais do agendamento
     const atual = new Date(
-      `${agendamento.data.split("/").reverse().join("-")}T${formatHora(
-        agendamento.hora
+      `${agendamento.data!.split("/").reverse().join("-")}T${formatHora(
+        agendamento.hora!
       )}`
     );
     // Nova data/hora escolhida
     const selecionada = new Date(`${novaData}T${novoHorario}`);
     return selecionada > atual;
   };
+
+
+   const handleRemarcar = () => {
+    if (!agendamento.id) return;
+    
+    dispatch(updateAgendamentoStatus({
+      agendamentoId: agendamento.id,
+      status: 'REMARCADO',
+      novaData,
+      novoHorario
+    }));
+    onClose();
+  };
+
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="modal-remarcar-title">
@@ -73,8 +72,8 @@ const ModalRemarcar: React.FC<ModalRemarcarProps> = ({
       >
         <Stack spacing={2} alignItems="center">
           <Avatar
-            src={agendamento.foto}
-            alt={agendamento.nome}
+            src={agendamento.monitor!.foto}
+            alt={agendamento.monitor!.nome}
             sx={{
               width: 80,
               height: 80,
@@ -84,11 +83,11 @@ const ModalRemarcar: React.FC<ModalRemarcarProps> = ({
           />
 
           <Typography variant="h6" color="primary.main" align="center">
-            {agendamento.nome}
+            {agendamento.monitor!.nome}
           </Typography>
           <Box sx={{ width: "100%" }}>
             <Typography variant="body1" color="text.secundary" align="center">
-              Disciplina: {agendamento.materia}
+              Disciplina: {agendamento.monitor!.materia}
             </Typography>
           </Box>
 
@@ -158,7 +157,7 @@ const ModalRemarcar: React.FC<ModalRemarcarProps> = ({
                 opacity: 0.6,
               },
             }}
-            onClick={() => onRemarcar(novaData, novoHorario)}
+            onClick={handleRemarcar}
             disabled={!isValidDateTime()}
           >
             Solicitar Reagendamento
