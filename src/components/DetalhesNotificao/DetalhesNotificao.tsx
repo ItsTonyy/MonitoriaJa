@@ -13,6 +13,8 @@ import {
   TextField,
   Rating,
   Divider,
+  IconButton,
+  Collapse,
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -24,6 +26,8 @@ import SchoolIcon from '@mui/icons-material/School';
 import PersonIcon from '@mui/icons-material/Person';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import LinkIcon from '@mui/icons-material/Link';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import InfoIcon from '@mui/icons-material/Info';
@@ -36,6 +40,34 @@ interface FormData {
   comentario: string;
 }
 
+<<<<<<< HEAD
+=======
+const MONITORES = [
+  {
+    id: 2,
+    nome: 'Ana Silva',
+    materia: 'Cálculo II',
+    nota: 4.8,
+    preco: 'R$ 35/h',
+    especialidades: ['Derivadas', 'Integrais', 'Limites'],
+  },
+  {
+    id: 3,
+    nome: 'Pedro Santos',
+    materia: 'Cálculo II',
+    nota: 4.7,
+    preco: 'R$ 30/h',
+    especialidades: ['Funções', 'Equações Diferenciais'],
+  },
+];
+
+const MATERIAIS_PREPARATORIOS = [
+  { titulo: 'Lista de Exercícios - Integrais', tipo: 'PDF', tamanho: '2.1 MB' },
+  { titulo: 'Resumo Teórico - Cálculo II', tipo: 'PDF', tamanho: '1.8 MB' },
+  { titulo: 'Formulário Básico', tipo: 'PDF', tamanho: '0.5 MB' },
+];
+
+>>>>>>> 97d7e9fa6423439effd68af002137ba572f6a24d
 const DADOS_REAGENDAMENTO = {
   monitor: {
     nome: 'João Silva',
@@ -69,6 +101,16 @@ export default function DetalhesNotificao() {
     titulo: '',
     comentario: '',
   });
+
+  const [expandedCard, setExpandedCard] = useState(false);
+
+  const SecondaryCard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    return (
+      <Collapse in={isMobile ? expandedCard : true} timeout="auto">
+        {children}
+      </Collapse>
+    );
+  };
 
   const getIconeByTipo = (tipo: string) => {
     switch (tipo) {
@@ -134,11 +176,27 @@ export default function DetalhesNotificao() {
             >
               {getIconeByTipo(notificacao.tipo)}
             </Avatar>
-            <Box>
+            <Box sx={{ flex: 1 }}>
               <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
                 {notificacao.titulo}
               </Typography>
             </Box>
+            {isMobile && (notificacao.tipo === 'agendamento' || 
+                          notificacao.tipo === 'agendamentoConfirmado' || 
+                          notificacao.tipo === 'reagendamento' || 
+                          notificacao.tipo === 'cancelamento' || 
+                          notificacao.tipo === 'avaliacao') && (
+              <IconButton
+                onClick={() => setExpandedCard(!expandedCard)}
+                size="small"
+                sx={{
+                  bgcolor: 'action.hover',
+                  '&:hover': { bgcolor: 'action.selected' },
+                }}
+              >
+                {expandedCard ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </IconButton>
+            )}
           </Box>
           <Typography variant="body1">{notificacao.descricao}</Typography>
           <Box sx={{ mt: 2 }}></Box>
@@ -160,7 +218,8 @@ export default function DetalhesNotificao() {
         </CardContent>
       </Card>
 
-      {!isMobile && notificacao.tipo === 'agendamento' && (
+      {notificacao.tipo === 'agendamento' && (
+        <SecondaryCard>
         <Card sx={{ mb: 3, p: 2 }}>
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -209,9 +268,11 @@ export default function DetalhesNotificao() {
             </Typography>
           </CardContent>
         </Card>
+        </SecondaryCard>
       )}
 
-      {!isMobile && notificacao.tipo === 'agendamentoConfirmado' && (
+      {notificacao.tipo === 'agendamentoConfirmado' && (
+        <SecondaryCard>
         <Card sx={{ mb: 3, p: 2 }}>
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -249,11 +310,12 @@ export default function DetalhesNotificao() {
             </Box>
           </CardContent>
         </Card>
+        </SecondaryCard>
       )}
 
-      {!isMobile &&
-        notificacao.tipo === 'reagendamento' &&
+      {notificacao.tipo === 'reagendamento' &&
         notificacao.titulo.includes('realizado') && (
+          <SecondaryCard>
           <Card sx={{ mb: 3, p: 2 }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -344,11 +406,12 @@ export default function DetalhesNotificao() {
               </Box>
             </CardContent>
           </Card>
+          </SecondaryCard>
         )}
 
-      {!isMobile &&
-        notificacao.tipo === 'reagendamento' &&
+      {notificacao.tipo === 'reagendamento' &&
         notificacao.titulo.includes('confirmado') && (
+          <SecondaryCard>
           <Card sx={{ mb: 3, p: 2 }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -424,11 +487,12 @@ export default function DetalhesNotificao() {
               </Box>
             </CardContent>
           </Card>
+          </SecondaryCard>
         )}
 
-      {!isMobile &&
-        notificacao.tipo === 'cancelamento' &&
+      {notificacao.tipo === 'cancelamento' &&
         notificacao.titulo.includes('cancelada') && (
+          <SecondaryCard>
           <Card sx={{ mb: 3, p: 2 }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -493,9 +557,11 @@ export default function DetalhesNotificao() {
               </Box>
             </CardContent>
           </Card>
+          </SecondaryCard>
         )}
 
-      {!isMobile && notificacao.tipo == 'avaliacao' && (
+      {notificacao.tipo == 'avaliacao' && (
+        <SecondaryCard>
         <Card sx={{ mb: 3, p: 2 }}>
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -586,6 +652,7 @@ export default function DetalhesNotificao() {
             </Box>
           </CardContent>
         </Card>
+        </SecondaryCard>
       )}
     </Container>
   );

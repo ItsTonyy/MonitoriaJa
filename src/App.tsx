@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/Login/LoginPage";
 import RecuperarSenhaPage from "./pages/Login/recuperarSenha/RecuperarSenhaPage";
+import ResetPasswordPage from "./pages/Login/resetPassword/ResetPasswordPage";
 import AvaliacaoPosAulaPage from "./pages/Login/AvaliacaoPosAula/AvaliacaoPosAulaPage";
 import ComentariosAvaliacaoPage from "./pages/Login/ComentariosAvaliacao/ComentariosAvaliacaoPage";
 import ListaMonitores from "./components/ListaMonitores";
