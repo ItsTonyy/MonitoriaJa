@@ -129,8 +129,7 @@ function ListaAgendamentos() {
   const [modalCancelamentoOpen, setModalCancelamentoOpen] = useState(false);
   const [modalRemarcarOpen, setModalRemarcarOpen] = useState(false);
   const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
-  const [agendamentoSelecionado, setAgendamentoSelecionado] =
-    useState<Agendamento | null>(null);
+  
   useEffect(() => {
     function handleResize() {
       setCardsPorPagina(getCardsPerPage());
