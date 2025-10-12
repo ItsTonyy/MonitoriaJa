@@ -13,6 +13,9 @@ import {
   Fade,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import ModalAcessar from "./ModalAcessar";
+import ModalRemarcar from "./ModalRemarcar";
+import ModalCancelamento from "./ModalCancelamento";
 
 type Agendamento = {
   id: number;
@@ -21,6 +24,7 @@ type Agendamento = {
   foto: string;
   data: string;
   hora: string;
+  link?: string;
 };
 
 const AGENDAMENTOS: Agendamento[] = [
@@ -152,7 +156,11 @@ function ListaAgendamentos() {
   const navigate = useNavigate();
   const [pagina, setPagina] = useState(1);
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
-
+  const [modalCancelamentoOpen, setModalCancelamentoOpen] = useState(false);
+  const [modalRemarcarOpen, setModalRemarcarOpen] = useState(false);
+  const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
+  const [agendamentoSelecionado, setAgendamentoSelecionado] =
+    useState<Agendamento | null>(null);
   useEffect(() => {
     function handleResize() {
       setCardsPorPagina(getCardsPerPage());
@@ -364,12 +372,13 @@ function ListaAgendamentos() {
                       <Button
                         size="medium"
                         variant="contained"
-                        onClick={() => navigate("/modalCancelamento")}
+                        onClick={() => {
+                          setAgendamentoSelecionado(agendamento);
+                          setModalCancelamentoOpen(true);
+                        }}
                         sx={{
-                          bgcolor: "#e53e3e !important", // Cor original do btnCancelar
-                          "&:hover": {
-                            bgcolor: "#a81d1d !important",
-                          },
+                          bgcolor: "#e53e3e !important",
+                          "&:hover": { bgcolor: "#a81d1d !important" },
                         }}
                       >
                         Cancelar
@@ -377,12 +386,13 @@ function ListaAgendamentos() {
                       <Button
                         size="medium"
                         variant="contained"
-                        onClick={() => navigate("/reagendamento")}
+                        onClick={() => {
+                          setAgendamentoSelecionado(agendamento);
+                          setModalRemarcarOpen(true);
+                        }}
                         sx={{
-                          bgcolor: "#6b7280 !important", // Cor original do btnReagendar
-                          "&:hover": {
-                            bgcolor: "#374151 !important",
-                          },
+                          bgcolor: "#6b7280 !important",
+                          "&:hover": { bgcolor: "#374151 !important" },
                         }}
                       >
                         Reagendar
@@ -390,12 +400,16 @@ function ListaAgendamentos() {
                       <Button
                         size="medium"
                         variant="contained"
-                        onClick={() => navigate("/avaliacao")}
+                        onClick={() => {
+                          setAgendamentoSelecionado({
+                            ...agendamento,
+                            link: "https://meet.google.com/zyw-jymr-ipg", // Substitua pelo link real
+                          });
+                          setModalAcessarOpen(true);
+                        }}
                         sx={{
-                          bgcolor: "#2d5be3 !important", // Cor original do btnAcessar
-                          "&:hover": {
-                            bgcolor: "#1b3e8a !important",
-                          },
+                          bgcolor: "#2d5be3 !important",
+                          "&:hover": { bgcolor: "#1b3e8a !important" },
                         }}
                       >
                         Acessar
@@ -435,6 +449,38 @@ function ListaAgendamentos() {
           &#8594;
         </Button>
       </Stack>
+      {/* Modais */}
+      {agendamentoSelecionado && (
+        <>
+          <ModalCancelamento
+            open={modalCancelamentoOpen}
+            onClose={() => setModalCancelamentoOpen(false)}
+            onConfirm={(motivo) => {
+              // Lógica para cancelar o agendamento
+              setModalCancelamentoOpen(false);
+            }}
+          />
+          <ModalRemarcar
+            open={modalRemarcarOpen}
+            onClose={() => setModalRemarcarOpen(false)}
+            agendamento={agendamentoSelecionado}
+            onRemarcar={(novaData, novoHorario) => {
+              // Lógica para remarcar o agendamento
+              setModalRemarcarOpen(false);
+            }}
+          />
+          <ModalAcessar
+            open={modalAcessarOpen}
+            onClose={() => setModalAcessarOpen(false)}
+            agendamento={{
+              ...agendamentoSelecionado,
+              link:
+                agendamentoSelecionado.link ??
+                "https://meet.google.com/zyw-jymr-ipg",
+            }}
+          />
+        </>
+      )}
     </Paper>
   );
 }
