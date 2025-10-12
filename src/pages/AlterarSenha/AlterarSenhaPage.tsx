@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ConfirmationButton from '../../components/login-form/ConfirmationButton'; 
+import ConfirmationButton from '../botaoTemporario/botaoTemporario';
 import styles from './AlterarSenhaPage.module.css'; 
 import { useNavigate } from 'react-router-dom'; 
 import CampoFormulario from '../PerfilMonitor/CampoFormulario/CampoFormulario';
@@ -88,14 +88,12 @@ const AlterarSenhaPage: React.FC = () => {
         
         <div className={styles.buttonSection}>
           <ConfirmationButton
-            className={styles.reusableButton}
             onClick={handleSubmit}
           >
             Trocar senha
           </ConfirmationButton>
 
           <ConfirmationButton
-            className={styles.reusableButton}
             onClick={() => navigate(-1)}
           >
             Voltar

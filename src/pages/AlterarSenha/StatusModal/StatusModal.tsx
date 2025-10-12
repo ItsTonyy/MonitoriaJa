@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import styles from "./StatusModal.module.css";
-import ConfirmationButton from '../../../components/login-form/ConfirmationButton';
+import ConfirmationButton from '../../botaoTemporario/botaoTemporario';
 
 interface StatusModalProps {
   open: boolean;
@@ -38,7 +38,6 @@ const StatusModal: React.FC<StatusModalProps> = ({
       <DialogActions className={styles.actions}>
         <ConfirmationButton 
           onClick={onClose} 
-          className={styles.closeButton}
         >
           Fechar
         </ConfirmationButton>

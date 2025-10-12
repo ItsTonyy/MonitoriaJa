@@ -3,7 +3,7 @@ import styles from './ListaCartaoPage.module.css';
 import Title from '../../../AlterarSenha/Titulo/Titulo';
 import CartaoItem from '../CartaoItem/CartaoItem';
 import { useNavigate } from 'react-router-dom';
-import ConfirmationButton from '../../../../components/login-form/ConfirmationButton';
+import ConfirmationButton from '../../../botaoTemporario/botaoTemporario';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../redux/store'; // <-- ajuste se o caminho for diferente
@@ -46,7 +46,6 @@ const ListaCartaoPage: React.FC = () => {
 
         <ConfirmationButton
           onClick={() => navigate('/MonitoriaJa/cadastra-cartao')}
-          className={styles.button}
         >
           Cadastrar Novo Cartão
         </ConfirmationButton>

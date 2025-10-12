@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ConfirmationButton from '../../components/login-form/ConfirmationButton';
+import ConfirmationButton from '../botaoTemporario/botaoTemporario';
 import DescriptionBox from './Descricao/Descricao';
 import styles from './PerfilMonitorPage.module.css';
 import PersonIcon from '@mui/icons-material/Person';
@@ -163,49 +163,47 @@ const PerfilMonitorPage: React.FC = () => {
         </div>
 
         {/* Botões */}
-        <div className={styles.buttonSection}>
-          {/* Linha 1: dois botões lado a lado */}
-          <div className={styles.buttonGroup}>
-            <ConfirmationButton
-              onClick={handleClickHorarios}
-              className={styles.reusableButton}
-            >
-              Atualizar horários
-            </ConfirmationButton>
-            <Menu
-              anchorEl={anchorHorarios}
-              open={openHorarios}
-              onClose={handleCloseHorarios}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-            >
-              <MenuItem onClick={handleCloseHorarios}>Segunda-feira</MenuItem>
-              <MenuItem onClick={handleCloseHorarios}>Terça-feira</MenuItem>
-              <MenuItem onClick={handleCloseHorarios}>Quarta-feira</MenuItem>
-            </Menu>
+        {/* Botões */}
+<div className={styles.buttonSection}>
 
-            <ConfirmationButton
-              className={styles.reusableButton}
-              onClick={() => navigate('/MonitoriaJa/alterar-senha')}
-            >
-              Trocar senha
-            </ConfirmationButton>
-          </div>
+  {/* Linha 1: Atualizar horários e Trocar senha */}
+  <div className={styles.buttonGroup}>
+    <ConfirmationButton onClick={handleClickHorarios}>
+      Atualizar horários
+    </ConfirmationButton>
+    <Menu
+      anchorEl={anchorHorarios}
+      open={openHorarios}
+      onClose={handleCloseHorarios}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+    >
+      <MenuItem onClick={handleCloseHorarios}>Segunda-feira</MenuItem>
+      <MenuItem onClick={handleCloseHorarios}>Terça-feira</MenuItem>
+      <MenuItem onClick={handleCloseHorarios}>Quarta-feira</MenuItem>
+    </Menu>
 
-          {/* Linha 2: botão Voltar ocupando 100% */}
-          <ConfirmationButton
-            className={styles.reusableButton}
-            onClick={handleSalvar}
-          >
-            Confirmar Mudanças
-          </ConfirmationButton>                    
-          <ConfirmationButton
-            className={styles.reusableButtonFull}
-            onClick={() => navigate(-1)}
-          >
-            Voltar
-          </ConfirmationButton>
-        </div>
+    <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>
+      Trocar senha
+    </ConfirmationButton>
+  </div>
+
+  {/* Linha 2: Confirmar mudanças */}
+  <div className={styles.buttonGroup}>
+    <ConfirmationButton onClick={handleSalvar}>
+      Confirmar Mudanças
+    </ConfirmationButton>
+  </div>
+
+  {/* Linha 3: Voltar */}
+  <div className={styles.buttonGroup}>
+    <ConfirmationButton onClick={() => navigate(-1)}>
+      Voltar
+    </ConfirmationButton>
+  </div>
+
+</div>
+
       </div>
 
       <StatusModal

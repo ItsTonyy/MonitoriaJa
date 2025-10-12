@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "./CadastraCartaoPage.module.css";
-import ConfirmationButton from '../../../../components/login-form/ConfirmationButton';
+import ConfirmationButton from '../../../botaoTemporario/botaoTemporario';
 import {
   TextField,
   MenuItem,
@@ -127,18 +127,12 @@ const CadastraCartaoPage: React.FC = () => {
 
           <div className={styles.buttonGroup}>
             <ConfirmationButton
-              variant="contained"
-              color="secondary"
-              className={styles.button}
               onClick={() => window.history.back()}
             >
               Voltar
             </ConfirmationButton>
             <ConfirmationButton
-              variant="contained"
-              color="primary"
               type="submit"
-              className={styles.button}
             >
               Cadastrar
             </ConfirmationButton>

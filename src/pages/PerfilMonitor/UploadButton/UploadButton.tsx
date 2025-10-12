@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import ConfirmationButton from '../../../components/login-form/ConfirmationButton';
+import ConfirmationButton from '../../botaoTemporario/botaoTemporario';
 import { styled } from '@mui/material/styles';
 
 const VisuallyHiddenInput = styled('input')({
@@ -33,7 +33,7 @@ const UploadButton: React.FC<UploadButtonProps> = ({ className, onFileSelect }) 
   return (
     <>
       {/* mantém aparência padronizada do botão */}
-      <ConfirmationButton className={className} onClick={handleClick}>
+      <ConfirmationButton onClick={handleClick}>
         Upload foto
       </ConfirmationButton>
       <VisuallyHiddenInput

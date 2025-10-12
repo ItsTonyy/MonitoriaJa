@@ -175,16 +175,19 @@ body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
 
 .buttonSection {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;
+  flex-direction: column; /* cada buttonGroup em uma linha */
+  gap: 12px;              /* espaço vertical entre linhas */
+  align-items: center;    /* ✅ centraliza cada linha horizontalmente */
 }
 
 .buttonGroup {
-  display: flex;
-  gap: 0.5rem;
-  width: 100%;
+  display: flex;          /* botões lado a lado */
+  gap: 16px;              /* espaço horizontal entre botões */
+  align-items: center;    /* alinhamento vertical */
+  flex-wrap: wrap;        /* permite quebrar linha se necessário */
+  justify-content: center; /* ✅ centraliza os botões dentro da linha */
 }
+
 
 .reusableButton {
   background-color: var(--cor-primaria) !important;

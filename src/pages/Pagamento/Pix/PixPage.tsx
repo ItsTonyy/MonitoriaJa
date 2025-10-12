@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
-import ConfirmationButton from '../../../components/login-form/ConfirmationButton';
+import ConfirmationButton from '../../botaoTemporario/botaoTemporario';
 import styles from './PixPage.module.css';
 import Title from '../../AlterarSenha/Titulo/Titulo';
 import StatusModal from '../../AlterarSenha/StatusModal/StatusModal';
@@ -39,13 +39,11 @@ const PixPage: React.FC = () => {
 
         <Box className={styles.buttonGroup}>
            <ConfirmationButton
-            className={styles.reusableButton}
             onClick={() => setOpen(true)} 
           >
             Copiar Código Pix
           </ConfirmationButton>
           <ConfirmationButton 
-            className={styles.reusableButton} 
             onClick={handleCancel}
           >
             Cancelar

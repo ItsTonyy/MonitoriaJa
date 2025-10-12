@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import ConfirmationButton from '../../../../components/login-form/ConfirmationButton';
+import ConfirmationButton from '../../../botaoTemporario/botaoTemporario';
 import styles from './ConfirmaPagamentoPage.module.css';
 import Title from '../../../AlterarSenha/Titulo/Titulo';
 import StatusModal from '../../../AlterarSenha/StatusModal/StatusModal';
@@ -37,14 +37,12 @@ const handleCancel = () => {
 
         <Box className={styles.buttonGroup}>
           <ConfirmationButton
-            className={styles.button}
             onClick={() => setOpen(true)}
           >
             Confirmar Pagamento
           </ConfirmationButton>
 
           <ConfirmationButton 
-            className={styles.button} 
             onClick={handleCancel}
           >
             Cancelar

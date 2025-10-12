@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ConfirmationButton from '../../components/login-form/ConfirmationButton';
+import ConfirmationButton from '../botaoTemporario/botaoTemporario';
 import styles from './PerfilUsuarioPage.module.css';
 import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
@@ -105,19 +105,16 @@ const PerfilUsuarioPage: React.FC = () => {
         {/* Botões */}
         <div className={styles.buttonSection}>
           <ConfirmationButton
-            className={styles.reusableButton}
             onClick={() => navigate('/MonitoriaJa/alterar-senha')}
           >
             Trocar senha
           </ConfirmationButton>
           <ConfirmationButton
-            className={styles.reusableButton}
             onClick={handleSalvar}
           >
             Confirmar Mudanças
           </ConfirmationButton>          
           <ConfirmationButton
-            className={styles.reusableButton}
             onClick={() => navigate(-1)}
           >
             Voltar
