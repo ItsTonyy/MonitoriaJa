@@ -10,156 +10,56 @@ import {
   Chip,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "../../redux/root-reducer";
+import type { AppDispatch } from "../../redux/store";
+import { fetchNotificacoes, markAsReadServer } from "../../redux/features/notificacoes/fetch";
+import { selectAllNotificacoes } from "../../redux/features/notificacoes/slice";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CancelIcon from "@mui/icons-material/Cancel";
 import StarIcon from "@mui/icons-material/Star";
-import { Monitor } from "../ListaMonitores";
 
 
 /*interface NotificacaoCardProps {
   color: "primary";
 }*/
 
-interface Notificacao {
-  id: string;
-  tipo:
-    | "cancelamento"
-    | "reagendamento"
-    | "agendamento"
-    | "avaliacao"
-    | "agendamentoConfirmado";
-  titulo: string;
-  previa: string;
-  descricao: string;
-  tempo: string;
-  lida: boolean;
-  icone?: React.ReactNode;
-}
-
-const monitorMock: Monitor[] = [
-  {
-    id: 1,
-    nome: "João Silva",
-    materia: "Matemática",
-    valor: "R$ 50/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/men/1.jpg",
-    avaliacao: 4.9,
-  },
-  {
-    id: 2,
-    nome: "Maria Souza",
-    materia: "Física",
-    valor: "R$ 60/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/women/2.jpg",
-    avaliacao: 4.8,
-  },
-  {
-    id: 3,
-    nome: "Carlos Lima",
-    materia: "Química",
-    valor: "R$ 55/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/men/3.jpg",
-    avaliacao: 4.5,
-  },
-  {
-    id: 4,
-    nome: "Ana Paula",
-    materia: "Biologia",
-    valor: "R$ 58/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/women/4.jpg",
-    avaliacao: 4.7,
-  },
-];
-
-const notificacoesMock: Notificacao[] = [
-  {
-    id: "1",
-    tipo: "reagendamento",
-    previa:
-      "Olá, Aluno x! Passando pra avisar que sua aula com " +
-      monitorMock[0].nome +
-      " foi reagendada.",
-    titulo: "Reagendamento realizado com sucesso",
-    descricao:
-      "Sua aula com " +
-      monitorMock[0].nome +
-      ' foi reagendada com sucesso. Clique em "Visualizar Agendamentos" para mais informacoes.',
-    tempo: "há 2 min",
-    lida: false,
-    icone: <CalendarMonthIcon color="primary" />,
-  },
-  {
-    id: "2",
-    tipo: "reagendamento",
-    previa:
-      "Olá, " +
-      monitorMock[0].nome +
-      "! Passando pra avisar que sua aula com Aluno x foi reagendada.",
-    titulo: "Reagendamento confirmado",
-    descricao:
-      'A aula de Aluno x foi reagendada. Clique em "Visualizar Agendamentos" para mais informacoes.',
-    tempo: "há 1 hora",
-    lida: false,
-    icone: <CalendarMonthIcon color="primary" />,
-  },
-  {
-    id: "3",
-    tipo: "agendamentoConfirmado",
-    previa:
-      "Olá, Aluno y! Passando pra avisar que sua aula com " +
-      monitorMock[2].nome +
-      " foi reagendada.",
-    titulo: "Aula confirmada",
-    descricao:
-      "Sua aula com " +
-      monitorMock[2].nome +
-      'foi confirmada. Clique em "Visualizar Agendamentos" para mais informacoes.',
-    tempo: "há 3 horas",
-    lida: true,
-    icone: <CalendarMonthIcon color="primary" />,
-  },
-  {
-    id: "4",
-    tipo: "avaliacao",
-    previa:
-      "Fala, Aluno y! Conta com a gente um pouco da sua experiência com " +
-      monitorMock[2].nome +
-      "!",
-    titulo: "Avalie sua experiência",
-    descricao:
-      "Conta pra gente como foi o serviço com " +
-      monitorMock[2].nome +
-      '! Clique em "Avaliar" para deixar seu feedback!',
-    tempo: "há 1 dia",
-    lida: true,
-    icone: <StarIcon color="warning" />,
-  },
-  {
-    id: "5",
-    tipo: "cancelamento",
-    previa:
-      "Olá," +
-      monitorMock[2].nome +
-      "! Passando pra avisar que sua aula com Aluno y foi cancelada.",
-    titulo: "Aula cancelada",
-    descricao: "Sua aula com Aluno y foi cancelada",
-    tempo: "há 2 dias",
-    lida: false,
-    icone: <CancelIcon color="error" />,
-  },
-];
+const getIconeNotificacao = (tipo: string) => {
+  switch (tipo) {
+    case "reagendamento":
+    case "agendamento":
+    case "agendamentoConfirmado":
+      return <CalendarMonthIcon color="primary" />;
+    case "avaliacao":
+      return <StarIcon color="warning" />;
+    case "cancelamento":
+      return <CancelIcon color="error" />;
+    default:
+      return <NotificationsIcon color="primary" />;
+  }
+};
 
 export default function NotificacaoCard() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [notificacoes, setNotificacoes] = React.useState(notificacoesMock);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  
+  const user = useSelector((state: RootState) => state.login.user);
+  const isAuthenticated = useSelector((state: RootState) => state.login.isAuthenticated);
+  const notificacoes = useSelector(selectAllNotificacoes);
   const open = Boolean(anchorEl);
   const notificacaoNaoLidas = notificacoes.filter((n) => !n.lida).length;
-  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    console.log('NotificacaoCard - user:', user);
+    console.log('user.id:', user?.id, 'user.role:', user?.role);
+    console.log('NotificacaoCard - notificacoes:', notificacoes);
+    if (user && user.id && user.role) {
+      console.log('Dispatching fetchNotificacoes with:', { userId: user.id, userRole: user.role });
+      dispatch(fetchNotificacoes({ userId: user.id, userRole: user.role }));
+    }
+  }, [user, dispatch]);
 
   // Ordenar notificações: não lidas primeiro, depois por data mais recente
   const notificacoesOrdenadas = React.useMemo(() => {
@@ -181,30 +81,32 @@ export default function NotificacaoCard() {
     setAnchorEl(null);
   };
 
-  const handleNotificationClick = (notificacao: Notificacao) => {
+  const handleNotificationClick = (notificacao: any) => {
     console.log("Clicou na notificação:", notificacao);
 
     // Marcar notificação como lida se não estiver lida
     if (!notificacao.lida) {
-      setNotificacoes((prev) =>
-        prev.map((n) => (n.id === notificacao.id ? { ...n, lida: true } : n))
-      );
+      dispatch(markAsReadServer(notificacao.id));
     }
 
-    // Passar apenas dados serializáveis (sem o ícone)
+    // Passar apenas dados serializáveis
     const notificacaoData = {
       id: notificacao.id,
       tipo: notificacao.tipo,
       titulo: notificacao.titulo,
       descricao: notificacao.descricao,
       tempo: notificacao.tempo,
-      lida: true, // sempre true após o clique
+      lida: true,
     };
     navigate(`/MonitoriaJa/detalhes-notificacao/${notificacao.id}`, {
       state: { notificacao: notificacaoData },
     });
     handleClose();
   };
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div>
@@ -296,7 +198,7 @@ export default function NotificacaoCard() {
                     mr: 2,
                   }}
                 >
-                  {notificacao.icone}
+                  {getIconeNotificacao(notificacao.tipo)}
                 </Avatar>
 
                 <Box sx={{ flex: 1 }}>

@@ -1,10 +1,19 @@
 import React from 'react';
 import './landingPage.css';
-import { Button } from '@mui/material'; // Assuming you're using Material UI for the button
+import { Button } from '@mui/material';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import PublicIcon from '@mui/icons-material/Public';
 import MicExternalOnIcon from '@mui/icons-material/MicExternalOn';
 import { useNavigate } from 'react-router-dom';
+import estudantesColaborando from '/estudantes-colaborando.avif'
+import estudante1 from '/estudante1.png'
+import estudante2 from '/estudante2.png'
+import estudante3 from '/estudante3.png'
+import estudante4 from '/estudante4.png'
+import professor1 from '/professor1.png'
+import professor4 from '/professor4.png'
+
+
 
 interface LandingPageProps {
   // Add any props if needed
@@ -43,7 +52,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
           <div className="hero-image">
             <div className="image-container">
               <img 
-                src="estudantes-colaborando.avif" 
+                src={estudantesColaborando}
                 alt="Students collaborating around a laptop" 
                 className="main-image" 
               />
@@ -54,7 +63,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
                 <span>AI</span>
               </div>
               <div className="icon-badge design-icon">
-                <span>Aa</span>
+                <span>Dev</span>
               </div>
             </div>
           </div>
@@ -67,14 +76,14 @@ const LandingPage: React.FC<LandingPageProps> = () => {
           <div className="partner-images">
             <div className="image-top">
               <img 
-                src="estudante1.png" 
+                src={estudante1} 
                 alt="Student with laptop" 
                 className="partner-image top-image" 
               />
             </div>
             <div className="image-bottom">
               <img 
-                src="estudante2.png" 
+                src={estudante2} 
                 alt="Student with laptop" 
                 className="partner-image bottom-image" 
               />
@@ -191,7 +200,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
           <div className="instructor-profile">
             <div className="instructor-image-container">
               <img 
-                src="professor1.png" 
+                src={professor1} 
                 alt="Jordan Ellis, Data Analytics Expert" 
                 className="instructor-image" 
               />
@@ -249,7 +258,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
               
               <div className="author-image">
                   <img 
-                    src="estudante3.png" 
+                    src={estudante3} 
                     alt="Emma Carter" 
                   />
               </div>
@@ -278,7 +287,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
               
               <div className="author-image">
                   <img 
-                    src="professor4.png" 
+                    src={professor4} 
                     alt="Priya Kumar" 
                   />
                 </div>
@@ -306,7 +315,7 @@ const LandingPage: React.FC<LandingPageProps> = () => {
               
               <div className="author-image">
                   <img 
-                    src="estudante4.png" 
+                    src={estudante4} 
                     alt="Michael Johnson" 
                   />
                 </div>

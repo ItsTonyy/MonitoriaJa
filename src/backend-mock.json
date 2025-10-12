@@ -1,0 +1,160 @@
+{
+  "avaliacoes": [
+    {
+      "id": "0",
+      "aluno_id": 1,
+      "monitor_id": 1,
+      "avaliacao": 5,
+      "curtido": true,
+      "comentario": "Ótimo monitor, muito atencioso e sempre disposto a ajudar."
+    },
+    {
+      "id": "1",
+      "aluno_id": 2,
+      "monitor_id": 1,
+      "avaliacao": 4,
+      "curtido": false,
+      "comentario": "Monitor bem atencioso, mas poderia melhorar na organização."
+    },
+    {
+      "id": "2",
+      "aluno_id": 3,
+      "monitor_id": 1,
+      "avaliacao": 3,
+      "curtido": true,
+      "comentario": "Monitor interessante, mas não foi bem organizado."
+    },
+    {
+      "id": "3",
+      "aluno_id": 4,
+      "monitor_id": 1,
+      "avaliacao": 2,
+      "curtido": false,
+      "comentario": "Monitor não foi bem atencioso."
+    }
+  ],
+  "usuarios": [
+    {
+      "id": "1",
+      "name": "adminTeste",
+      "email": "admin@teste.com",
+      "password": "123456",
+      "role": "admin"
+    },
+    {
+      "id": "2",
+      "name": "monitorTeste",
+      "email": "monitor@teste.com",
+      "password": "123456",
+      "role": "monitor"
+    },
+    {
+      "id": "3",
+      "name": "userTeste",
+      "email": "user@teste.com",
+      "password": "123456",
+      "role": "user"
+    }
+  ],
+  "notificacoes": [
+    {
+      "id": "1",
+      "userId": 1,
+      "tipo": "reagendamento",
+      "titulo": "Reagendamento realizado com sucesso",
+      "previa": "Olá, admin! Passando pra avisar que sua aula com João Silva foi reagendada.",
+      "descricao": "Sua aula com João Silva foi reagendada com sucesso. Clique em 'Visualizar Agendamentos' para mais informações.",
+      "tempo": "há 2 min",
+      "lida": false,
+      "role": "admin"
+    },
+    {
+      "id": "2",
+      "userId": 2,
+      "tipo": "reagendamento",
+      "titulo": "Reagendamento confirmado",
+      "previa": "Olá, monitorTeste! Passando pra avisar que sua aula com Aluno x foi reagendada.",
+      "descricao": "A aula de Aluno x foi reagendada. Clique em 'Visualizar Agendamentos' para mais informações.",
+      "tempo": "há 1 hora",
+      "lida": false,
+      "role": "monitor"
+    },
+    {
+      "id": "3",
+      "userId": 1,
+      "tipo": "agendamentoConfirmado",
+      "titulo": "Aula confirmada",
+      "previa": "Olá, adminTeste! Passando pra avisar que sua aula com Carlos Lima foi confirmada.",
+      "descricao": "Sua aula com Carlos Lima foi confirmada. Clique em 'Visualizar Agendamentos' para mais informações.",
+      "tempo": "há 3 horas",
+      "lida": true,
+      "role": "admin"
+    },
+    {
+      "id": "4",
+      "userId": 1,
+      "tipo": "avaliacao",
+      "titulo": "Avalie sua experiência",
+      "previa": "Fala, adminTeste! Conta com a gente um pouco da sua experiência com Carlos Lima!",
+      "descricao": "Conta pra gente como foi o serviço com Carlos Lima! Clique em 'Avaliar' para deixar seu feedback!",
+      "tempo": "há 1 dia",
+      "lida": true,
+      "role": "admin"
+    },
+    {
+      "id": "5",
+      "userId": 2,
+      "tipo": "cancelamento",
+      "titulo": "Aula cancelada",
+      "previa": "Olá, monitorTeste! Passando pra avisar que sua aula com Aluno y foi cancelada.",
+      "descricao": "Sua aula com Aluno y foi cancelada.",
+      "tempo": "há 2 dias",
+      "lida": false,
+      "role": "monitor"
+    },
+    {
+      "id": "6",
+      "userId": 3,
+      "tipo": "agendamento",
+      "titulo": "Nova aula agendada",
+      "previa": "Olá, userTeste! Sua aula com Maria Souza foi agendada com sucesso.",
+      "descricao": "Sua aula de Física com Maria Souza foi agendada para amanhã às 14h. Clique em 'Visualizar Agendamentos' para mais informações.",
+      "tempo": "há 30 min",
+      "lida": true,
+      "role": "user"
+    },
+    {
+      "id": "7",
+      "userId": 3,
+      "tipo": "avaliacao",
+      "titulo": "Avalie sua última aula",
+      "previa": "Olá, aluno! Que tal avaliar sua experiência com Carlos Lima?",
+      "descricao": "Sua aula com João Silva foi concluída. Clique em 'Avaliar' para deixar seu feedback e nos ajudar a melhorar!",
+      "tempo": "há 1 hora",
+      "lida": true,
+      "role": "user"
+    },
+    {
+      "id": "8",
+      "userId": 3,
+      "tipo": "agendamentoConfirmado",
+      "titulo": "Aula confirmada",
+      "previa": "Olá, userTeste! Sua aula com Ana Paula foi confirmada.",
+      "descricao": "Sua aula de Biologia com Ana Paula foi confirmada para sexta-feira às 16h. Clique em 'Visualizar Agendamentos' para mais informações.",
+      "tempo": "há 2 horas",
+      "lida": true,
+      "role": "user"
+    },
+    {
+      "id": "9",
+      "userId": 3,
+      "tipo": "reagendamento",
+      "titulo": "Aula reagendada",
+      "previa": "Olá, userTeste! Sua aula com Carlos Lima foi reagendada.",
+      "descricao": "Sua aula de Química com Carlos Lima foi reagendada para segunda-feira às 10h. Clique em 'Visualizar Agendamentos' para mais informações.",
+      "tempo": "há 4 horas",
+      "lida": true,
+      "role": "user"
+    }
+  ]
+}
