@@ -32,5 +32,19 @@
             "curtido": false,
             "comentario": "Monitor não foi bem atencioso."
         }
-    ]
+    ],
+    "cartoes": [
+        {
+            "id": 1, 
+            "numero": "1234567812345678", 
+            "nome": "Rafael Penela", 
+            "bandeira": "Visa" 
+        },
+        { 
+            "id": 2, 
+            "numero": "8765432187654321", 
+            "nome": "Maria Silva", 
+            "bandeira": "MasterCard" 
+        }
+  ]
 }

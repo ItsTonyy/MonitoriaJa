@@ -10,6 +10,10 @@ import {
   Box,
 } from "@mui/material";
 import Title from '../../../AlterarSenha/Titulo/Titulo';
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { AppDispatch } from "../../../../redux/store";
+import { adicionarCartao } from "../../../../redux/features/listaCartao/slice"; // ajuste o caminho se necessário
 
 const CadastraCartaoPage: React.FC = () => {
   const [numero, setNumero] = useState("");
@@ -20,9 +24,25 @@ const CadastraCartaoPage: React.FC = () => {
   const [mes, setMes] = useState("");
   const [ano, setAno] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ numero, nome, bandeira, cpf, cvv, mes, ano });
+
+    // chama o thunk de adicionarCartao com os dados principais
+    if (numero && nome && bandeira) {
+      await dispatch(
+        adicionarCartao({
+          numero,
+          nome,
+          bandeira: bandeira as "Visa" | "MasterCard" | "Elo",
+        })
+      );
+
+      // volta para a página de listagem
+      navigate("/MonitoriaJa/lista-cartao");
+    }
   };
 
   return (
@@ -54,9 +74,9 @@ const CadastraCartaoPage: React.FC = () => {
               onChange={(e) => setBandeira(e.target.value)}
               label="Bandeira"
             >
-              <MenuItem value="visa">Visa</MenuItem>
-              <MenuItem value="mastercard">MasterCard</MenuItem>
-              <MenuItem value="elo">Elo</MenuItem>
+              <MenuItem value="Visa">Visa</MenuItem>
+              <MenuItem value="MasterCard">MasterCard</MenuItem>
+              <MenuItem value="Elo">Elo</MenuItem>
             </Select>
           </FormControl>
 
