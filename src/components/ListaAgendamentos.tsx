@@ -12,115 +12,83 @@ import {
   Box,
   Fade,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+
 import ModalAcessar from "./ModalAcessar";
 import ModalRemarcar from "./ModalRemarcar";
 import ModalCancelamento from "./ModalCancelamento";
-
-type Agendamento = {
-  id: number;
-  nome: string;
-  materia: string;
-  foto: string;
-  data: string;
-  hora: string;
-  link?: string;
-};
+import { Agendamento } from "./models/agendamento.model";
+import { MONITORES } from "./ListaMonitores";
 
 const AGENDAMENTOS: Agendamento[] = [
   {
     id: 1,
-    nome: "João Silva",
-    materia: "Matemática",
-    foto: "https://randomuser.me/api/portraits/men/1.jpg",
+    monitor: MONITORES[0],
     data: "12/09/2025",
     hora: "14h",
   },
   {
     id: 2,
-    nome: "Maria Souza",
-    materia: "Física",
-    foto: "https://randomuser.me/api/portraits/women/2.jpg",
+    monitor: MONITORES[1],
     data: "15/09/2025",
     hora: "10h",
   },
   {
     id: 3,
-    nome: "Carlos Lima",
-    materia: "Química",
-    foto: "https://randomuser.me/api/portraits/men/3.jpg",
+    monitor: MONITORES[2],
     data: "20/09/2025",
     hora: "16h",
   },
   {
     id: 4,
-    nome: "Ana Paula",
-    materia: "Biologia",
-    foto: "https://randomuser.me/api/portraits/women/4.jpg",
+    monitor: MONITORES[3],
     data: "22/09/2025",
     hora: "09h",
   },
   {
     id: 5,
-    nome: "João Silva",
-    materia: "Matemática",
-    foto: "https://randomuser.me/api/portraits/men/1.jpg",
+    monitor: MONITORES[4],
     data: "12/09/2025",
     hora: "14h",
   },
   {
     id: 6,
-    nome: "Maria Souza",
-    materia: "Física",
-    foto: "https://randomuser.me/api/portraits/women/2.jpg",
+    monitor: MONITORES[5],
     data: "15/09/2025",
     hora: "10h",
   },
   {
     id: 7,
-    nome: "Carlos Lima",
-    materia: "Química",
-    foto: "https://randomuser.me/api/portraits/men/3.jpg",
+    monitor: MONITORES[6],
     data: "20/09/2025",
     hora: "16h",
   },
   {
     id: 8,
-    nome: "Ana Paula",
-    materia: "Biologia",
-    foto: "https://randomuser.me/api/portraits/women/4.jpg",
+    monitor: MONITORES[7],
     data: "22/09/2025",
     hora: "09h",
   },
   {
     id: 9,
-    nome: "João Silva",
-    materia: "Matemática",
-    foto: "https://randomuser.me/api/portraits/men/1.jpg",
+    monitor: MONITORES[8],
     data: "12/09/2025",
     hora: "14h",
   },
   {
     id: 10,
-    nome: "Maria Souza",
-    materia: "Física",
-    foto: "https://randomuser.me/api/portraits/women/2.jpg",
+    monitor: MONITORES[9],
     data: "15/09/2025",
     hora: "10h",
   },
   {
     id: 11,
-    nome: "Carlos Lima",
-    materia: "Química",
-    foto: "https://randomuser.me/api/portraits/men/3.jpg",
+    monitor: MONITORES[10],
     data: "20/09/2025",
     hora: "16h",
   },
   {
     id: 12,
-    nome: "Ana Paula",
-    materia: "Biologia",
-    foto: "https://randomuser.me/api/portraits/women/4.jpg",
+    monitor: MONITORES[11],
     data: "22/09/2025",
     hora: "09h",
   },
@@ -153,7 +121,6 @@ function getCardsPerPage() {
   return cols * rows;
 }
 function ListaAgendamentos() {
-  const navigate = useNavigate();
   const [pagina, setPagina] = useState(1);
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
   const [modalCancelamentoOpen, setModalCancelamentoOpen] = useState(false);
@@ -268,8 +235,8 @@ function ListaAgendamentos() {
                   >
                     <CardMedia
                       component="img"
-                      image={agendamento.foto}
-                      alt={`Foto de ${agendamento.nome}`}
+                      image={agendamento.monitor!.foto}
+                      alt={`Foto de ${agendamento.monitor!.nome}`}
                       sx={{
                         width: { xs: 70, sm: 80 },
                         height: { xs: 70, sm: 80 },
@@ -316,7 +283,7 @@ function ListaAgendamentos() {
                         whiteSpace: "normal",
                       }}
                     >
-                      {agendamento.nome}
+                      {agendamento.monitor!.nome}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -325,7 +292,7 @@ function ListaAgendamentos() {
                         color: "text.secondary",
                       }}
                     >
-                      {agendamento.materia}
+                      {agendamento.monitor!.materia}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -450,7 +417,7 @@ function ListaAgendamentos() {
         </Button>
       </Stack>
       {/* Modais */}
-      {agendamentoSelecionado && (
+      {/*agendamentoSelecionado && (
         <>
           <ModalCancelamento
             open={modalCancelamentoOpen}
@@ -480,7 +447,7 @@ function ListaAgendamentos() {
             }}
           />
         </>
-      )}
+      )*/}
     </Paper>
   );
 }
