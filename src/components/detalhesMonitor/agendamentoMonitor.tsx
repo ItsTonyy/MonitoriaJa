@@ -1,12 +1,12 @@
-import './agendamentoMonitor.css';
-import Button from '@mui/material/Button';
-import { useLocation, useNavigate } from 'react-router-dom';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import VideocamIcon from '@mui/icons-material/Videocam';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { clearAgendamento } from '../../redux/features/agendamento/agendamentoSlice';
+import "./agendamentoMonitor.css";
+import Button from "@mui/material/Button";
+import { useLocation, useNavigate } from "react-router-dom";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import VideocamIcon from "@mui/icons-material/Videocam";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { clearAgendamento } from "../../redux/features/agendamento/agendamentoSlice";
 
 interface AgendamentoMonitorProps {
   linkImagem?: string;
@@ -24,7 +24,7 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
   const navigate = useNavigate();
   /*const location = useLocation();
   const state = location.state || {};/*/
-  let materiasTeste = ['matemática', 'inglês', 'português'];
+  let materiasTeste = ["matemática", "inglês", "português"];
 
   return (
     <main className="main">
@@ -33,7 +33,11 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
       <div className="monitorDetails">
         <div className="monitorProfile">
           <div>
-            <img src={agendamento.monitorImage} alt="imagem do monitor" className="monitorImage" />
+            <img
+              src={agendamento.monitorImage}
+              alt="imagem do monitor"
+              className="monitorImage"
+            />
           </div>
 
           <div className="avaliacao">
@@ -50,7 +54,7 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
             <h1 className="titulo-monitor">{agendamento.monitorName}</h1>
             <div className="monitor-materia-valor">
               <h2>
-                {materiasTeste.map((materia, index) => (
+                {props.materias?.map((materia, index) => (
                   <span key={index} className="materia">
                     {materia}
                   </span>
@@ -93,11 +97,21 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
         <h1 className="titulo">Tipo de Serviço</h1>
         <div className="checkboxes">
           <label className="checkboxes-box" htmlFor="aula">
-            <input type="checkbox" name="servico" id="aula" className="checkbox" />
+            <input
+              type="checkbox"
+              name="servico"
+              id="aula"
+              className="checkbox"
+            />
             <span className="checkbox-names">aula</span>
           </label>
           <label className="checkboxes-box" htmlFor="exercicio">
-            <input type="checkbox" name="servico" id="exercicio" className="checkbox" />
+            <input
+              type="checkbox"
+              name="servico"
+              id="exercicio"
+              className="checkbox"
+            />
             <span className="checkbox-names">exercício</span>
           </label>
         </div>
@@ -120,22 +134,27 @@ function AgendamentoMonitor(props: AgendamentoMonitorProps) {
       <div className="formação">
         <h1 className="titulo">Tópicos da Reunião</h1>
         <div className="text-box">
-          <textarea name="text" id="text" maxLength={1500} className="topicos-input" />
+          <textarea
+            name="text"
+            id="text"
+            maxLength={1500}
+            className="topicos-input"
+          />
         </div>
       </div>
 
-     <div className="botoes">
+      <div className="botoes">
         <Button
           variant="outlined"
-          sx={{ padding: '5px 40px' }}
+          sx={{ padding: "5px 40px" }}
           onClick={() => {
             dispatch(clearAgendamento());
-            navigate('/MonitoriaJa/detalhes-monitor');
+            navigate("/MonitoriaJa/detalhes-monitor");
           }}
         >
           Voltar
         </Button>
-        <Button variant="contained" sx={{ padding: '5px 40px' }}>
+        <Button variant="contained" sx={{ padding: "5px 40px" }}>
           Agendar
         </Button>
       </div>
