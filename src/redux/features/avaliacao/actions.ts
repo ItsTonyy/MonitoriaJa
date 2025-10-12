@@ -1,4 +1,4 @@
-import { AppThunk, AppDispatch } from "../../store";
+import { AppThunk } from "../../store";
 import {
   criarAvaliacaoServer,
   buscarAvaliacoesServer,
@@ -28,7 +28,6 @@ export const buscarAvaliacoes = (): AppThunk => async (dispatch) => {
   }
 };
 
-// Action para buscar avaliações por ID de usuário
 export const buscarAvaliacoesPorUsuario =
   (usuarioId: number): AppThunk =>
   async (dispatch) => {
@@ -39,7 +38,6 @@ export const buscarAvaliacoesPorUsuario =
     }
   };
 
-// Action para buscar avaliações por ID de monitor
 export const buscarAvaliacoesPorMonitor =
   (monitorId: number): AppThunk =>
   async (dispatch) => {
@@ -50,7 +48,6 @@ export const buscarAvaliacoesPorMonitor =
     }
   };
 
-// Action para buscar uma avaliação específica por ID
 export const buscarAvaliacaoPorId =
   (avaliacaoId: number): AppThunk =>
   async (dispatch) => {
@@ -61,7 +58,6 @@ export const buscarAvaliacaoPorId =
     }
   };
 
-// Action para atualizar uma avaliação existente
 export const atualizarAvaliacao =
   (avaliacao: Avaliacao): AppThunk =>
   async (dispatch) => {
@@ -73,7 +69,6 @@ export const atualizarAvaliacao =
     }
   };
 
-// Action para limpar o estado atual da avaliação
 export const limparAvaliacao = (): AppThunk => (dispatch) => {
   dispatch(limparEstadoAvaliacao());
 };
