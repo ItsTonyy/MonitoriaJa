@@ -7,6 +7,7 @@ export interface Agendamento{
   servico?: 'Aula' | 'Exercícios';  //aula ou exercicios
   data?: string;
   hora?: string;
+  duracao?: number; 
   link?: string;
   status?: 'AGUARDANDO' | 'CONFIRMADO' | 'CANCELADO' | 'REMARCADO' |  'CONCLUIDO';
   usuario?:Usuario;
@@ -14,4 +15,5 @@ export interface Agendamento{
   valor?: number;
   formaPagamento?: 'CARTAO' | 'PIX';
   statusPagamento?: 'PENDENTE' | 'PAGO' | 'REEMBOLSADO';
+  topicos?: string;
 };

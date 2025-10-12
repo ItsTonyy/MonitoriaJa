@@ -16,7 +16,7 @@ import {
 import ModalAcessar from "./ModalAcessar";
 import ModalRemarcar from "./ModalRemarcar";
 import ModalCancelamento from "./ModalCancelamento";
-import { Agendamento } from "./models/agendamento.model";
+import { Agendamento } from "../models/agendamento.model";
 import { MONITORES } from "./ListaMonitores";
 
 const AGENDAMENTOS: Agendamento[] = [
