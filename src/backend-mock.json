@@ -38,21 +38,27 @@
       "id": "1",
       "name": "adminTeste",
       "email": "admin@teste.com",
+      "telefone": "21900000000",
       "password": "123456",
+      "description":"",
       "role": "admin"
     },
     {
       "id": "2",
       "name": "monitorTeste",
       "email": "monitor@teste.com",
+      "telefone": "21900000000",
       "password": "123456",
+      "description":"",
       "role": "monitor"
     },
     {
       "id": "3",
       "name": "userTeste",
       "email": "user@teste.com",
+      "telefone": "21900000000",
       "password": "123456",
+      "description":"",
       "role": "user"
     }
   ],

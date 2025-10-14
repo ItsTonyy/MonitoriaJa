@@ -1,78 +1,73 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Box, Menu, MenuItem } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import ConfirmationButton from '../botaoTemporario/botaoTemporario';
 import DescriptionBox from './Descricao/Descricao';
-import styles from './PerfilMonitorPage.module.css';
-import PersonIcon from '@mui/icons-material/Person';
-import { useNavigate } from 'react-router-dom';
 import CampoFormulario from './CampoFormulario/CampoFormulario';
-import { Menu, MenuItem } from '@mui/material';
-import Estrela from '../../../public/five-stars-rating-icon-png.webp';
-import AtualizarMateria from './AtualizarMateria/AtualizarMateria';
 import UploadButton from './UploadButton/UploadButton';
 import StatusModal from '../AlterarSenha/StatusModal/StatusModal';
+import PersonIcon from '@mui/icons-material/Person';
+import styles from './PerfilMonitorPage.module.css';
+import Estrela from '../../../public/five-stars-rating-icon-png.webp';
+import AtualizarMateria from './AtualizarMateria/AtualizarMateria';
+import { RootState } from '../../redux/root-reducer';
+import {
+  atualizarDescricao,
+  atualizarContato,
+  atualizarMaterias,
+} from '../../redux/features/perfilMonitor/slice';
 
+const MATERIAS = [
+  "Matemática", "Física", "Química", "Biologia", "História",
+  "Geografia", "Português", "Inglês", "Programação"
+];
 
 const PerfilMonitorPage: React.FC = () => {
-  const [description, setDescription] = useState('');
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Estados para inputs e modal
-  const [telefone, setTelefone] = useState('');
-  const [email, setEmail] = useState('');
+  const monitor = useSelector((state: RootState) => state.perfilMonitor);
+
+  // Local state para inputs
+  const [telefoneInput, setTelefoneInput] = useState(monitor.telefone);
+  const [emailInput, setEmailInput] = useState(monitor.email);
+  const [descricaoInput, setDescricaoInput] = useState(monitor.descricao);
+  const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>(monitor.materias);
+
   const [erros, setErros] = useState<{ telefone?: string; email?: string }>({});
   const [open, setOpen] = useState(false);
 
-  // Regex para telefone e email
-  const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/; // (XX) 9XXXX-XXXX
+  const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const validarCampos = () => {
     const novosErros: { telefone?: string; email?: string } = {};
 
-    if (!telefoneRegex.test(telefone)) {
+    if (!telefoneRegex.test(telefoneInput)) {
       novosErros.telefone = 'Telefone inválido. Use o formato (XX) 9XXXX-XXXX';
     }
-
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(emailInput)) {
       novosErros.email = 'Email inválido';
     }
 
     setErros(novosErros);
-
     return Object.keys(novosErros).length === 0;
   };
 
   const handleSalvar = () => {
     if (validarCampos()) {
-      console.log('Dados salvos:', { telefone, email });
+      dispatch(atualizarContato({ telefone: telefoneInput, email: emailInput }));
+      dispatch(atualizarDescricao(descricaoInput));
+      dispatch(atualizarMaterias(materiasSelecionadas));
       setOpen(true);
     }
   };
 
-
-
-  // Dropdown Horários
-  const [anchorHorarios, setAnchorHorarios] = useState<null | HTMLElement>(null);
-  const openHorarios = Boolean(anchorHorarios);
-  const handleClickHorarios = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorHorarios(event.currentTarget);
-  };
-  const handleCloseHorarios = () => {
-    setAnchorHorarios(null);
-  };
- 
-  const [buscaMateriaMultiplas, setBuscaMateriaMultiplas] = useState<string[]>([]);
-
-  const MATERIAS = [
-    "Matemática", "Física", "Química", "Biologia", "História",
-    "Geografia", "Português", "Inglês", "Programação"
-  ];
-
-
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
-        {/* Cabeçalho com nome e matéria */}
+        {/* Cabeçalho */}
         <div className={styles.profileHeader}>
           <div className={styles.editableGroup}>
             <div
@@ -83,22 +78,12 @@ const PerfilMonitorPage: React.FC = () => {
               aria-label="Nome do monitor"
               tabIndex={0}
             >
-              Monitor X
-            </div>
-            <div
-              className={styles.subject}
-              contentEditable
-              suppressContentEditableWarning
-              role="textbox"
-              aria-label="Matéria do monitor"
-              tabIndex={0}
-            >
-              Matéria X
+              {monitor.nome}
             </div>
           </div>
         </div>
 
-        {/* Foto de perfil */}
+        {/* Foto */}
         <div className={styles.photoSection}>
           <div className={styles.photoContainer}>
             <PersonIcon className={styles.profilePhotoIcon} />
@@ -111,7 +96,7 @@ const PerfilMonitorPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Avaliação e formação */}
+        {/* Avaliação e Formação */}
         <div className={styles.ratingAndFormation}>
           <div className={styles.rating}>
             <img src={Estrela} alt="Estrela" className={styles.starIcon} />
@@ -122,8 +107,8 @@ const PerfilMonitorPage: React.FC = () => {
         {/* Descrição */}
         <div className={styles.descriptionBox}>
           <DescriptionBox
-            value={description}
-            onChange={setDescription}
+            value={descricaoInput}
+            onChange={setDescricaoInput}
             rows={4}
             placeholder="Escreva uma descrição sobre o monitor..."
           />
@@ -133,86 +118,59 @@ const PerfilMonitorPage: React.FC = () => {
         <div className={styles.fieldsContainer}>
           <CampoFormulario
             label="Telefone"
-            value={telefone}
+            value={telefoneInput}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setTelefone(e.target.value)
+              setTelefoneInput(e.target.value)
             }
           />
-          {erros.telefone && (
-            <span className={styles.error}>{erros.telefone}</span>
-          )}
+          {erros.telefone && <span className={styles.error}>{erros.telefone}</span>}
 
           <CampoFormulario
             label="Email"
-            value={email}
+            value={emailInput}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setEmail(e.target.value)
+              setEmailInput(e.target.value)
             }
           />
-          {erros.email && (
-            <span className={styles.error}>{erros.email}</span>
-          )}
-<AtualizarMateria
-  value={buscaMateriaMultiplas}
-  onChange={setBuscaMateriaMultiplas}
-  options={MATERIAS}
-/>
+          {erros.email && <span className={styles.error}>{erros.email}</span>}
 
-
-
+          {/* Matérias - somente expositivo */}
+          <AtualizarMateria
+            value={materiasSelecionadas}
+            onChange={setMateriasSelecionadas}
+            options={MATERIAS}
+          />
         </div>
 
         {/* Botões */}
-        {/* Botões */}
-<div className={styles.buttonSection}>
+        <div className={styles.buttonSection}>
+          <div className={styles.buttonGroup}>
+            <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>
+              Trocar senha
+            </ConfirmationButton>
+          </div>
 
-  {/* Linha 1: Atualizar horários e Trocar senha */}
-  <div className={styles.buttonGroup}>
-    <ConfirmationButton onClick={handleClickHorarios}>
-      Atualizar horários
-    </ConfirmationButton>
-    <Menu
-      anchorEl={anchorHorarios}
-      open={openHorarios}
-      onClose={handleCloseHorarios}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-    >
-      <MenuItem onClick={handleCloseHorarios}>Segunda-feira</MenuItem>
-      <MenuItem onClick={handleCloseHorarios}>Terça-feira</MenuItem>
-      <MenuItem onClick={handleCloseHorarios}>Quarta-feira</MenuItem>
-    </Menu>
+          <div className={styles.buttonGroup}>
+            <ConfirmationButton onClick={handleSalvar}>
+              Confirmar Mudanças
+            </ConfirmationButton>
+          </div>
 
-    <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>
-      Trocar senha
-    </ConfirmationButton>
-  </div>
-
-  {/* Linha 2: Confirmar mudanças */}
-  <div className={styles.buttonGroup}>
-    <ConfirmationButton onClick={handleSalvar}>
-      Confirmar Mudanças
-    </ConfirmationButton>
-  </div>
-
-  {/* Linha 3: Voltar */}
-  <div className={styles.buttonGroup}>
-    <ConfirmationButton onClick={() => navigate(-1)}>
-      Voltar
-    </ConfirmationButton>
-  </div>
-
-</div>
-
+          <div className={styles.buttonGroup}>
+            <ConfirmationButton onClick={() => navigate(-1)}>
+              Voltar
+            </ConfirmationButton>
+          </div>
+        </div>
       </div>
 
+      {/* Modal de status */}
       <StatusModal
         open={open}
         onClose={() => setOpen(false)}
         status="sucesso"
         mensagem="Alterações salvas com sucesso!"
       />
-
     </main>
   );
 };

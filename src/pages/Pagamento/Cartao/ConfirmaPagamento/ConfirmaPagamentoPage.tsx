@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ConfirmationButton from '../../../botaoTemporario/botaoTemporario';
 import styles from './ConfirmaPagamentoPage.module.css';
 import Title from '../../../AlterarSenha/Titulo/Titulo';
@@ -12,6 +12,8 @@ const ConfirmaPagamento: React.FC = () => {
   const orderValue = 'R$ 00,00';
   const cardNumber = '0000005678';
   const navigate = useNavigate();
+  const location = useLocation();
+  const cartao = location.state?.cartao;
   const [open, setOpen] = useState(false);
 
 const handleCancel = () => {
@@ -29,11 +31,12 @@ const handleCancel = () => {
 
         {/* 🔹 Substitui a imagem antiga pelo componente de cartão */}
         <CartaoItem
-          numero={cardNumber}
-          nome="Rafael Penela"
-          bandeira="Visa"
+          numero={cartao?.numero ?? '************0000'}
+          nome={cartao?.nome ?? 'Nome não disponível'}
+          bandeira={cartao?.bandeira ?? 'Visa'}
           mostrarBotoes={false}
         />
+
 
         <Box className={styles.buttonGroup}>
           <ConfirmationButton

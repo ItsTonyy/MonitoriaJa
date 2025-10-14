@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import ConfirmationButton from '../botaoTemporario/botaoTemporario';
 import styles from './PerfilUsuarioPage.module.css';
 import PersonIcon from '@mui/icons-material/Person';
@@ -6,18 +7,38 @@ import { useNavigate } from 'react-router-dom';
 import CampoFormulario from '../PerfilMonitor/CampoFormulario/CampoFormulario';
 import UploadButton from '../PerfilMonitor/UploadButton/UploadButton';
 import StatusModal from '../AlterarSenha/StatusModal/StatusModal';
+import { AppDispatch } from '../../redux/store';
+import { RootState } from '../../redux/root-reducer'
+import { fetchUsuario, updateUsuario } from '../../redux/features/perfilUsuario/slice';
 
 const PerfilUsuarioPage: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
-  // Estados para inputs e modal
+  // Seleciona dados do Redux
+  const currentUser = useSelector((state: RootState) => state.usuario.currentUser);
+  const loading = useSelector((state: RootState) => state.usuario.loading);
+
+  // Estados locais para edição
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
   const [erros, setErros] = useState<{ telefone?: string; email?: string }>({});
   const [open, setOpen] = useState(false);
 
-  // Regex para telefone e email
-  const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/; // (XX) 9XXXX-XXXX
+  useEffect(() => {
+    // Carrega usuário com id 1 (exemplo)
+    dispatch(fetchUsuario('1'));
+  }, [dispatch]);
+
+  // Atualiza campos quando currentUser muda
+  useEffect(() => {
+    if (currentUser) {
+      setTelefone(currentUser.telefone || '');
+      setEmail(currentUser.email || '');
+    }
+  }, [currentUser]);
+
+  const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const validarCampos = () => {
@@ -32,21 +53,21 @@ const PerfilUsuarioPage: React.FC = () => {
     }
 
     setErros(novosErros);
-
     return Object.keys(novosErros).length === 0;
   };
 
   const handleSalvar = () => {
-    if (validarCampos()) {
-      console.log('Dados salvos:', { telefone, email });
+    if (validarCampos() && currentUser) {
+      dispatch(updateUsuario({ telefone, email }));
       setOpen(true);
     }
   };
 
+  if (loading || !currentUser) return <div>Carregando...</div>;
+
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
-        {/* Cabeçalho */}
         <div className={styles.profileHeader}>
           <div className={styles.editableGroup}>
             <div
@@ -57,12 +78,11 @@ const PerfilUsuarioPage: React.FC = () => {
               aria-label="Nome do aluno"
               tabIndex={0}
             >
-              Aluno X
+              {currentUser.nome}
             </div>
           </div>
         </div>
 
-        {/* Foto */}
         <div className={styles.photoSection}>
           <div className={styles.photoContainer}>
             <PersonIcon className={styles.profilePhotoIcon} />
@@ -70,60 +90,38 @@ const PerfilUsuarioPage: React.FC = () => {
           <div className={styles.uploadButtonContainer}>
             <UploadButton
               className={styles.uploadButton}
-              onFileSelect={(file) =>
-                console.log('Arquivo selecionado:', file)
-              }
+              onFileSelect={(file) => console.log('Arquivo selecionado:', file)}
             />
           </div>
         </div>
 
-        {/* Campos de Telefone e Email */}
         <div className={styles.fieldsContainer}>
           <CampoFormulario
             label="Telefone"
             value={telefone}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setTelefone(e.target.value)
-            }
+            onChange={(e) => setTelefone(e.target.value)}
           />
-          {erros.telefone && (
-            <span className={styles.error}>{erros.telefone}</span>
-          )}
+          {erros.telefone && <span className={styles.error}>{erros.telefone}</span>}
 
           <CampoFormulario
             label="Email"
             value={email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setEmail(e.target.value)
-            }
+            onChange={(e) => setEmail(e.target.value)}
           />
-          {erros.email && (
-            <span className={styles.error}>{erros.email}</span>
-          )}
+          {erros.email && <span className={styles.error}>{erros.email}</span>}
         </div>
 
-        {/* Botões */}
         <div className={styles.buttonSection}>
-          <ConfirmationButton
-            onClick={() => navigate('/MonitoriaJa/alterar-senha')}
-          >
+          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>
             Trocar senha
           </ConfirmationButton>
-          <ConfirmationButton
-            onClick={handleSalvar}
-          >
+          <ConfirmationButton onClick={handleSalvar}>
             Confirmar Mudanças
           </ConfirmationButton>          
-          <ConfirmationButton
-            onClick={() => navigate(-1)}
-          >
-            Voltar
-          </ConfirmationButton>
-
+          <ConfirmationButton onClick={() => navigate(-1)}>Voltar</ConfirmationButton>
         </div>
       </div>
 
-      {/* Modal de status */}
       <StatusModal
         open={open}
         onClose={() => setOpen(false)}
