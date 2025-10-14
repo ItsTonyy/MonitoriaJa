@@ -13,7 +13,7 @@ import Title from '../../../AlterarSenha/Titulo/Titulo';
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../../redux/store";
-import { adicionarCartao } from "../../../../redux/features/listaCartao/slice"; // ajuste o caminho se necessário
+import { adicionarCartao } from "../../../../redux/features/listaCartao/actions"; // ajuste o caminho se necessário
 
 const CadastraCartaoPage: React.FC = () => {
   const [numero, setNumero] = useState("");

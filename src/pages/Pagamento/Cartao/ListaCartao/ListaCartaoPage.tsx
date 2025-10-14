@@ -8,12 +8,12 @@ import ConfirmationButton from '../../../botaoTemporario/botaoTemporario';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store'; // <-- ajuste se o caminho for diferente
 import { RootState } from '../../../../redux/root-reducer';
+import { selectAllCartoes } from '../../../../redux/features/listaCartao/slice';
 import {
   fetchCartoes,
-  removerCartao,
-  selectAllCartoes,
-} from '../../../../redux/features/listaCartao/slice';
-import reducer from '../../../../redux/features/monitor/monitorSlice';
+  removerCartao
+} from '../../../../redux/features/listaCartao/actions';
+
 
 const ListaCartaoPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
