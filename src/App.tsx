@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/Login/LoginPage";
 import RecuperarSenhaPage from "./pages/Login/recuperarSenha/RecuperarSenhaPage";
+import ResetPasswordPage from "./pages/Login/resetPassword/ResetPasswordPage";
 import AvaliacaoPosAulaPage from "./pages/Login/AvaliacaoPosAula/AvaliacaoPosAulaPage";
 import ComentariosAvaliacaoPage from "./pages/Login/ComentariosAvaliacao/ComentariosAvaliacaoPage";
 import ListaMonitores from "./components/ListaMonitores";
@@ -28,6 +29,7 @@ const App = () => {
           path="/MonitoriaJa/recuperar-senha"
           element={<RecuperarSenhaPage />}
         />
+         <Route path="/MonitoriaJa/redefinir-senha" element={<ResetPasswordPage />} />
         <Route
           path="/MonitoriaJa/avaliacao-pos-aula"
           element={<AvaliacaoPosAulaPage />}

@@ -93,7 +93,7 @@ const AGENDAMENTOS: Agendamento[] = [
     monitor: MONITORES[11],
     data: "22/09/2025",
     hora: "09h",
-  },
+  }
 ];
 
 function getGridCols() {
