@@ -1,42 +1,24 @@
 import { useEffect, useState } from "react";
 import "./detalhesMonitor.css";
 import Button from "@mui/material/Button";
-import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { clearSelectedMonitor } from "../../redux/features/monitor/monitorSlice";
-import { setAgendamentoData } from "../../redux/features/agendamento/agendamentoSlice";
+import { setCurrentAgendamento } from "../../redux/features/agendamento/agendamentoSlice";
+import { Agendamento } from "../../models/agendamento.model";
 
-interface TimeSlot {
+/*interface TimeSlot {
   day: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
   times: string[];
-}
+}*/
 
-interface DetalhesMonitorProps {
-  monitorImage?: string;
-  monitorName?: string;
-  materia?: string;
-  valor?: string;
-  duracao?: string;
-  formacao?: string;
-  horarios?: TimeSlot[];
-  onVoltar?: () => void;
-  onAgendar?: () => void;
-}
-
-function DetalhesMonitor(props: DetalhesMonitorProps) {
+function DetalhesMonitor() {
   const dispatch = useAppDispatch();
   const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
-  const location = useLocation();
   const navigate = useNavigate();
-  /*const monitor = location.state?.monitor;
-  const monitorImage = monitor?.foto || props.monitorImage;
-  const monitorName = monitor?.nome || props.monitorName;
-  const materia = monitor?.materia || props.materia;
-  const valor = monitor?.valor || props.valor;
-  const duracao = monitor?.duracao || props.duracao;
-  const formacao = monitor?.formacao || props.formacao;*/
+
+  // Horários mockados - idealmente viriam da disponibilidade do monitor
   const horarios = [
     { day: "seg", times: ["10:00", "14:00", "16:00", "22:00"] },
     { day: "ter", times: ["10:00", "14:00", "16:00"] },
@@ -49,11 +31,12 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
 
   useEffect(() => {
     if (!monitor) {
-      navigate("/MonitoriaJa/");
+      navigate("/MonitoriaJa/lista-monitores");
     }
   }, [monitor, navigate]);
 
   if (!monitor) return null;
+
   const handleTimeSlotClick = (day: string, time: string) => {
     const slotId = `${day}-${time}`;
     setSelectedSlots((prev) => {
@@ -67,8 +50,27 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
     });
   };
 
-  const numeroColunasHorarios = props.horarios ? props.horarios.length : 0;
-  console.log(numeroColunasHorarios);
+  const handleAgendar = () => {
+    const agora = new Date();
+    const dataFormatada = agora.toLocaleDateString("pt-BR"); // formato: dd/mm/aaaa
+    const horaFormatada = agora.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }); // formato: hh:mm
+    // Cria um novo agendamento com base no monitor selecionado
+    const novoAgendamento: Agendamento = {
+      id: Date.now(), // Gera um id único baseado no timestamp
+      monitor: monitor,
+      data: dataFormatada,
+      hora: horaFormatada,
+      status: "AGUARDANDO",
+      valor: monitor.valorHora,
+      statusPagamento: "PENDENTE",
+    };
+
+    dispatch(setCurrentAgendamento(novoAgendamento));
+    navigate("/MonitoriaJa/agendamento-monitor");
+  };
 
   return (
     <div className="main">
@@ -84,7 +86,7 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
           <div className="avaliacao">
             <p className="nota">{monitor.avaliacao}</p>
             <img
-              src="./public/five-stars-rating-icon-png.webp"
+              src="/public/five-stars-rating-icon-png.webp"
               alt="avaliação do monitor"
               className="avaliação-monitor"
             />
@@ -96,9 +98,8 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
             <div className="monitor-materia-valor">
               <h2>{monitor.materia}</h2>
               <p className="traço">-</p>
-              <h2>{monitor.valor}</h2>
+              <h2>R$ {monitor.valorHora}/hora</h2>
             </div>
-            <h2 className="duração">duracao</h2>
           </div>
         </div>
       </div>
@@ -107,7 +108,6 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
         <h1 className="titulo">Formação e Cursos</h1>
         <p className="formação-paragrafo">{monitor.formacao}</p>
       </div>
-
       <div
         className="horários"
         style={
@@ -150,7 +150,7 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
           sx={{ padding: "5px 40px" }}
           onClick={() => {
             dispatch(clearSelectedMonitor());
-            navigate("/MonitoriaJa/");
+            navigate("/MonitoriaJa/lista-monitores");
           }}
         >
           Voltar
@@ -158,18 +158,8 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
         <Button
           variant="contained"
           sx={{ padding: "5px 40px" }}
-          onClick={() => {
-            dispatch(
-              setAgendamentoData({
-                monitorImage: monitor.foto,
-                monitorName: monitor.nome,
-                materia: monitor.materia,
-                valor: monitor.valor,
-                duracao: "1h", 
-              })
-            );
-            navigate("/MonitoriaJa/agendamento-monitor");
-          }}
+          onClick={handleAgendar}
+          disabled={selectedSlots.size === 0}
         >
           Agendar
         </Button>
