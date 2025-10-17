@@ -12,6 +12,7 @@ import {
 import { styled } from "@mui/material/styles";
 import StarIcon from "@mui/icons-material/Star";
 import "./AvaliacaoPosAula .css";
+import ConfirmationButton from "../login-form/ConfirmationButton";
 
 const AvaliacaoCard = styled(Card)({
   width: "100%",
@@ -228,10 +229,9 @@ const AvaliacaoPosAula: React.FC = () => {
               mt: 2,
               py: 1.5,
               px: 4,
-              backgroundColor: "var(--cor-primaria)",
+              backgroundColor: "primary",
               fontSize: "1.1rem",
               fontWeight: 600,
-              borderRadius: "15px",
               "&:hover": {
                 backgroundColor: "var(--cor-secundaria)",
                 transform: "translateY(-2px)",

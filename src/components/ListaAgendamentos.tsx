@@ -10,72 +10,108 @@ import {
   Grid,
   Paper,
   Box,
-  Fade
+  Fade,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
-type Agendamento = {
-  id: number;
-  nome: string;
-  materia: string;
-  foto: string;
-  data: string;
-  hora: string;
-};
+import ModalAcessar from "./ModalAcessar";
+import ModalRemarcar from "./ModalRemarcar";
+import ModalCancelamento from "./ModalCancelamento";
+import { Agendamento } from "../models/agendamento.model";
+import { MONITORES } from "./ListaMonitores";
+import { useAppDispatch } from "../redux/hooks";
+import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
 
 const AGENDAMENTOS: Agendamento[] = [
   {
     id: 1,
-    nome: "João Silva",
-    materia: "Matemática",
-    foto: "https://randomuser.me/api/portraits/men/1.jpg",
+    monitor: MONITORES[0],
     data: "12/09/2025",
     hora: "14h",
   },
   {
     id: 2,
-    nome: "Maria Souza",
-    materia: "Física",
-    foto: "https://randomuser.me/api/portraits/women/2.jpg",
+    monitor: MONITORES[1],
     data: "15/09/2025",
     hora: "10h",
   },
   {
     id: 3,
-    nome: "Carlos Lima",
-    materia: "Química",
-    foto: "https://randomuser.me/api/portraits/men/3.jpg",
+    monitor: MONITORES[2],
     data: "20/09/2025",
     hora: "16h",
   },
   {
     id: 4,
-    nome: "Ana Paula",
-    materia: "Biologia",
-    foto: "https://randomuser.me/api/portraits/women/4.jpg",
+    monitor: MONITORES[3],
     data: "22/09/2025",
     hora: "09h",
   },
+  {
+    id: 5,
+    monitor: MONITORES[4],
+    data: "12/09/2025",
+    hora: "14h",
+  },
+  {
+    id: 6,
+    monitor: MONITORES[5],
+    data: "15/09/2025",
+    hora: "10h",
+  },
+  {
+    id: 7,
+    monitor: MONITORES[6],
+    data: "20/09/2025",
+    hora: "16h",
+  },
+  {
+    id: 8,
+    monitor: MONITORES[7],
+    data: "22/09/2025",
+    hora: "09h",
+  },
+  {
+    id: 9,
+    monitor: MONITORES[8],
+    data: "12/09/2025",
+    hora: "14h",
+  },
+  {
+    id: 10,
+    monitor: MONITORES[9],
+    data: "15/09/2025",
+    hora: "10h",
+  },
+  {
+    id: 11,
+    monitor: MONITORES[10],
+    data: "20/09/2025",
+    hora: "16h",
+  },
+  {
+    id: 12,
+    monitor: MONITORES[11],
+    data: "22/09/2025",
+    hora: "09h",
+  }
 ];
 
 function getGridCols() {
   if (typeof window === "undefined") return 2;
   const width = window.innerWidth;
-  if (width >= 1200) return 3; 
+  if (width >= 1200) return 3;
   if (width >= 783) return 2;
   return 1;
 }
-
 
 function getGridRows() {
   const alturaReservada = 350;
   const alturaCard = 180;
   const espacamentoVertical = 24;
   const alturaTotal = alturaCard + espacamentoVertical;
-  
-  const alturaDisponivel = typeof window !== "undefined" 
-    ? window.innerHeight - alturaReservada 
-    : 600;
+
+  const alturaDisponivel =
+    typeof window !== "undefined" ? window.innerHeight - alturaReservada : 600;
 
   return Math.max(1, Math.floor(alturaDisponivel / alturaTotal));
 }
@@ -87,10 +123,13 @@ function getCardsPerPage() {
   return cols * rows;
 }
 function ListaAgendamentos() {
-  const navigate = useNavigate();
   const [pagina, setPagina] = useState(1);
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
-
+  const dispatch = useAppDispatch();
+  const [modalCancelamentoOpen, setModalCancelamentoOpen] = useState(false);
+  const [modalRemarcarOpen, setModalRemarcarOpen] = useState(false);
+  const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
+  
   useEffect(() => {
     function handleResize() {
       setCardsPorPagina(getCardsPerPage());
@@ -99,44 +138,42 @@ function ListaAgendamentos() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const totalPaginas = Math.max(1, Math.ceil(AGENDAMENTOS.length / cardsPorPagina));
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(AGENDAMENTOS.length / cardsPorPagina)
+  );
 
   useEffect(() => {
     if (pagina > totalPaginas) setPagina(1);
   }, [totalPaginas, pagina]);
 
   const agendamentosPagina = useMemo(
-    () => AGENDAMENTOS.slice((pagina - 1) * cardsPorPagina, pagina * cardsPorPagina),
+    () =>
+      AGENDAMENTOS.slice(
+        (pagina - 1) * cardsPorPagina,
+        pagina * cardsPorPagina
+      ),
     [pagina, cardsPorPagina]
   );
 
   return (
-    <Paper 
-        elevation={0}
-        sx={{
-            p: 3,
-            m: 2,
-            borderRadius: 2,
-            bgcolor: 'background.default',
-            maxWidth: 1100,
-            margin: '0 auto',
-            marginTop: '130px',
-            '@media (width <= 760px)': {
-              marginTop: '6rem',
-            },
-           marginBottom: '40px',
-           boxShadow: ' 0 8px 24px rgba(5, 3, 21, 0.08)',
-           
-        }}
-        >
-      <Typography 
-        variant="h4" 
-        align="center" 
+    <Paper
+      elevation={0}
+      sx={{
+        p: 3,
+        borderRadius: 2,
+        bgcolor: "background.default",
+        maxWidth: 1200,
+      }}
+    >
+      <Typography
+        variant="h4"
+        align="center"
         gutterBottom
-        sx={{ 
+        sx={{
           fontWeight: 500,
-          color: 'primary.main',
-          mb: 4
+          color: "primary.main",
+          mb: 2,
         }}
       >
         Lista de Agendamentos
@@ -147,189 +184,210 @@ function ListaAgendamentos() {
         spacing={3}
         justifyContent="center"
         sx={{
-            width: '100%',
-            margin: '0 auto'
+          width: "100%",
+          margin: "0 auto",
         }}
-        >
+      >
         {agendamentosPagina.length === 0 ? (
-          <Grid item xs={12}  component={"div" as unknown as React.ElementType}>
-            <Typography
-              align="center"
-              color="text.secondary"
-              sx={{ my: 4 }}
-            >
+          <Grid item xs={12} component={"div" as unknown as React.ElementType}>
+            <Typography align="center" color="text.secondary" sx={{ my: 4 }}>
               Nenhum agendamento encontrado.
             </Typography>
           </Grid>
         ) : (
           agendamentosPagina.map((agendamento) => (
-            <Grid 
-              item 
+            <Grid
+              item
               xs={12}
               key={agendamento.id}
               sx={{
-                display: 'flex',
-                justifyContent: 'center'
+                display: "flex",
+                justifyContent: "center",
               }}
-               component={"div" as unknown as React.ElementType}
+              component={"div" as unknown as React.ElementType}
             >
               <Fade in timeout={500}>
                 <Card
-                    elevation={2}
+                  elevation={2}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    height: "180px",
+                    width: "350px",
+                    minWidth: "340px",
+                    maxWidth: "350px",
+                    margin: "0 auto",
+                    "&:hover": {
+                      elevation: 4,
+                      transform: "translateY(-2px)",
+                      transition: "all 0.2s ease-in-out",
+                    },
+                  }}
+                >
+                  <Box
                     sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        height: '180px',
-                        width: '100%',
-                        maxWidth: '800px',
-                        minWidth: '330px',
-                        margin: '0 auto',
-                        '&:hover': {
-                        elevation: 4,
-                        transform: 'translateY(-2px)',
-                        transition: 'all 0.2s ease-in-out'
-                        }
-                    }}
-                    >
-                  <Box 
-                    sx={{ 
                       p: 1.5,
-                      display: 'flex', 
-                      flexDirection: 'column', 
-                      alignItems: 'center',
-                    justifyContent: 'center',
-                      width: '100px',
-                      minWidth: '100px'
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100px",
+                      minWidth: "100px",
                     }}
                   >
                     <CardMedia
                       component="img"
-                      image={agendamento.foto}
-                      alt={`Foto de ${agendamento.nome}`}
+                      image={agendamento.monitor!.foto}
+                      alt={`Foto de ${agendamento.monitor!.nome}`}
                       sx={{
                         width: { xs: 70, sm: 80 },
                         height: { xs: 70, sm: 80 },
-                        borderRadius: '50%',
+                        borderRadius: "50%",
                         border: 2,
-                        borderColor: 'primary.main'
+                        borderColor: "primary.main",
                       }}
                     />
                   </Box>
 
-                  <CardContent 
-                    sx={{ 
+                  <CardContent
+                    sx={{
                       flex: 1,
                       p: 1.5,
-                      overflow: 'hidden',
-                      '&:last-child': { pb: 1.5 },
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center'
+                      overflow: "hidden",
+                      "&:last-child": { pb: 1.5 },
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
                     }}
                   >
-                    <Typography 
-                      variant="h6" 
-                      color="primary.main" 
-                      sx={{ 
-                        fontSize: '1.1rem',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
+                    {/* <Typography
+                      variant="h6"
+                      color="primary.main"
+                      sx={{
+                        fontSize: "1.1rem",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >*/}
+                    <Typography
+                      variant="h6"
+                      color="primary.main"
+                      sx={{
+                        fontSize: "0.9rem",
+                        lineHeight: 1.2,
+                        maxHeight: "2.4em",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        whiteSpace: "normal",
                       }}
                     >
-                      {agendamento.nome}
+                      {agendamento.monitor!.nome}
                     </Typography>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        fontSize: '0.9rem',
-                        color: 'text.secondary'
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "0.9rem",
+                        color: "text.secondary",
                       }}
                     >
-                      {agendamento.materia}
+                      {agendamento.monitor!.materia}
                     </Typography>
-                     <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        fontSize: '0.9rem',
-                        color: 'text.secondary'
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "0.9rem",
+                        color: "text.secondary",
                       }}
                     >
-                        {agendamento.data}
-                      </Typography>
-                      <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        fontSize: '0.9rem',
-                        color: 'text.secondary'
+                      {agendamento.data}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "0.9rem",
+                        color: "text.secondary",
                       }}
                     >
-                        {agendamento.hora}
-                      </Typography>
+                      {agendamento.hora}
+                    </Typography>
                   </CardContent>
 
-                  <CardActions 
-                    sx={{ 
+                  <CardActions
+                    sx={{
                       p: 1.5,
-                      display: 'flex',
-                      flexDirection: 'column',
+                      display: "flex",
+                      flexDirection: "column",
                       gap: 1,
-                      minWidth: '110px',
-                      justifyContent: 'center'
-                      
+                      minWidth: "110px",
+                      justifyContent: "center",
                     }}
                   >
                     <Stack
-                spacing={1} // Adiciona espaçamento vertical entre botões
-                sx={{ 
-                    width: '100%',
-                minWidth: '110px',
-                '& .MuiButton-root': { // Estilo comum para todos os botões
-                        padding: '8px 16px',
-                        fontSize: '0.875rem'
-                      }}}
-                    
-                >
-                    <Button
-                     size="medium"
-                    variant="contained"
-                    onClick={() => navigate("/modalCancelamento")}
-                    sx={{
-                    bgcolor: '#e53e3e !important', // Cor original do btnCancelar
-                    '&:hover': {
-                        bgcolor: '#a81d1d !important'
-                    }
-                    }}
+                      spacing={1} // Adiciona espaçamento vertical entre botões
+                      sx={{
+                        width: "100%",
+                        minWidth: "110px",
+                        "& .MuiButton-root": {
+                          // Estilo comum para todos os botões
+                          padding: "8px 16px",
+                          fontSize: "0.875rem",
+                        },
+                      }}
                     >
+                      <Button
+                        size="medium"
+                        variant="contained"
+                        onClick={() => {
+                          dispatch(setCurrentAgendamento(agendamento));
+                          setModalCancelamentoOpen(true);
+                        }}
+                        sx={{
+                          bgcolor: "#e53e3e !important",
+                          "&:hover": { bgcolor: "#a81d1d !important" },
+                        }}
+                      >
                         Cancelar
-                    </Button>
-                    <Button
-                         size="medium"
+                      </Button>
+
+                      <Button
+                        size="medium"
                         variant="contained"
-                        onClick={() => navigate("/reagendamento")}
-                        sx={{
-                        bgcolor: '#6b7280 !important', // Cor original do btnReagendar
-                        '&:hover': {
-                            bgcolor: '#374151 !important'
-                        }
+                        onClick={() => {
+                          dispatch(setCurrentAgendamento(agendamento));
+                          setModalRemarcarOpen(true);
                         }}
-                    >
+                        sx={{
+                          bgcolor: "#6b7280 !important",
+                          "&:hover": { bgcolor: "#374151 !important" },
+                        }}
+                      >
                         Reagendar
-                    </Button>
-                    <Button
-                     size="medium"
+                      </Button>
+
+                      <Button
+                        size="medium"
                         variant="contained"
-                        onClick={() => navigate("/avaliacao")}
-                        sx={{
-                        bgcolor: '#2d5be3 !important', // Cor original do btnAcessar
-                        '&:hover': {
-                            bgcolor: '#1b3e8a !important'
-                        }
+                        onClick={() => {
+                          dispatch(
+                            setCurrentAgendamento({
+                              ...agendamento,
+                              link: "https://meet.google.com/zyw-jymr-ipg",
+                            })
+                          );
+                          setModalAcessarOpen(true);
                         }}
-                    >
+                        sx={{
+                          bgcolor: "#2d5be3 !important",
+                          "&:hover": { bgcolor: "#1b3e8a !important" },
+                        }}
+                      >
                         Acessar
-                    </Button>
-                </Stack>
+                      </Button>
+                    </Stack>
                   </CardActions>
                 </Card>
               </Fade>
@@ -338,12 +396,7 @@ function ListaAgendamentos() {
         )}
       </Grid>
 
-      <Stack
-        spacing={1}
-        direction="row"
-        justifyContent="center"
-        sx={{ mt: 4 }}
-      >
+      <Stack spacing={1} direction="row" justifyContent="center" sx={{ mt: 4 }}>
         <Button
           variant="contained"
           onClick={() => setPagina((p) => Math.max(1, p - 1))}
@@ -354,9 +407,9 @@ function ListaAgendamentos() {
         <Typography
           variant="body1"
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            px: 2
+            display: "flex",
+            alignItems: "center",
+            px: 2,
           }}
         >
           {pagina} de {totalPaginas}
@@ -369,6 +422,19 @@ function ListaAgendamentos() {
           &#8594;
         </Button>
       </Stack>
+      {/* Modais */}
+     <ModalCancelamento
+    open={modalCancelamentoOpen}
+    onClose={() => setModalCancelamentoOpen(false)}
+  />
+  <ModalRemarcar
+    open={modalRemarcarOpen}
+    onClose={() => setModalRemarcarOpen(false)}
+  />
+  <ModalAcessar
+    open={modalAcessarOpen}
+    onClose={() => setModalAcessarOpen(false)}
+  />
     </Paper>
   );
 }

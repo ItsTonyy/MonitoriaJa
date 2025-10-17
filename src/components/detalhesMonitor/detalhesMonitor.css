@@ -34,12 +34,12 @@ body {
   flex-direction: column;
   margin: 40px auto;
   max-width: 1100px;
-  margin-top: 130px;
+  margin-top: 0px;
   margin-bottom: 40px;
 
   @media (width <= 640px) {
     margin: 0;
-    padding-top: 6rem;
+    padding-top: 0rem;
     width: auto;
     border-radius: 0;
   }
