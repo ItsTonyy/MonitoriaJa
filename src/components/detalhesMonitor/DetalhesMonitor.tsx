@@ -7,10 +7,10 @@ import { clearSelectedMonitor } from "../../redux/features/monitor/monitorSlice"
 import { setCurrentAgendamento } from "../../redux/features/agendamento/agendamentoSlice";
 import { Agendamento } from "../../models/agendamento.model";
 
-interface TimeSlot {
+/*interface TimeSlot {
   day: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
   times: string[];
-}
+}*/
 
 function DetalhesMonitor() {
   const dispatch = useAppDispatch();
@@ -59,6 +59,7 @@ function DetalhesMonitor() {
     }); // formato: hh:mm
     // Cria um novo agendamento com base no monitor selecionado
     const novoAgendamento: Agendamento = {
+      id: Date.now(), // Gera um id único baseado no timestamp
       monitor: monitor,
       data: dataFormatada,
       hora: horaFormatada,

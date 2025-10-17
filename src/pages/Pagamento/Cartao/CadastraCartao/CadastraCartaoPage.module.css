@@ -1,0 +1,96 @@
+:root {
+  --cor-primaria: #104c91;
+  --cor-secundaria: #1f8ac0;
+  --cor-acento: #efc9af;
+  --cor-fundo: #ffffff;
+  --cor-texto: #050315;
+  --cor-texto-claro: #ffffff;
+  --shadow: 0 8px 24px rgba(5, 3, 21, 0.5);
+  --button-padding: 12px 0;
+  --input-padding: 10px;
+  --cor-borda-input: #ccc;
+  --cor-input-fundo: #2b3a55;
+  --cor-background-escuro: rgb(240, 240, 240);
+  --font-principal: 'Roboto', sans-serif;
+}
+
+/* Aplica Roboto globalmente */
+body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
+  font-family: var(--font-principal);
+}
+
+.centralizeContent {
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.card {
+  background-color: var(--cor-fundo);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-radius: 12px;
+}
+
+.title {
+  text-align: center;
+  color: var(--cor-primaria);
+  margin-bottom: 1rem;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.button {
+  flex: 1 0 auto;
+  min-width: 120px;
+  max-width: 200px;
+  padding: var(--button-padding) !important;
+  text-transform: none !important;
+  font-weight: bold !important;
+  border-radius: 8px;
+  background-color: var(--cor-primaria);
+  color: var(--cor-texto-claro);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover {
+  background-color: var(--cor-secundaria);
+}
+
+@media (max-width: 480px) {
+  .buttonGroup {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .button {
+    width: 100%;
+    max-width: 100%;
+  }
+}

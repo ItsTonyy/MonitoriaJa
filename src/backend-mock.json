@@ -38,21 +38,27 @@
       "id": "1",
       "name": "adminTeste",
       "email": "admin@teste.com",
+      "telefone": "21900000000",
       "password": "123456",
+      "description":"",
       "role": "admin"
     },
     {
       "id": "2",
       "name": "monitorTeste",
       "email": "monitor@teste.com",
+      "telefone": "21900000000",
       "password": "123456",
+      "description":"",
       "role": "monitor"
     },
     {
       "id": "3",
       "name": "userTeste",
       "email": "user@teste.com",
+      "telefone": "21900000000",
       "password": "123456",
+      "description":"",
       "role": "user"
     }
   ],
@@ -156,5 +162,19 @@
       "lida": true,
       "role": "user"
     }
+  ],
+  "cartoes": [
+        {
+            "id": 1, 
+            "numero": "1234567812345678", 
+            "nome": "Rafael Penela", 
+            "bandeira": "Visa" 
+        },
+        { 
+            "id": 2, 
+            "numero": "8765432187654321", 
+            "nome": "Maria Silva", 
+            "bandeira": "MasterCard" 
+        }
   ]
 }

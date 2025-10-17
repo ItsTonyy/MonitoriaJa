@@ -42,7 +42,7 @@ function AgendamentoMonitor() {
   const handleAgendar = () => {
     if (!currentAgendamento.id || !formaPagamento) return;
 
-    // Update payment status
+    // Atualiza status do pagamento e do agendamento
     dispatch(
       updateAgendamentoPagamento({
         agendamentoId: currentAgendamento.id,
@@ -50,8 +50,6 @@ function AgendamentoMonitor() {
         formaPagamento: formaPagamento,
       })
     );
-
-    // Update agendamento status
     dispatch(
       updateAgendamentoStatus({
         agendamentoId: currentAgendamento.id,
@@ -59,7 +57,14 @@ function AgendamentoMonitor() {
       })
     );
 
-    navigate("/MonitoriaJa/lista-agendamentos");
+    // Redireciona conforme a forma de pagamento
+    if (formaPagamento === "PIX") {
+      navigate("/MonitoriaJa/pix");
+    } else if (formaPagamento === "CARTAO") {
+      navigate("/MonitoriaJa/lista-cartao");
+    } else {
+      navigate("/MonitoriaJa/lista-agendamentos");
+    }
   };
 
   return (

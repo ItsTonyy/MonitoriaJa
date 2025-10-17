@@ -15,6 +15,13 @@ import DetalhesNotificao from "./components/DetalhesNotificao/DetalhesNotificao"
 import DisciplinaModal from "./components/disciplina/DisciplinaModal";
 import MainLayout from "./components/MainLayout/MainLayout";
 import LandingPage from "./components/landingPage";
+import PerfilMonitorPage from "./pages/PerfilMonitor/PerfilMonitorPage";
+import PerfilUsuarioPage from "./pages/PerfilUsuario/PerfilUsuarioPage";
+import AlterarSenhaPage from "./pages/AlterarSenha/AlterarSenhaPage";
+import PixPage from "./pages/Pagamento/Pix/PixPage";
+import CadastraCartao from "./pages/Pagamento/Cartao/CadastraCartao/CadastraCartaoPage";
+import ConfirmaPagamento from "./pages/Pagamento/Cartao/ConfirmaPagamento/ConfirmaPagamentoPage";
+import ListaCartaoPage from "./pages/Pagamento/Cartao/ListaCartao/ListaCartaoPage";
 
 const App = () => {
   return (
@@ -74,6 +81,27 @@ const App = () => {
             />
           }
         />
+        <Route 
+          path="/MonitoriaJa/perfil-monitor" 
+          element={<PerfilMonitorPage/>}/>
+        <Route 
+          path="/MonitoriaJa/perfil-usuario" 
+          element={<PerfilUsuarioPage/>}/>
+        <Route 
+          path="/MonitoriaJa/alterar-senha" 
+          element={<AlterarSenhaPage/>}/>
+        <Route 
+          path="/MonitoriaJa/pix" 
+          element={<PixPage/>}/>
+        <Route 
+          path="/MonitoriaJa/cadastra-cartao" 
+          element={<CadastraCartao/>}/>
+        <Route 
+          path="/MonitoriaJa/confirma-pagamento" 
+          element={<ConfirmaPagamento/>}/>
+        <Route 
+          path="/MonitoriaJa/lista-cartao" 
+          element={<ListaCartaoPage/>}/>
       </Routes>
       </MainLayout>
       <Footer />
