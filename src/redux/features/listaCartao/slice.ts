@@ -1,4 +1,4 @@
-// src/store/listaCartaoSlice.ts
+// src/redux/features/listaCartao/slice.ts
 import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
 import { Cartao } from './fetch';
 import { fetchCartoes, adicionarCartao, removerCartao } from './actions';
@@ -24,7 +24,8 @@ const listaCartaoSlice = createSlice({
 
 export default listaCartaoSlice.reducer;
 
-// Exporta seletores prontos do entity adapter
+import { RootState } from '../../root-reducer';
+
 export const { selectAll: selectAllCartoes } = cartaoAdapter.getSelectors(
-  (state: any) => state.cartoes
+  (state: RootState) => state.cartoes
 );

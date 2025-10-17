@@ -40,7 +40,7 @@
       "email": "admin@teste.com",
       "telefone": "21900000000",
       "password": "123456",
-      "description":"",
+      "description": "",
       "role": "admin"
     },
     {
@@ -49,7 +49,7 @@
       "email": "monitor@teste.com",
       "telefone": "21900000000",
       "password": "123456",
-      "description":"",
+      "description": "",
       "role": "monitor"
     },
     {
@@ -58,7 +58,7 @@
       "email": "user@teste.com",
       "telefone": "21900000000",
       "password": "123456",
-      "description":"",
+      "description": "",
       "role": "user"
     }
   ],
@@ -71,7 +71,7 @@
       "previa": "Olá, admin! Passando pra avisar que sua aula com João Silva foi reagendada.",
       "descricao": "Sua aula com João Silva foi reagendada com sucesso. Clique em 'Visualizar Agendamentos' para mais informações.",
       "tempo": "há 2 min",
-      "lida": false,
+      "lida": true,
       "role": "admin"
     },
     {
@@ -164,17 +164,12 @@
     }
   ],
   "cartoes": [
-        {
-            "id": 1, 
-            "numero": "1234567812345678", 
-            "nome": "Rafael Penela", 
-            "bandeira": "Visa" 
-        },
-        { 
-            "id": 2, 
-            "numero": "8765432187654321", 
-            "nome": "Maria Silva", 
-            "bandeira": "MasterCard" 
-        }
+    {
+      "id": "28e1",
+      "numero": "1234567891234567",
+      "nome": "Ruy Anderson",
+      "bandeira": "Elo",
+      "usuarioId": "1"
+    }
   ]
 }

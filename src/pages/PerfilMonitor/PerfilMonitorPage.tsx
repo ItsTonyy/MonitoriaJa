@@ -64,6 +64,11 @@ const PerfilMonitorPage: React.FC = () => {
     }
   };
 
+  const handleExcluirMateria = (materiaToDelete: string) => {
+    const novasMaterias = materiasSelecionadas.filter(materia => materia !== materiaToDelete);
+    setMateriasSelecionadas(novasMaterias);
+  };
+
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
@@ -82,6 +87,27 @@ const PerfilMonitorPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Display das matérias abaixo do nome */}
+        {materiasSelecionadas.length > 0 && (
+          <div className={styles.materiasAssociadas}>
+            <label className={styles.materiasLabel}>Matérias Associadas:</label>
+            <div className={styles.materiasChips}>
+              {materiasSelecionadas.map((materia, index) => (
+                <div key={index} className={styles.materiaChip}>
+                  {materia}
+                  <button 
+                    type="button"
+                    className={styles.deleteButton}
+                    onClick={() => handleExcluirMateria(materia)}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Foto */}
         <div className={styles.photoSection}>
@@ -134,7 +160,7 @@ const PerfilMonitorPage: React.FC = () => {
           />
           {erros.email && <span className={styles.error}>{erros.email}</span>}
 
-          {/* Matérias - somente expositivo */}
+          {/* Campo para adicionar matérias */}
           <AtualizarMateria
             value={materiasSelecionadas}
             onChange={setMateriasSelecionadas}
