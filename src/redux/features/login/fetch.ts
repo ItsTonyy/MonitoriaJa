@@ -1,7 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { httpGet, httpPost, httpPut } from "../../../utils";
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { httpGet, httpPut } from "../../../utils";
 
 export interface User {
   id: number;
