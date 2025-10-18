@@ -32,7 +32,6 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import InfoIcon from "@mui/icons-material/Info";
 import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
-import { MONITORES } from "../ListaMonitores";
 
 interface FormData {
   rating: number | null;
@@ -59,11 +58,11 @@ const MONITORES = [
   },
 ];
 
-const MATERIAIS_PREPARATORIOS = [
-  { titulo: "Lista de Exercícios - Integrais", tipo: "PDF", tamanho: "2.1 MB" },
-  { titulo: "Resumo Teórico - Cálculo II", tipo: "PDF", tamanho: "1.8 MB" },
-  { titulo: "Formulário Básico", tipo: "PDF", tamanho: "0.5 MB" },
-];
+/*const MATERIAIS_PREPARATORIOS = [
+  { titulo: 'Lista de Exercícios - Integrais', tipo: 'PDF', tamanho: '2.1 MB' },
+  { titulo: 'Resumo Teórico - Cálculo II', tipo: 'PDF', tamanho: '1.8 MB' },
+  { titulo: 'Formulário Básico', tipo: 'PDF', tamanho: '0.5 MB' },
+];/*/
 
 const DADOS_REAGENDAMENTO = {
   monitor: {
@@ -163,7 +162,7 @@ export default function DetalhesNotificao() {
     <Container
       maxWidth="md"
       sx={{
-        pt: 0,
+        pt: { xs: 12, sm: 14, md: 16 },
         pb: 4,
         px: { xs: 2, sm: 3, md: 4 },
       }}
