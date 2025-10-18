@@ -2,8 +2,8 @@ import * as React from "react";
 import { styled, alpha } from "@mui/material/styles";
 import "./appNavBar.css";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "../redux/root-reducer";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { logoutUserServer } from "../redux/features/login/fetch";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -53,18 +53,23 @@ export default function AppNavBar() {
   );
 
   const navigate = useNavigate();
-  const { isAuthenticated } = useSelector((state: RootState) => state.login);
+  const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector((state) => state.login);
 
   function handleClickHome() {
     navigate("/MonitoriaJa");
   }
 
   function handleClickMonitores() {
-    navigate("/MonitoriaJa/lista-monitores");
+    if (isAuthenticated) {
+      navigate("/MonitoriaJa/lista-monitores");
+    }
   }
 
   function handleClickAgendamento() {
-    navigate("/MonitoriaJa/lista-agendamentos");
+    if (isAuthenticated) {
+      navigate("/MonitoriaJa/lista-agendamentos");
+    }
   }
 
   function handleClickLogin() {
@@ -75,7 +80,12 @@ export default function AppNavBar() {
 
   function handleClickHistorico() {}
 
-  function handleClickLogout() {}
+  async function handleClickLogout(event: React.MouseEvent<HTMLElement>) {
+    event.preventDefault();
+    localStorage.clear();
+    await dispatch(logoutUserServer());
+    navigate("/MonitoriaJa/login");
+  }
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);

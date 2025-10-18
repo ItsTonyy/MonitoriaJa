@@ -22,6 +22,7 @@ import PixPage from "./pages/Pagamento/Pix/PixPage";
 import CadastraCartao from "./pages/Pagamento/Cartao/CadastraCartao/CadastraCartaoPage";
 import ConfirmaPagamento from "./pages/Pagamento/Cartao/ConfirmaPagamento/ConfirmaPagamentoPage";
 import ListaCartaoPage from "./pages/Pagamento/Cartao/ListaCartao/ListaCartaoPage";
+import Middleware from "./components/routesMiddleware";
 
 const App = () => {
   return (
@@ -39,21 +40,38 @@ const App = () => {
             path="/MonitoriaJa/redefinir-senha"
             element={<ResetPasswordPage />}
           />
+
           <Route
             path="/MonitoriaJa/avaliacao-pos-aula"
-            element={<AvaliacaoPosAulaPage />}
+            element={
+              <Middleware>
+                <AvaliacaoPosAulaPage />
+              </Middleware>
+            }
           />
           <Route
             path="/MonitoriaJa/comentarios-avaliacao"
-            element={<ComentariosAvaliacaoPage />}
+            element={
+              <Middleware>
+                <ComentariosAvaliacaoPage />
+              </Middleware>
+            }
           />
           <Route
             path="/MonitoriaJa/lista-monitores"
-            element={<ListaMonitores />}
+            element={
+              <Middleware>
+                <ListaMonitores />
+              </Middleware>
+            }
           />
           <Route
             path="/MonitoriaJa/lista-agendamentos"
-            element={<ListaAgendamentos />}
+            element={
+              <Middleware>
+                <ListaAgendamentos />
+              </Middleware>
+            }
           />
           <Route
             path="/MonitoriaJa/cadastro-monitor"
@@ -61,53 +79,98 @@ const App = () => {
           />
           <Route
             path="/MonitoriaJa/detalhes-monitor"
-            element={<DetalhesMonitor />}
+            element={
+              <Middleware>
+                <DetalhesMonitor />
+              </Middleware>
+            }
           />
           <Route
             path="/MonitoriaJa/agendamento-monitor"
-            element={<AgendamentoMonitor />}
+            element={
+              <Middleware>
+                <AgendamentoMonitor />
+              </Middleware>
+            }
           />
           <Route
             path="/MonitoriaJa/detalhes-notificacao/:id"
-            element={<DetalhesNotificao />}
+            element={
+              <Middleware>
+                <DetalhesNotificao />
+              </Middleware>
+            }
           />
           <Route
             path="/MonitoriaJa/cadastro-disciplina"
             element={
-              <DisciplinaModal
-                open={true}
-                onClose={() => window.history.back()}
-                onSave={(disciplina) => {
-                  console.log("Disciplina:", disciplina);
-                  window.history.back();
-                }}
-              />
+              <Middleware>
+                <DisciplinaModal
+                  open={true}
+                  onClose={() => window.history.back()}
+                  onSave={(disciplina) => {
+                    console.log("Disciplina:", disciplina);
+                    window.history.back();
+                  }}
+                />
+              </Middleware>
             }
           />
           <Route
             path="/MonitoriaJa/perfil-monitor"
-            element={<PerfilMonitorPage />}
+            element={
+              <Middleware>
+                <PerfilMonitorPage />
+              </Middleware>
+            }
           />
           <Route
             path="/MonitoriaJa/perfil-usuario"
-            element={<PerfilUsuarioPage />}
+            element={
+              <Middleware>
+                <PerfilUsuarioPage />
+              </Middleware>
+            }
           />
           <Route
             path="/MonitoriaJa/alterar-senha"
-            element={<AlterarSenhaPage />}
+            element={
+              <Middleware>
+                <AlterarSenhaPage />
+              </Middleware>
+            }
           />
-          <Route path="/MonitoriaJa/pix" element={<PixPage />} />
+          <Route
+            path="/MonitoriaJa/pix"
+            element={
+              <Middleware>
+                <PixPage />
+              </Middleware>
+            }
+          />
           <Route
             path="/MonitoriaJa/cadastra-cartao"
-            element={<CadastraCartao />}
+            element={
+              <Middleware>
+                <CadastraCartao />
+              </Middleware>
+            }
           />
           <Route
             path="/MonitoriaJa/confirma-pagamento"
-            element={<ConfirmaPagamento />}
+            element={
+              <Middleware>
+                <ConfirmaPagamento />
+              </Middleware>
+            }
           />
           <Route
             path="/MonitoriaJa/lista-cartao"
-            element={<ListaCartaoPage />}
+            element={
+              <Middleware>
+                <ListaCartaoPage />
+              </Middleware>
+            }
           />
         </Routes>
       </MainLayout>

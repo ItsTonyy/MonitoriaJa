@@ -162,8 +162,6 @@ export default function DetalhesNotificao() {
     <Container
       maxWidth="md"
       sx={{
-        pt: { xs: 12, sm: 14, md: 16 },
-        pb: 4,
         px: { xs: 2, sm: 3, md: 4 },
       }}
     >

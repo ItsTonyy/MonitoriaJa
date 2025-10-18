@@ -1,5 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { httpGet, httpPost, httpPut } from "../../../utils";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { httpGet, httpPut } from "../../../utils";
 
 export interface User {
   id: number;
@@ -45,6 +47,13 @@ export const loginUserServer = createAsyncThunk<AuthResponse, LoginCredentials>(
     localStorage.setItem("token", authResponse.token);
 
     return authResponse;
+  }
+);
+
+export const logoutUserServer = createAsyncThunk<void, void>(
+  "auth/logoutUserServer",
+  async () => {
+    localStorage.removeItem("token");
   }
 );
 
