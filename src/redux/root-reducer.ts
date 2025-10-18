@@ -7,6 +7,7 @@ import notificacoesReducer from "./features/notificacoes/slice";
 import usuarioReducer from "./features/perfilUsuario/slice";
 import perfilMonitorReducer from "./features/perfilMonitor/slice";
 import alterarSenhaReducer from "./features/alterarSenha/slice";
+import avaliacaoReducer from "./features/avaliacao/slice";
 
 const rootReducer = combineReducers({
   monitor: monitorReducer,

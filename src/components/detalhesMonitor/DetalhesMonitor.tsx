@@ -13,7 +13,7 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { Agendamento } from "../../models/agendamento.model";
 
-/*interface TimeSlot {
+interface TimeSlot {
   day: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
   times: string[];
 }
@@ -48,17 +48,7 @@ let conquistas: string[] = [
   "Ajudou 10 alunos durante um fim de semana.",
 ];
 
-interface DetalhesMonitorProps {
-  monitorImage?: string;
-  monitorName?: string;
-  materias?: string[];
-  valor?: string;
-  duracao?: string;
-  formacao?: string;
-  horarios?: TimeSlot[];
-  onVoltar?: () => void;
-  onAgendar?: () => void;
-}
+// Interface não é mais necessária pois usamos Redux
 
 function DetalhesMonitor() {
   const dispatch = useAppDispatch();
@@ -66,8 +56,8 @@ function DetalhesMonitor() {
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
 
-  // Horários mockados - idealmente viriam da disponibilidade do monitor
-  const horarios = [
+  // Horários do monitor - idealmente viriam da disponibilidade do monitor no Redux
+  const horarios = monitor?.listaDisponibilidades || [
     { day: "seg", times: ["10:00", "14:00", "16:00", "22:00"] },
     { day: "ter", times: ["10:00", "14:00", "16:00"] },
     { day: "qua", times: ["10:00", "14:00", "16:00", "20:00"] },
@@ -146,7 +136,7 @@ function DetalhesMonitor() {
 
             <div className="monitor-atributos">
               <h2>
-                {props.materias?.map((materia, index) => (
+                {monitor.listaDisciplinas?.map((materia, index) => (
                   <span key={index} className="materia">
                     {materia}
                   </span>
@@ -154,7 +144,7 @@ function DetalhesMonitor() {
               </h2>
               <div className="monitor-detalhes-atributos">
                 <AttachMoneyIcon />
-                <p>{monitor.valor}</p>
+                <p>{monitor.valorHora}</p>
               </div>
               <div className="monitor-detalhes-atributos">
                 <AccessTimeIcon />
@@ -177,7 +167,9 @@ function DetalhesMonitor() {
 
       <div className="formação">
         <h1 className="titulo">Formação e Cursos</h1>
-        <p className="formação-paragrafo">{monitor.formacao}</p>
+        <p className="formação-paragrafo">
+          {monitor.formacao || "Informação não disponível"}
+        </p>
       </div>
       <div
         className="horários"
@@ -190,7 +182,7 @@ function DetalhesMonitor() {
         <h1 className="titulo">Horários</h1>
         <div className="outer-tabela">
           <div className="schedule-container">
-            {horarios &&
+            {/*horarios &&
               horarios.map(({ day, times }) => (
                 <div key={day} className="day-column">
                   <div className="day-header">{day}</div>
@@ -210,7 +202,7 @@ function DetalhesMonitor() {
                     );
                   })}
                 </div>
-              ))}
+              ))*/}
           </div>
         </div>
       </div>

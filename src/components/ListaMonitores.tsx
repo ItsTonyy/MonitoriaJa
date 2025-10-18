@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from "react";
-import React, { useState, useMemo, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -22,12 +21,6 @@ import StarIcon from "@mui/icons-material/Star";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../redux/hooks";
 import { setSelectedMonitor } from "../redux/features/monitor/monitorSlice";
-} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import StarIcon from "@mui/icons-material/Star";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../redux/hooks";
-import { setSelectedMonitor } from "../redux/features/monitor/monitorSlice";
 
 export type Monitor = {
   id: number;
@@ -38,7 +31,6 @@ export type Monitor = {
   foto: string;
   avaliacao: number;
   formacao?: string;
-  formacao?: string;
 };
 
 export const MONITORES: Monitor[] = [
@@ -46,12 +38,10 @@ export const MONITORES: Monitor[] = [
     id: 1,
     nome: "João Silva",
     materia: "Matemática",
-    valor: "50/h",
+    valor: "R$ 50/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/men/1.jpg",
     avaliacao: 4.9,
-    formacao:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
     formacao:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
   },
@@ -59,7 +49,7 @@ export const MONITORES: Monitor[] = [
     id: 2,
     nome: "Maria Souza",
     materia: "Física",
-    valor: "60/h",
+    valor: "R$ 60/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/women/2.jpg",
     avaliacao: 4.8,
@@ -68,7 +58,7 @@ export const MONITORES: Monitor[] = [
     id: 3,
     nome: "Carlos Lima",
     materia: "Química",
-    valor: "55/h",
+    valor: "R$ 55/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/men/3.jpg",
     avaliacao: 4.5,
@@ -77,7 +67,7 @@ export const MONITORES: Monitor[] = [
     id: 4,
     nome: "Ana Paula",
     materia: "Biologia",
-    valor: "58/h",
+    valor: "R$ 58/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/women/4.jpg",
     avaliacao: 4.7,
@@ -86,7 +76,7 @@ export const MONITORES: Monitor[] = [
     id: 5,
     nome: "João Silva",
     materia: "Matemática",
-    valor: "50/h",
+    valor: "R$ 50/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/men/1.jpg",
     avaliacao: 4.9,
@@ -95,7 +85,7 @@ export const MONITORES: Monitor[] = [
     id: 6,
     nome: "Maria Souza",
     materia: "Física",
-    valor: "60/h",
+    valor: "R$ 60/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/women/2.jpg",
     avaliacao: 4.8,
@@ -104,7 +94,7 @@ export const MONITORES: Monitor[] = [
     id: 7,
     nome: "Carlos Lima",
     materia: "Química",
-    valor: "55/h",
+    valor: "R$ 55/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/men/3.jpg",
     avaliacao: 4.5,
@@ -113,7 +103,7 @@ export const MONITORES: Monitor[] = [
     id: 8,
     nome: "Ana Paula",
     materia: "Biologia",
-    valor: "58/h",
+    valor: "R$ 58/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/women/4.jpg",
     avaliacao: 4.7,
@@ -122,7 +112,7 @@ export const MONITORES: Monitor[] = [
     id: 9,
     nome: "Ana Paula",
     materia: "Biologia",
-    valor: "58/h",
+    valor: "R$ 58/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/women/4.jpg",
     avaliacao: 4.7,
@@ -131,7 +121,7 @@ export const MONITORES: Monitor[] = [
     id: 10,
     nome: "João Silva",
     materia: "Matemática",
-    valor: "50/h",
+    valor: "R$ 50/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/men/1.jpg",
     avaliacao: 4.9,
@@ -140,7 +130,7 @@ export const MONITORES: Monitor[] = [
     id: 11,
     nome: "Maria Souza",
     materia: "Física",
-    valor: "60/h",
+    valor: "R$ 60/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/women/2.jpg",
     avaliacao: 4.8,
@@ -149,7 +139,7 @@ export const MONITORES: Monitor[] = [
     id: 12,
     nome: "Carlos Lima",
     materia: "Química",
-    valor: "55/h",
+    valor: "R$ 55/h",
     servico: "Serviço X",
     foto: "https://randomuser.me/api/portraits/men/3.jpg",
     avaliacao: 4.5,
@@ -157,15 +147,6 @@ export const MONITORES: Monitor[] = [
 ];
 
 const MATERIAS = [
-  "Matemática",
-  "Física",
-  "Química",
-  "Biologia",
-  "História",
-  "Geografia",
-  "Português",
-  "Inglês",
-  "Programação",
   "Matemática",
   "Física",
   "Química",
@@ -188,7 +169,6 @@ function matchStartOfWords(text: string, search: string) {
 
 function getGridCols() {
   if (typeof window === "undefined") return 2;
-  if (typeof window === "undefined") return 2;
   const width = window.innerWidth;
   if (width >= 1200) return 3;
   if (width >= 771) return 2;
@@ -199,13 +179,9 @@ function getGridRows() {
   const alturaReservada = 350;
   const alturaCard = 180;
   const espacamentoVertical = 24;
-  const alturaReservada = 350;
-  const alturaCard = 180;
-  const espacamentoVertical = 24;
   const alturaTotal = alturaCard + espacamentoVertical;
 
   const alturaDisponivel =
-    typeof window !== "undefined" ? window.innerHeight - alturaReservada : 600;
     typeof window !== "undefined" ? window.innerHeight - alturaReservada : 600;
 
   return Math.max(1, Math.floor(alturaDisponivel / alturaTotal));
@@ -219,10 +195,7 @@ function getCardsPerPage() {
 
 function ListaMonitores() {
   const dispatch = useAppDispatch();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [buscaNome, setBuscaNome] = useState("");
-  const [buscaMateria, setBuscaMateria] = useState("");
   const [buscaNome, setBuscaNome] = useState("");
   const [buscaMateria, setBuscaMateria] = useState("");
   const [pagina, setPagina] = useState(1);
@@ -237,24 +210,15 @@ function ListaMonitores() {
     }
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
   }, []);
   const monitoresFiltrados = useMemo(() => {
     return MONITORES.filter(
       (m) =>
         matchStartOfWords(m.nome, buscaNome) &&
         matchStartOfWords(m.materia, buscaMateria)
-      (m) =>
-        matchStartOfWords(m.nome, buscaNome) &&
-        matchStartOfWords(m.materia, buscaMateria)
     );
   }, [buscaNome, buscaMateria]);
 
-  const totalPaginas = Math.max(
-    1,
-    Math.ceil(monitoresFiltrados.length / cardsPorPagina)
-  );
   const totalPaginas = Math.max(
     1,
     Math.ceil(monitoresFiltrados.length / cardsPorPagina)
@@ -276,8 +240,6 @@ function ListaMonitores() {
         borderRadius: 2,
         bgcolor: "background.default",
         maxWidth: 1200,
-        bgcolor: "background.default",
-        maxWidth: 1200,
       }}
     >
       <Typography
@@ -288,8 +250,6 @@ function ListaMonitores() {
           fontWeight: 500,
           color: "primary.main",
           mb: 2,
-          color: "primary.main",
-          mb: 2,
         }}
       >
         Lista de Monitores
@@ -297,17 +257,11 @@ function ListaMonitores() {
 
       <Stack
         direction={{ xs: "column", sm: "row" }}
-        direction={{ xs: "column", sm: "row" }}
         spacing={2}
         alignItems="center"
         justifyContent="center"
-        justifyContent="center"
         sx={{
           mb: 3,
-          width: "100%",
-          display: "flex",
-          "& > *": {
-            width: { xs: "100%", sm: "auto" },
           width: "100%",
           display: "flex",
           "& > *": {
@@ -349,11 +303,6 @@ function ListaMonitores() {
               label="Filtrar por disciplina"
               variant="outlined"
             />
-            <TextField
-              {...params}
-              label="Filtrar por disciplina"
-              variant="outlined"
-            />
           )}
           sx={{ maxWidth: 350 }}
           ListboxProps={{ style: { maxHeight: 200 } }}
@@ -365,16 +314,10 @@ function ListaMonitores() {
           <Chip
             label={`Matéria: ${buscaMateria}`}
             onDelete={() => setBuscaMateria("")}
-            onDelete={() => setBuscaMateria("")}
             color="primary"
           />
         )}
         {buscaNome && (
-          <Chip
-            label={`Nome: ${buscaNome}`}
-            onDelete={() => setBuscaNome("")}
-            color="secondary"
-          />
           <Chip
             label={`Nome: ${buscaNome}`}
             onDelete={() => setBuscaNome("")}
@@ -390,8 +333,6 @@ function ListaMonitores() {
         sx={{
           width: "100%",
           margin: "0 auto",
-          width: "100%",
-          margin: "0 auto",
         }}
       >
         {monitoresPagina.length === 0 ? (
@@ -399,11 +340,7 @@ function ListaMonitores() {
             item
             xs={12}
             component={"div" as unknown as React.ElementType}
-            xs={12}
-            component={"div" as unknown as React.ElementType}
             sx={{
-              display: "flex",
-              justifyContent: "center",
               display: "flex",
               justifyContent: "center",
             }}
@@ -418,10 +355,7 @@ function ListaMonitores() {
               item
               xs={12} // Sempre ocupará 100% da largura
               component={"div" as unknown as React.ElementType}
-              component={"div" as unknown as React.ElementType}
               sx={{
-                display: "flex",
-                justifyContent: "center",
                 display: "flex",
                 justifyContent: "center",
               }}
@@ -438,17 +372,7 @@ function ListaMonitores() {
                     maxWidth: "350px",
                     margin: "0 auto",
                     "&:hover": {
-                    display: "flex",
-                    flexDirection: "row",
-                    height: "180px",
-                    width: "350px",
-                    minWidth: "340px",
-                    maxWidth: "350px",
-                    margin: "0 auto",
-                    "&:hover": {
                       elevation: 4,
-                      transform: "translateY(-2px)",
-                      transition: "all 0.2s ease-in-out",
                       transform: "translateY(-2px)",
                       transition: "all 0.2s ease-in-out",
                     },
@@ -457,12 +381,6 @@ function ListaMonitores() {
                   <Box
                     sx={{
                       p: 1.5,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "100px",
-                      minWidth: "100px",
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
@@ -479,9 +397,7 @@ function ListaMonitores() {
                         width: { xs: 70, sm: 80 },
                         height: { xs: 70, sm: 80 },
                         borderRadius: "50%",
-                        borderRadius: "50%",
                         border: 2,
-                        borderColor: "primary.main",
                         borderColor: "primary.main",
                       }}
                     />
@@ -489,18 +405,10 @@ function ListaMonitores() {
                       <StarIcon
                         sx={{ color: "#f5b301", verticalAlign: "middle" }}
                       />
-                      <StarIcon
-                        sx={{ color: "#f5b301", verticalAlign: "middle" }}
-                      />
                       <Typography
                         variant="body2"
                         component="span"
                         color="text.secondary"
-                        sx={{
-                          fontSize: "0.9rem",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
                         sx={{
                           fontSize: "0.9rem",
                           overflow: "hidden",
@@ -521,23 +429,8 @@ function ListaMonitores() {
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "center",
-                      overflow: "hidden",
-                      "&:last-child": { pb: 1.5 },
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
                     }}
                   >
-                    {/* <Typography
-                      variant="h6"
-                      color="primary.main"
-                      sx={{
-                        fontSize: "1.1rem",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                   > */}
                     {/* <Typography
                       variant="h6"
                       color="primary.main"
@@ -552,15 +445,6 @@ function ListaMonitores() {
                       variant="h6"
                       color="primary.main"
                       sx={{
-                        fontSize: "0.9rem",
-                        lineHeight: 1.2,
-                        maxHeight: "2.4em",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        whiteSpace: "normal",
                         fontSize: "0.9rem",
                         lineHeight: 1.2,
                         maxHeight: "2.4em",
@@ -582,10 +466,6 @@ function ListaMonitores() {
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
-                        fontSize: "0.9rem",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
                       }}
                     >
                       {monitor.materia}
@@ -598,22 +478,14 @@ function ListaMonitores() {
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
-                        fontSize: "0.9rem",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
                       }}
                     >
-                      {`R$ ${monitor.valor}`}
+                      {monitor.valor}
                     </Typography>
                     <Typography
                       variant="body2"
                       color="text.secondary"
                       sx={{
-                        fontSize: "0.9rem",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
                         fontSize: "0.9rem",
                         whiteSpace: "nowrap",
                         overflow: "hidden",
@@ -629,11 +501,7 @@ function ListaMonitores() {
                       p: 1.5,
                       display: "flex",
                       flexDirection: "column",
-                      display: "flex",
-                      flexDirection: "column",
                       gap: 1,
-                      minWidth: "110px",
-                      justifyContent: "center",
                       minWidth: "110px",
                       justifyContent: "center",
                     }}
@@ -644,12 +512,7 @@ function ListaMonitores() {
                         width: "100%",
                         minWidth: "110px",
                         "& .MuiButton-root": {
-                        width: "100%",
-                        minWidth: "110px",
-                        "& .MuiButton-root": {
                           // Estilo comum para todos os botões
-                          padding: "8px 16px",
-                          fontSize: "0.875rem",
                           padding: "8px 16px",
                           fontSize: "0.875rem",
                         },
@@ -659,10 +522,6 @@ function ListaMonitores() {
                         variant="contained"
                         color="primary"
                         size="medium"
-                        onClick={() => {
-                          dispatch(setSelectedMonitor(monitor));
-                          navigate("/MonitoriaJa/detalhes-monitor");
-                        }}
                         onClick={() => {
                           dispatch(setSelectedMonitor(monitor));
                           navigate("/MonitoriaJa/detalhes-monitor");
@@ -690,8 +549,6 @@ function ListaMonitores() {
         <Typography
           variant="body1"
           sx={{
-            display: "flex",
-            alignItems: "center",
             display: "flex",
             alignItems: "center",
             px: 2,
