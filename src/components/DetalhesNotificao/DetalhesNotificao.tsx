@@ -58,11 +58,11 @@ const MONITORES = [
   },
 ];
 
-const MATERIAIS_PREPARATORIOS = [
+/*const MATERIAIS_PREPARATORIOS = [
   { titulo: 'Lista de Exercícios - Integrais', tipo: 'PDF', tamanho: '2.1 MB' },
   { titulo: 'Resumo Teórico - Cálculo II', tipo: 'PDF', tamanho: '1.8 MB' },
   { titulo: 'Formulário Básico', tipo: 'PDF', tamanho: '0.5 MB' },
-];
+];/*/
 
 const DADOS_REAGENDAMENTO = {
   monitor: {

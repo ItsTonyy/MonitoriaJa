@@ -12,114 +12,88 @@ import {
   Box,
   Fade,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
-type Agendamento = {
-  id: number;
-  nome: string;
-  materia: string;
-  foto: string;
-  data: string;
-  hora: string;
-};
+import ModalAcessar from "./ModalAcessar";
+import ModalRemarcar from "./ModalRemarcar";
+import ModalCancelamento from "./ModalCancelamento";
+import { Agendamento } from "../models/agendamento.model";
+import { MONITORES } from "./ListaMonitores";
+import { useAppDispatch } from "../redux/hooks";
+import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
 
 const AGENDAMENTOS: Agendamento[] = [
   {
     id: 1,
-    nome: "João Silva",
-    materia: "Matemática",
-    foto: "https://randomuser.me/api/portraits/men/1.jpg",
+    monitor: MONITORES[0],
     data: "12/09/2025",
     hora: "14h",
   },
   {
     id: 2,
-    nome: "Maria Souza",
-    materia: "Física",
-    foto: "https://randomuser.me/api/portraits/women/2.jpg",
+    monitor: MONITORES[1],
     data: "15/09/2025",
     hora: "10h",
   },
   {
     id: 3,
-    nome: "Carlos Lima",
-    materia: "Química",
-    foto: "https://randomuser.me/api/portraits/men/3.jpg",
+    monitor: MONITORES[2],
     data: "20/09/2025",
     hora: "16h",
   },
   {
     id: 4,
-    nome: "Ana Paula",
-    materia: "Biologia",
-    foto: "https://randomuser.me/api/portraits/women/4.jpg",
+    monitor: MONITORES[3],
     data: "22/09/2025",
     hora: "09h",
   },
   {
     id: 5,
-    nome: "João Silva",
-    materia: "Matemática",
-    foto: "https://randomuser.me/api/portraits/men/1.jpg",
+    monitor: MONITORES[4],
     data: "12/09/2025",
     hora: "14h",
   },
   {
     id: 6,
-    nome: "Maria Souza",
-    materia: "Física",
-    foto: "https://randomuser.me/api/portraits/women/2.jpg",
+    monitor: MONITORES[5],
     data: "15/09/2025",
     hora: "10h",
   },
   {
     id: 7,
-    nome: "Carlos Lima",
-    materia: "Química",
-    foto: "https://randomuser.me/api/portraits/men/3.jpg",
+    monitor: MONITORES[6],
     data: "20/09/2025",
     hora: "16h",
   },
   {
     id: 8,
-    nome: "Ana Paula",
-    materia: "Biologia",
-    foto: "https://randomuser.me/api/portraits/women/4.jpg",
+    monitor: MONITORES[7],
     data: "22/09/2025",
     hora: "09h",
   },
   {
     id: 9,
-    nome: "João Silva",
-    materia: "Matemática",
-    foto: "https://randomuser.me/api/portraits/men/1.jpg",
+    monitor: MONITORES[8],
     data: "12/09/2025",
     hora: "14h",
   },
   {
     id: 10,
-    nome: "Maria Souza",
-    materia: "Física",
-    foto: "https://randomuser.me/api/portraits/women/2.jpg",
+    monitor: MONITORES[9],
     data: "15/09/2025",
     hora: "10h",
   },
   {
     id: 11,
-    nome: "Carlos Lima",
-    materia: "Química",
-    foto: "https://randomuser.me/api/portraits/men/3.jpg",
+    monitor: MONITORES[10],
     data: "20/09/2025",
     hora: "16h",
   },
   {
     id: 12,
-    nome: "Ana Paula",
-    materia: "Biologia",
-    foto: "https://randomuser.me/api/portraits/women/4.jpg",
+    monitor: MONITORES[11],
     data: "22/09/2025",
     hora: "09h",
-  },
+  }
 ];
 
 function getGridCols() {
@@ -149,10 +123,13 @@ function getCardsPerPage() {
   return cols * rows;
 }
 function ListaAgendamentos() {
-  const navigate = useNavigate();
   const [pagina, setPagina] = useState(1);
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
-
+  const dispatch = useAppDispatch();
+  const [modalCancelamentoOpen, setModalCancelamentoOpen] = useState(false);
+  const [modalRemarcarOpen, setModalRemarcarOpen] = useState(false);
+  const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
+  
   useEffect(() => {
     function handleResize() {
       setCardsPorPagina(getCardsPerPage());
@@ -260,8 +237,8 @@ function ListaAgendamentos() {
                   >
                     <CardMedia
                       component="img"
-                      image={agendamento.foto}
-                      alt={`Foto de ${agendamento.nome}`}
+                      image={agendamento.monitor!.foto}
+                      alt={`Foto de ${agendamento.monitor!.nome}`}
                       sx={{
                         width: { xs: 70, sm: 80 },
                         height: { xs: 70, sm: 80 },
@@ -308,7 +285,7 @@ function ListaAgendamentos() {
                         whiteSpace: "normal",
                       }}
                     >
-                      {agendamento.nome}
+                      {agendamento.monitor!.nome}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -317,7 +294,7 @@ function ListaAgendamentos() {
                         color: "text.secondary",
                       }}
                     >
-                      {agendamento.materia}
+                      {agendamento.monitor!.materia}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -364,38 +341,48 @@ function ListaAgendamentos() {
                       <Button
                         size="medium"
                         variant="contained"
-                        onClick={() => navigate("/modalCancelamento")}
+                        onClick={() => {
+                          dispatch(setCurrentAgendamento(agendamento));
+                          setModalCancelamentoOpen(true);
+                        }}
                         sx={{
-                          bgcolor: "#e53e3e !important", // Cor original do btnCancelar
-                          "&:hover": {
-                            bgcolor: "#a81d1d !important",
-                          },
+                          bgcolor: "#e53e3e !important",
+                          "&:hover": { bgcolor: "#a81d1d !important" },
                         }}
                       >
                         Cancelar
                       </Button>
+
                       <Button
                         size="medium"
                         variant="contained"
-                        onClick={() => navigate("/reagendamento")}
+                        onClick={() => {
+                          dispatch(setCurrentAgendamento(agendamento));
+                          setModalRemarcarOpen(true);
+                        }}
                         sx={{
-                          bgcolor: "#6b7280 !important", // Cor original do btnReagendar
-                          "&:hover": {
-                            bgcolor: "#374151 !important",
-                          },
+                          bgcolor: "#6b7280 !important",
+                          "&:hover": { bgcolor: "#374151 !important" },
                         }}
                       >
                         Reagendar
                       </Button>
+
                       <Button
                         size="medium"
                         variant="contained"
-                        onClick={() => navigate("/avaliacao")}
+                        onClick={() => {
+                          dispatch(
+                            setCurrentAgendamento({
+                              ...agendamento,
+                              link: "https://meet.google.com/zyw-jymr-ipg",
+                            })
+                          );
+                          setModalAcessarOpen(true);
+                        }}
                         sx={{
-                          bgcolor: "#2d5be3 !important", // Cor original do btnAcessar
-                          "&:hover": {
-                            bgcolor: "#1b3e8a !important",
-                          },
+                          bgcolor: "#2d5be3 !important",
+                          "&:hover": { bgcolor: "#1b3e8a !important" },
                         }}
                       >
                         Acessar
@@ -435,6 +422,19 @@ function ListaAgendamentos() {
           &#8594;
         </Button>
       </Stack>
+      {/* Modais */}
+     <ModalCancelamento
+    open={modalCancelamentoOpen}
+    onClose={() => setModalCancelamentoOpen(false)}
+  />
+  <ModalRemarcar
+    open={modalRemarcarOpen}
+    onClose={() => setModalRemarcarOpen(false)}
+  />
+  <ModalAcessar
+    open={modalAcessarOpen}
+    onClose={() => setModalAcessarOpen(false)}
+  />
     </Paper>
   );
 }
