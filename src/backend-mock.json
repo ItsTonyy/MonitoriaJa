@@ -38,7 +38,7 @@
       "id": "1",
       "name": "adminTeste",
       "email": "admin@teste.com",
-      "telefone": "21900000000",
+      "telefone": "21900000001",
       "password": "123456",
       "description": "",
       "role": "admin"
@@ -49,7 +49,7 @@
       "email": "monitor@teste.com",
       "telefone": "21900000000",
       "password": "123456",
-      "description": "",
+      "description": "Me chamo monitor e estou cursando BCC a 3 anos, com metodologia de estudo e ensinamentos direcionados para computação espero poder te ajudar a alcançar suas melhores notas",
       "role": "monitor"
     },
     {
@@ -82,7 +82,7 @@
       "previa": "Olá, monitorTeste! Passando pra avisar que sua aula com Aluno x foi reagendada.",
       "descricao": "A aula de Aluno x foi reagendada. Clique em 'Visualizar Agendamentos' para mais informações.",
       "tempo": "há 1 hora",
-      "lida": false,
+      "lida": true,
       "role": "monitor"
     },
     {
@@ -115,7 +115,7 @@
       "previa": "Olá, monitorTeste! Passando pra avisar que sua aula com Aluno y foi cancelada.",
       "descricao": "Sua aula com Aluno y foi cancelada.",
       "tempo": "há 2 dias",
-      "lida": false,
+      "lida": true,
       "role": "monitor"
     },
     {

@@ -17,13 +17,30 @@ const initialState: AlterarSenhaState = {
   status: 'idle',
 };
 
-// AsyncThunk simulando atualização da senha
+// AsyncThunk para atualizar senha no JSON Server
 export const atualizarSenha = createAsyncThunk(
   'alterarSenha/atualizarSenha',
-  async (senha: { senhaAnterior: string; novaSenha: string }) => {
-    // Aqui poderíamos chamar o backend, mas por enquanto simulamos delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return senha.novaSenha;
+  async (senhaData: { senhaAnterior: string; novaSenha: string }, { getState }) => {
+    const state = getState() as any;
+    const currentUser = state.login.user; // ✅ Usuário logado
+    
+    // ✅ Atualizar senha no JSON Server
+    const response = await fetch(`http://localhost:3000/usuarios/${currentUser.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        password: senhaData.novaSenha, // ✅ Campo 'password' no JSON
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao atualizar senha');
+    }
+
+    await response.json();
+    return senhaData.novaSenha;
   }
 );
 

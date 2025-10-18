@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, Menu, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationButton from '../botaoTemporario/botaoTemporario';
 import DescriptionBox from './Descricao/Descricao';
@@ -12,10 +11,10 @@ import styles from './PerfilMonitorPage.module.css';
 import Estrela from '../../../public/five-stars-rating-icon-png.webp';
 import AtualizarMateria from './AtualizarMateria/AtualizarMateria';
 import { RootState } from '../../redux/root-reducer';
+import { AppDispatch } from '../../redux/store';
 import {
-  atualizarDescricao,
-  atualizarContato,
-  atualizarMaterias,
+  fetchMonitor,
+  updateMonitor
 } from '../../redux/features/perfilMonitor/slice';
 
 const MATERIAS = [
@@ -24,19 +23,41 @@ const MATERIAS = [
 ];
 
 const PerfilMonitorPage: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const monitor = useSelector((state: RootState) => state.perfilMonitor);
+  const authUser = useSelector((state: RootState) => state.login.user);
+const monitor = useSelector((state: RootState) => state.perfilMonitor.currentMonitor);
+const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
 
-  // Local state para inputs
-  const [telefoneInput, setTelefoneInput] = useState(monitor.telefone);
-  const [emailInput, setEmailInput] = useState(monitor.email);
-  const [descricaoInput, setDescricaoInput] = useState(monitor.descricao);
-  const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>(monitor.materias);
+  // Estados locais para inputs
+  const [telefoneInput, setTelefoneInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [descricaoInput, setDescricaoInput] = useState('');
+  const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>([]);
 
   const [erros, setErros] = useState<{ telefone?: string; email?: string }>({});
   const [open, setOpen] = useState(false);
+
+  // Buscar dados do monitor ao carregar a página
+  useEffect(() => {
+    if (authUser && authUser.id) {
+      const userId = Number(authUser.id);
+      dispatch(fetchMonitor(userId));
+    } else {
+      navigate('/MonitoriaJa/login');
+    }
+  }, [dispatch, navigate, authUser]);
+
+  // Atualizar estados locais quando o monitor for carregado
+  useEffect(() => {
+    if (monitor) {
+      setTelefoneInput(monitor.telefone || '');
+      setEmailInput(monitor.email || '');
+      setDescricaoInput(monitor.descricao || '');
+      setMateriasSelecionadas(monitor.materias || []);
+    }
+  }, [monitor]);
 
   const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -55,12 +76,19 @@ const PerfilMonitorPage: React.FC = () => {
     return Object.keys(novosErros).length === 0;
   };
 
-  const handleSalvar = () => {
-    if (validarCampos()) {
-      dispatch(atualizarContato({ telefone: telefoneInput, email: emailInput }));
-      dispatch(atualizarDescricao(descricaoInput));
-      dispatch(atualizarMaterias(materiasSelecionadas));
-      setOpen(true);
+  const handleSalvar = async () => {
+    if (validarCampos() && monitor) {
+      try {
+        await dispatch(updateMonitor({
+          telefone: telefoneInput,
+          email: emailInput,
+          descricao: descricaoInput,
+          materias: materiasSelecionadas
+        })).unwrap();
+        setOpen(true);
+      } catch (error) {
+        console.error('Erro ao salvar:', error);
+      }
     }
   };
 
@@ -68,6 +96,19 @@ const PerfilMonitorPage: React.FC = () => {
     const novasMaterias = materiasSelecionadas.filter(materia => materia !== materiaToDelete);
     setMateriasSelecionadas(novasMaterias);
   };
+
+  if (loading) return <div className={styles.centralizeContent}>Carregando...</div>;
+
+  if (!monitor) return (
+    <div className={styles.centralizeContent}>
+      <div className={styles.profileCard}>
+        <p>Monitor não encontrado</p>
+        <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
+          Fazer Login
+        </ConfirmationButton>
+      </div>
+    </div>
+  );
 
   return (
     <main className={styles.centralizeContent}>

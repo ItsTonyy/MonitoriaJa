@@ -15,22 +15,24 @@ const PerfilUsuarioPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
-  // Seleciona dados do Redux
+  const authUser = useSelector((state: RootState) => state.login.user);
   const currentUser = useSelector((state: RootState) => state.usuario.currentUser);
   const loading = useSelector((state: RootState) => state.usuario.loading);
 
-  // Estados locais para edição
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
   const [erros, setErros] = useState<{ telefone?: string; email?: string }>({});
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // Carrega usuário com id 1 (exemplo)
-    dispatch(fetchUsuario('1'));
-  }, [dispatch]);
+    if (authUser && authUser.id) {
+      const userId = Number(authUser.id);
+      dispatch(fetchUsuario(userId));
+    } else {
+      navigate('/MonitoriaJa/login');
+    }
+  }, [dispatch, navigate, authUser]);
 
-  // Atualiza campos quando currentUser muda
   useEffect(() => {
     if (currentUser) {
       setTelefone(currentUser.telefone || '');
@@ -44,7 +46,7 @@ const PerfilUsuarioPage: React.FC = () => {
   const validarCampos = () => {
     const novosErros: { telefone?: string; email?: string } = {};
 
-    if (!telefoneRegex.test(telefone)) {
+    if (telefone && !telefoneRegex.test(telefone)) {
       novosErros.telefone = 'Telefone inválido. Use o formato (XX) 9XXXX-XXXX';
     }
 
@@ -56,14 +58,32 @@ const PerfilUsuarioPage: React.FC = () => {
     return Object.keys(novosErros).length === 0;
   };
 
-  const handleSalvar = () => {
+  const handleSalvar = async () => {
     if (validarCampos() && currentUser) {
-      dispatch(updateUsuario({ telefone, email }));
-      setOpen(true);
+      try {
+        await dispatch(updateUsuario({ 
+          telefone, 
+          email 
+        })).unwrap();
+        setOpen(true);
+      } catch (error) {
+        console.error('Erro ao salvar:', error);
+      }
     }
   };
 
-  if (loading || !currentUser) return <div>Carregando...</div>;
+  if (loading) return <div className={styles.centralizeContent}>Carregando...</div>;
+  
+  if (!currentUser) return (
+    <div className={styles.centralizeContent}>
+      <div className={styles.profileCard}>
+        <p>Usuário não encontrado</p>
+        <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
+          Fazer Login
+        </ConfirmationButton>
+      </div>
+    </div>
+  );
 
   return (
     <main className={styles.centralizeContent}>
