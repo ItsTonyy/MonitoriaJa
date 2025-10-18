@@ -22,87 +22,50 @@ import PixPage from "./pages/Pagamento/Pix/PixPage";
 import CadastraCartao from "./pages/Pagamento/Cartao/CadastraCartao/CadastraCartaoPage";
 import ConfirmaPagamento from "./pages/Pagamento/Cartao/ConfirmaPagamento/ConfirmaPagamentoPage";
 import ListaCartaoPage from "./pages/Pagamento/Cartao/ListaCartao/ListaCartaoPage";
+import Middleware from "./components/routesMiddleware";
 
 const App = () => {
   return (
     <BrowserRouter>
       <AppNavBar />
       <MainLayout>
-      <Routes>
-        <Route path="/MonitoriaJa" element={<LandingPage />} />
-            <Route path="/MonitoriaJa/login" element={<LoginPage />} />
-        <Route
-          path="/MonitoriaJa/recuperar-senha"
-          element={<RecuperarSenhaPage />}
-        />
-         <Route path="/MonitoriaJa/redefinir-senha" element={<ResetPasswordPage />} />
-        <Route
-          path="/MonitoriaJa/avaliacao-pos-aula"
-          element={<AvaliacaoPosAulaPage />}
-        />
-        <Route
-          path="/MonitoriaJa/comentarios-avaliacao"
-          element={<ComentariosAvaliacaoPage />}
-        />
-        <Route
-          path="/MonitoriaJa/lista-monitores"
-          element={<ListaMonitores />}
-        />
-        <Route
-          path="/MonitoriaJa/lista-agendamentos"
-          element={<ListaAgendamentos />}
-        />
-        <Route
-          path="/MonitoriaJa/cadastro-monitor"
-          element={<CadastroMonitor />}
-        />
-        <Route
-          path="/MonitoriaJa/detalhes-monitor"
-          element={<DetalhesMonitor />}
-        />
-        <Route
-          path="/MonitoriaJa/agendamento-monitor"
-          element={<AgendamentoMonitor />}
-        />
-        <Route
-          path="/MonitoriaJa/detalhes-notificacao/:id"
-          element={<DetalhesNotificao />}
-        />
-        <Route
-          path="/MonitoriaJa/cadastro-disciplina"
-          element={
-            <DisciplinaModal
-              open={true}
-              onClose={() => window.history.back()}
-              onSave={(disciplina) => {
-                console.log("Disciplina:", disciplina);
-                window.history.back();
-              }}
-            />
-          }
-        />
-        <Route 
-          path="/MonitoriaJa/perfil-monitor" 
-          element={<PerfilMonitorPage/>}/>
-        <Route 
-          path="/MonitoriaJa/perfil-usuario" 
-          element={<PerfilUsuarioPage/>}/>
-        <Route 
-          path="/MonitoriaJa/alterar-senha" 
-          element={<AlterarSenhaPage/>}/>
-        <Route 
-          path="/MonitoriaJa/pix" 
-          element={<PixPage/>}/>
-        <Route 
-          path="/MonitoriaJa/cadastra-cartao" 
-          element={<CadastraCartao/>}/>
-        <Route 
-          path="/MonitoriaJa/confirma-pagamento" 
-          element={<ConfirmaPagamento/>}/>
-        <Route 
-          path="/MonitoriaJa/lista-cartao" 
-          element={<ListaCartaoPage/>}/>
-      </Routes>
+        <Routes>
+          <Route path="/MonitoriaJa" element={<LandingPage />} />
+          <Route path="/MonitoriaJa/login" element={<LoginPage />} />
+          <Route path="/MonitoriaJa/recuperar-senha" element={<RecuperarSenhaPage />} />
+          <Route path="/MonitoriaJa/redefinir-senha" element={<ResetPasswordPage />} />
+          
+          <Route path="/MonitoriaJa/avaliacao-pos-aula" element={<Middleware><AvaliacaoPosAulaPage /></Middleware>} />
+          <Route path="/MonitoriaJa/comentarios-avaliacao" element={<Middleware><ComentariosAvaliacaoPage /></Middleware>} />
+          <Route path="/MonitoriaJa/lista-monitores" element={<Middleware><ListaMonitores /></Middleware>} />
+          <Route path="/MonitoriaJa/lista-agendamentos" element={<Middleware><ListaAgendamentos /></Middleware>} />
+          <Route path="/MonitoriaJa/cadastro-monitor" element={<CadastroMonitor />} />
+          <Route path="/MonitoriaJa/detalhes-monitor" element={<Middleware><DetalhesMonitor /></Middleware>} />
+          <Route path="/MonitoriaJa/agendamento-monitor" element={<Middleware><AgendamentoMonitor /></Middleware>} />
+          <Route path="/MonitoriaJa/detalhes-notificacao/:id" element={<Middleware><DetalhesNotificao /></Middleware>} />
+          <Route
+            path="/MonitoriaJa/cadastro-disciplina"
+            element={
+              <Middleware>
+                <DisciplinaModal
+                  open={true}
+                  onClose={() => window.history.back()}
+                  onSave={(disciplina) => {
+                    console.log("Disciplina:", disciplina);
+                    window.history.back();
+                  }}
+                />
+              </Middleware>
+            }
+          />
+          <Route path="/MonitoriaJa/perfil-monitor" element={<Middleware><PerfilMonitorPage /></Middleware>} />
+          <Route path="/MonitoriaJa/perfil-usuario" element={<Middleware><PerfilUsuarioPage /></Middleware>} />
+          <Route path="/MonitoriaJa/alterar-senha" element={<Middleware><AlterarSenhaPage /></Middleware>} />
+          <Route path="/MonitoriaJa/pix" element={<Middleware><PixPage /></Middleware>} />
+          <Route path="/MonitoriaJa/cadastra-cartao" element={<Middleware><CadastraCartao /></Middleware>} />
+          <Route path="/MonitoriaJa/confirma-pagamento" element={<Middleware><ConfirmaPagamento /></Middleware>} />
+          <Route path="/MonitoriaJa/lista-cartao" element={<Middleware><ListaCartaoPage /></Middleware>} />
+        </Routes>
       </MainLayout>
       <Footer />
     </BrowserRouter>

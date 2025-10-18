@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './CartaoItem.module.css';
 import VisaLogo from '../Logos/VisaLogo.png';
 import MastercardLogo from '../Logos/MasterCardLogo.png';
-import EloLogo from '../Logos/Elologo.png';
+import EloLogo from '../Logos/EloLogo.png';
 import ConfirmationButton from '../../../botaoTemporario/botaoTemporario';
 
 type CartaoProps = {

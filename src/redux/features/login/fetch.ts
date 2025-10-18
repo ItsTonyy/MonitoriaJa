@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { httpGet, httpPost, httpPut } from '../../../utils';
+import { httpGet,httpPut } from '../../../utils';
 
 export interface User {
   id: number;
@@ -21,7 +21,7 @@ export interface LoginCredentials {
 export const loginUserServer = createAsyncThunk<AuthResponse, LoginCredentials>(
   'auth/loginUserServer',
   async (credentials) => {
-    const usuarios = await httpGet(`http://localhost:3000/usuarios?email=${credentials.email}`);
+    const usuarios = await httpGet(`http://localhost:3001/usuarios?email=${credentials.email}`);
     
     if (!usuarios || usuarios.length === 0) {
       throw new Error('Email não encontrado.');
@@ -46,10 +46,17 @@ export const loginUserServer = createAsyncThunk<AuthResponse, LoginCredentials>(
   }
 );
 
+export const logoutUserServer = createAsyncThunk<void,void>(
+  'auth/logoutUserServer',
+  async()=> {
+    localStorage.removeItem('token')
+  }
+)
+
 export const resetPasswordServer = createAsyncThunk<{ message: string }, string>(
   'auth/resetPasswordServer',
   async (email) => {
-    const usuarios = await httpGet(`http://localhost:3000/usuarios?email=${email}`);
+    const usuarios = await httpGet(`http://localhost:3001/usuarios?email=${email}`);
 
     if (!usuarios || usuarios.length === 0) {
       throw new Error('Email não encontrado.');
@@ -69,7 +76,7 @@ export interface UpdatePasswordCredentials {
 export const updatePasswordServer = createAsyncThunk<{ message: string }, UpdatePasswordCredentials>(
   'auth/updatePasswordServer',
   async (credentials) => {
-    const usuarios = await httpGet(`http://localhost:3000/usuarios?email=${credentials.email}`);
+    const usuarios = await httpGet(`http://localhost:3001/usuarios?email=${credentials.email}`);
 
     if (!usuarios || usuarios.length === 0) {
       throw new Error('Email não encontrado.');
@@ -77,7 +84,7 @@ export const updatePasswordServer = createAsyncThunk<{ message: string }, Update
 
     const usuario = usuarios[0];
 
-    await httpPut(`http://localhost:3000/usuarios/${usuario.id}`, {
+    await httpPut(`http://localhost:3001/usuarios/${usuario.id}`, {
       ...usuario,
       password: credentials.newPassword,
     });
