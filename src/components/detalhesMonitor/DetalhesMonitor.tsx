@@ -75,7 +75,8 @@ function DetalhesMonitor() {
 
   if (!monitor) return null;
 
-  const handleTimeSlotClick = (day: string, time: string) => {
+  const handleTimeSlotClick = (day: string | undefined, time: string) => {
+    if (!day) return;
     const slotId = `${day}-${time}`;
     setSelectedSlots((prev) => {
       const newSet = new Set(prev);
@@ -182,11 +183,11 @@ function DetalhesMonitor() {
         <h1 className="titulo">Horários</h1>
         <div className="outer-tabela">
           <div className="schedule-container">
-            {/*horarios &&
-              horarios.map(({ day, times }) => (
+            {horarios &&
+              horarios.map(({ day , times }) => (
                 <div key={day} className="day-column">
                   <div className="day-header">{day}</div>
-                  {times.map((time) => {
+                  {times!.map((time) => {
                     const slotId = `${day}-${time}`;
                     const isSelected = selectedSlots.has(slotId);
                     return (
@@ -202,7 +203,7 @@ function DetalhesMonitor() {
                     );
                   })}
                 </div>
-              ))*/}
+              ))}
           </div>
         </div>
       </div>

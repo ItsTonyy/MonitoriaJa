@@ -167,33 +167,6 @@ export default function AppNavBar() {
               >
                 Agendamento
               </Button>
-
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{
-                  paddingLeft: "10px",
-                  paddingRight: "10px",
-                  ":hover": { transform: "none" },
-                }}
-              >
-                Dashboard
-              </Button>
-
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{
-                  minWidth: 0,
-                  paddingLeft: "10px",
-                  paddingRight: "10px",
-                  ":hover": { transform: "none" },
-                }}
-              >
-                Sobre Nós
-              </Button>
             </Box>
           </Box>
           <Box
@@ -334,14 +307,11 @@ export default function AppNavBar() {
                     <CloseRoundedIcon />
                   </IconButton>
                 </Box>
-
                 <MenuItem onClick={handleClickHome}>Home</MenuItem>
                 <MenuItem onClick={handleClickMonitores}>Monitores</MenuItem>
                 <MenuItem onClick={handleClickAgendamento}>
                   Agendamento
                 </MenuItem>
-                <MenuItem>Dashboard</MenuItem>
-                <MenuItem>Sobre Nós</MenuItem>
                 <Divider sx={{ my: 3 }} />
                 {!isAuthenticated && (
                   <>

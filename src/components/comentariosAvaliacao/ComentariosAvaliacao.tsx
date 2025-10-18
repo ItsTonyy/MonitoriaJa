@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Box,
@@ -19,13 +19,18 @@ import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import "./ComentariosAvaliacao.css";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import {
+  buscarAvaliacoesPorMonitor,
+  criarAvaliacao,
+} from "../../redux/features/avaliacao/actions";
 
 const AvaliacaoCard = styled(Card)({
   width: "100%",
   maxWidth: "none",
   padding: "3rem",
   textAlign: "left",
-  borderRadius: "10px",	
+  borderRadius: "10px",
   minHeight: "70vh",
   "@media (max-width: 768px)": {
     padding: "2rem",
@@ -48,14 +53,7 @@ const ModalStyle = {
   p: 4,
 };
 
-interface Avaliacao {
-  nota: number;
-  autor: string;
-  data: string;
-  comentario: string;
-  util: number;
-  naoUtil: number;
-}
+// Avaliações são fornecidas pelo Redux (interface em redux/features/avaliacao/fetch.ts)
 
 interface FormData {
   rating: number | null;
@@ -63,83 +61,7 @@ interface FormData {
   comentario: string;
 }
 
-const AVALIACOES: Avaliacao[] = [
-  {
-    nota: 5,
-    autor: "Emília",
-    data: "18/02/2025",
-    comentario:
-      "Monitoria de boa qualidade e surpreendente, ótimo custo-benefício.",
-    util: 4,
-    naoUtil: 0,
-  },
-  {
-    nota: 5,
-    autor: "franciscoreis",
-    data: "09/02/2025",
-    comentario: "Muito bom, monitor muito atencioso!",
-    util: 3,
-    naoUtil: 1,
-  },
-  {
-    nota: 5,
-    autor: "Carlos",
-    data: "10/09/2025",
-    comentario: "Excelente explicação, aprendi muito na aula de cálculo.",
-    util: 2,
-    naoUtil: 0,
-  },
-  {
-    nota: 1,
-    autor: "João",
-    data: "01/01/2025",
-    comentario: "Não gostei, monitor não apareceu na hora marcada.",
-    util: 0,
-    naoUtil: 5,
-  },
-  {
-    nota: 4,
-    autor: "Maria",
-    data: "05/01/2025",
-    comentario: "Ótimo, mas a conexão caiu algumas vezes.",
-    util: 1,
-    naoUtil: 0,
-  },
-  {
-    nota: 5,
-    autor: "Lucas",
-    data: "15/01/2025",
-    comentario: "Perfeito, recomendo a todos! Monitor muito didático.",
-    util: 6,
-    naoUtil: 1,
-  },
-  {
-    nota: 5,
-    autor: "Ana",
-    data: "20/01/2025",
-    comentario:
-      "Excelente, atendeu todas as minhas expectativas. Tirei todas as dúvidas!",
-    util: 2,
-    naoUtil: 0,
-  },
-  {
-    nota: 3,
-    autor: "Pedro",
-    data: "25/01/2025",
-    comentario: "Bom, mas poderia ser melhor. Monitor foi pontual.",
-    util: 1,
-    naoUtil: 1,
-  },
-  {
-    nota: 4,
-    autor: "Carla",
-    data: "01/02/2025",
-    comentario:
-      "Estou satisfeita, mas o material disponibilizado poderia ser melhor.",
-    util: 3,
-    naoUtil: 0,
-  },
-];
+// Dados de avaliações removidos; serão carregados do Redux via busco por monitorId
 
 const ComentariosAvaliacao: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -149,17 +71,31 @@ const ComentariosAvaliacao: React.FC = () => {
     titulo: "",
     comentario: "",
   });
+  const dispatch = useAppDispatch();
+  const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
+  const { avaliacoes, loading, error } = useAppSelector(
+    (state) => state.avaliacao
+  );
+  const usuarioLogado = useAppSelector((state) => state.login.user);
 
-  const totalAvaliacoes = AVALIACOES.length;
-  const somaNotas = AVALIACOES.reduce((soma, av) => soma + av.nota, 0);
-  const notaMedia = (somaNotas / totalAvaliacoes).toFixed(1);
+  useEffect(() => {
+    if (monitor?.id) {
+      dispatch(buscarAvaliacoesPorMonitor(monitor.id));
+    }
+  }, [monitor?.id, dispatch]);
 
-  const contagemNotas = AVALIACOES.reduce((acc, av) => {
-    acc[av.nota] = (acc[av.nota] || 0) + 1;
+  const totalAvaliacoes = avaliacoes.length;
+  const somaNotas = avaliacoes.reduce((soma, av) => soma + (av.nota || 0), 0);
+  const notaMedia =
+    totalAvaliacoes > 0 ? (somaNotas / totalAvaliacoes).toFixed(1) : "0.0";
+
+  const contagemNotas = avaliacoes.reduce((acc, av) => {
+    const n = av.nota || 0;
+    acc[n] = (acc[n] || 0) + 1;
     return acc;
   }, {} as Record<number, number>);
 
-  const avaliacoesVisiveis = showMore ? AVALIACOES : AVALIACOES.slice(0, 2);
+  const avaliacoesVisiveis = showMore ? avaliacoes : avaliacoes.slice(0, 2);
 
   const handleModalOpen = () => setModalOpen(true);
   const handleModalClose = () => {
@@ -167,16 +103,36 @@ const ComentariosAvaliacao: React.FC = () => {
     setFormData({ rating: null, titulo: "", comentario: "" });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.rating || !formData.comentario) {
       alert("Por favor, preencha todos os campos obrigatórios!");
       return;
     }
-    console.log("Avaliação enviada:", formData);
+    if (!usuarioLogado?.id || !monitor?.id) {
+      alert("Você precisa estar logado e selecionar um monitor para avaliar.");
+      return;
+    }
+    await dispatch(
+      criarAvaliacao({
+        usuarioId: usuarioLogado.id,
+        monitorId: monitor.id,
+        nota: formData.rating,
+        comentario: formData.comentario,
+      })
+    );
     handleModalClose();
     alert("Avaliação enviada com sucesso!");
+    dispatch(buscarAvaliacoesPorMonitor(monitor.id));
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ py: 4 }}>
+        <Typography>Carregando avaliações...</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ py: 4 }}>
@@ -274,7 +230,8 @@ const ComentariosAvaliacao: React.FC = () => {
               </Typography>
               {[5, 4, 3, 2, 1].map((estrelas) => {
                 const count = contagemNotas[estrelas] || 0;
-                const porcentagem = (count / totalAvaliacoes) * 100;
+                const porcentagem =
+                  totalAvaliacoes > 0 ? (count / totalAvaliacoes) * 100 : 0;
                 return (
                   <Box
                     key={estrelas}
@@ -357,7 +314,7 @@ const ComentariosAvaliacao: React.FC = () => {
                       }}
                     >
                       <Rating
-                        value={avaliacao.nota}
+                        value={avaliacao.nota || 0}
                         readOnly
                         size="small"
                         sx={{
@@ -367,7 +324,7 @@ const ComentariosAvaliacao: React.FC = () => {
                         }}
                       />
                       <Typography variant="body2" color="text.secondary">
-                        Comentário de {avaliacao.autor}
+                        Comentário de Usuário #{avaliacao.usuarioId ?? "N/A"}
                       </Typography>
                     </Box>
 
@@ -381,7 +338,8 @@ const ComentariosAvaliacao: React.FC = () => {
                       }}
                     >
                       <Typography variant="body2" color="text.secondary">
-                        {avaliacao.autor} em {avaliacao.data}
+                        Usuário #{avaliacao.usuarioId ?? "N/A"} em{" "}
+                        {new Date(avaliacao.data).toLocaleDateString("pt-BR")}
                       </Typography>
                       <Chip
                         icon={<CheckCircleIcon sx={{ fontSize: 14 }} />}
@@ -428,7 +386,7 @@ const ComentariosAvaliacao: React.FC = () => {
                             borderRadius: "15px",
                           }}
                         >
-                          ({avaliacao.util})
+                          ({0})
                         </Button>
                         <Button
                           variant="outlined"
@@ -446,7 +404,7 @@ const ComentariosAvaliacao: React.FC = () => {
                             borderRadius: "15px",
                           }}
                         >
-                          ({avaliacao.naoUtil})
+                          ({0})
                         </Button>
                       </Box>
                     </Box>
@@ -457,7 +415,7 @@ const ComentariosAvaliacao: React.FC = () => {
                 </Box>
               ))}
 
-              {AVALIACOES.length > 2 && (
+              {avaliacoes.length > 2 && (
                 <Box sx={{ textAlign: "center", mt: 3 }}>
                   <Button
                     variant="outlined"

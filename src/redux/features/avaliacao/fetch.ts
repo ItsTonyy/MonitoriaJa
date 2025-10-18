@@ -30,7 +30,7 @@ export const criarAvaliacaoServer = createAsyncThunk<Avaliacao, NovaAvaliacao>(
       data: new Date().toISOString(),
     };
 
-    const response = await httpPost("http://localhost:3000/avaliacoes", data);
+    const response = await httpPost("http://localhost:3001/avaliacoes", data);
     return response;
   }
 );
@@ -39,7 +39,7 @@ export const buscarAvaliacoesServer = createAsyncThunk<
   Avaliacao[],
   BuscarAvaliacoesParams | void
 >("avaliacao/buscarAvaliacoesServer", async (params) => {
-  let endpoint = "http://localhost:3000/avaliacoes";
+  let endpoint = "http://localhost:3001/avaliacoes";
 
   if (params) {
     const queryParams = [];
@@ -59,7 +59,7 @@ export const buscarAvaliacaoPorIdServer = createAsyncThunk<Avaliacao, number>(
   "avaliacao/buscarAvaliacaoPorIdServer",
   async (avaliacaoId) => {
     const response = await httpGet(
-      `http://localhost:3000/avaliacoes/${avaliacaoId}`
+      `http://localhost:3001/avaliacoes/${avaliacaoId}`
     );
     return response;
   }
@@ -69,7 +69,7 @@ export const atualizarAvaliacaoServer = createAsyncThunk<Avaliacao, Avaliacao>(
   "avaliacao/atualizarAvaliacaoServer",
   async (avaliacao) => {
     const response = await httpPut(
-      `http://localhost:3000/avaliacoes/${avaliacao.id}`,
+      `http://localhost:3001/avaliacoes/${avaliacao.id}`,
       avaliacao
     );
     return response;
