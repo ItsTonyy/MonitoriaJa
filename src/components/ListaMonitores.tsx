@@ -63,7 +63,7 @@ function getCardsPerPage() {
   return cols * rows;
 }
 
-function Listamonitores() {
+function ListaMonitores() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [monitores, setmonitores] = useState<Monitor[]>([]);
@@ -464,4 +464,4 @@ function Listamonitores() {
   );
 }
 
-export default Listamonitores;
+export default ListaMonitores;

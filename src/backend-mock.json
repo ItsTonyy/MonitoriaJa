@@ -1,36 +1,28 @@
 {
   "avaliacoes": [
     {
-      "id": "0",
-      "aluno_id": 1,
-      "monitor_id": 1,
-      "avaliacao": 5,
-      "curtido": true,
-      "comentario": "Ótimo monitor, muito atencioso e sempre disposto a ajudar."
+      "id": "1bce",
+      "usuarioId": "2",
+      "monitorId": 1,
+      "nota": 5,
+      "comentario": "Muito bom, gostei da didática, foi bem organizado.",
+      "data": "2025-10-18T19:21:36.207Z"
     },
     {
-      "id": "1",
-      "aluno_id": 2,
-      "monitor_id": 1,
-      "avaliacao": 4,
-      "curtido": false,
-      "comentario": "Monitor bem atencioso, mas poderia melhorar na organização."
+      "id": "2z4a",
+      "usuarioId": "2",
+      "monitorId": 1,
+      "nota": 3,
+      "comentario": "Monitor não foi bem atencioso.",
+      "data": "2025-10-18T19:21:36.207Z"
     },
     {
-      "id": "2",
-      "aluno_id": 3,
-      "monitor_id": 1,
-      "avaliacao": 3,
-      "curtido": true,
-      "comentario": "Monitor interessante, mas não foi bem organizado."
-    },
-    {
-      "id": "3",
-      "aluno_id": 4,
-      "monitor_id": 1,
-      "avaliacao": 2,
-      "curtido": false,
-      "comentario": "Monitor não foi bem atencioso."
+      "id": "4a1f",
+      "usuarioId": "2",
+      "monitorId": 1,
+      "nota": 4,
+      "comentario": "Boa monitoria, tudo funcionou direitinho, só acho que a didática poderia melhorar um pouco.",
+      "data": "2025-10-18T19:21:36.207Z"
     }
   ],
   "usuarios": [
@@ -71,7 +63,7 @@
       "previa": "Olá, admin! Passando pra avisar que sua aula com João Silva foi reagendada.",
       "descricao": "Sua aula com João Silva foi reagendada com sucesso. Clique em 'Visualizar Agendamentos' para mais informações.",
       "tempo": "há 2 min",
-      "lida": false,
+      "lida": true,
       "role": "admin"
     },
     {
@@ -544,6 +536,18 @@
     {
       "id": "21",
       "nome": "Design"
+    }
+    {
+      "id": "1",
+      "numero": "1234567812345678",
+      "nome": "Rafael Penela",
+      "bandeira": "Visa"
+    },
+    {
+      "id": "2",
+      "numero": "8765432187654321",
+      "nome": "Maria Silva",
+      "bandeira": "MasterCard"
     }
   ]
 }
