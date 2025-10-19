@@ -221,6 +221,26 @@ body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
   padding: 0 24px;
 }
 
+.nomeField {
+  margin-bottom: 16px;
+}
+
+.nomeField .MuiInputBase-root {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nomeField .MuiInputLabel-root {
+  font-size: 1rem;
+}
+
+.fieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
 .materiasLabel {
   display: block;
   margin-bottom: 8px;

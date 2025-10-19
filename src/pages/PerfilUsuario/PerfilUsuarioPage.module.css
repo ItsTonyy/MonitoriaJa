@@ -23,6 +23,26 @@
   min-height: 100vh;
 }
 
+.nomeField {
+  margin-bottom: 16px;
+}
+
+.nomeField .MuiInputBase-root {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nomeField .MuiInputLabel-root {
+  font-size: 1rem;
+}
+
+.fieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
 .profileCard {
   background-color: var(--cor-fundo);
   box-shadow: var(--shadow);

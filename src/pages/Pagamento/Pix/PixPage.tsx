@@ -1,35 +1,61 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Box, Typography, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
 import ConfirmationButton from "../../botaoTemporario/botaoTemporario";
 import styles from "./PixPage.module.css";
 import Title from "../../AlterarSenha/Titulo/Titulo";
+import {
+  gerarCodigoPix,
+  copiarCodigoPix,
+  resetPixStatus,
+  resetPix,
+} from "../../../redux/features/pix/slice";
+import type { AppDispatch } from "../../../redux/store";
+import type { RootState } from "../../../redux/root-reducer";
 
 const PixPage: React.FC = () => {
-  const orderId = "#0000";
-  const orderValue = "R$ 00,00";
   const navigate = useNavigate();
-  const [success, setSuccess] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
 
+  // ✅ Seletor do Redux
+  const { orderId, orderValue, pixCode, status, errorMessage } = useSelector(
+    (state: RootState) => state.pix
+  );
+
+  // ✅ Gerar código PIX ao montar componente
   useEffect(() => {
-    if (success) {
+    if (!pixCode) {
+      dispatch(gerarCodigoPix());
+    }
+  }, [dispatch, pixCode]);
+
+  // ✅ Redirecionar após sucesso
+  useEffect(() => {
+    if (status === "success") {
       const timer = setTimeout(() => {
+        dispatch(resetPix());
         navigate("/MonitoriaJa/lista-agendamentos");
       }, 2000);
+
       return () => clearTimeout(timer);
     }
-  }, [success, navigate]);
+  }, [status, navigate, dispatch]);
 
   const handleCopyPixCode = () => {
-    setSuccess(true);
-    // ...código para copiar, se necessário...
+    if (pixCode) {
+      dispatch(copiarCodigoPix(pixCode));
+    }
   };
 
   const handleCancel = () => {
-    navigate("/MonitoriaJa/agendamento-monitor");
+    dispatch(resetPix());
+    navigate(-1);
   };
-  if (success) {
+
+  // ✅ Tela de sucesso
+  if (status === "success") {
     return (
       <main
         style={{
@@ -66,21 +92,62 @@ const PixPage: React.FC = () => {
     );
   }
 
+  // ✅ Tela de erro
+  if (status === "error") {
+    return (
+      <main
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "80vh",
+        }}
+      >
+        <Alert
+          severity="error"
+          sx={{
+            width: "100%",
+            maxWidth: 400,
+            fontSize: "1.2rem",
+            py: 3,
+            boxShadow: 4,
+            textAlign: "center",
+          }}
+        >
+          {errorMessage || "Erro ao processar pagamento"}
+          <Box sx={{ mt: 2 }}>
+            <ConfirmationButton onClick={() => dispatch(resetPixStatus())}>
+              Tentar novamente
+            </ConfirmationButton>
+          </Box>
+        </Alert>
+      </main>
+    );
+  }
+
   return (
     <main className={styles.centralizeContent}>
       <Box className={styles.card}>
         <Title text="Pix" />
+
         <Typography className={styles.infoText}>Pedido {orderId}</Typography>
         <Typography className={styles.infoText}>
           Valor de compra: {orderValue}
         </Typography>
+
         <Box className={styles.qrCodeContainer}>
-          <QrCode2Icon className={styles.qrCodeIcon} />
+          {status === "loading" ? (
+            <Typography variant="h6">Gerando código PIX...</Typography>
+          ) : (
+            <QrCode2Icon className={styles.qrCodeIcon} />
+          )}
         </Box>
+
         <Box className={styles.buttonGroup}>
           <ConfirmationButton onClick={handleCopyPixCode}>
-            Copiar Código Pix
+            {status === "loading" ? "Processando..." : "Copiar Código Pix"}
           </ConfirmationButton>
+
           <ConfirmationButton onClick={handleCancel}>
             Cancelar
           </ConfirmationButton>

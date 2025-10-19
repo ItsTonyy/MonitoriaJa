@@ -1,26 +1,35 @@
-// ConfirmationButton.tsx
-import Button from '@mui/material/Button';
-import React from 'react';
-import styles from './botaoTemporario.module.css';
+import React from "react";
 
 interface ConfirmationButtonProps {
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  children?: React.ReactNode;
-  type?: 'button' | 'submit' | 'reset';
+  type?: "button" | "submit" | "reset";
+  onClick?: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
 }
 
-export default function ConfirmationButton({
+const ConfirmationButton: React.FC<ConfirmationButtonProps> = ({
+  type = "button",
   onClick,
+  disabled,
   children,
-  type = 'button', 
-}: ConfirmationButtonProps) {
+}) => {
   return (
-    <Button
+    <button
+      type={type}
       onClick={onClick}
-      type={type} 
-      className={styles.button}
+      disabled={disabled}
+      style={{
+        backgroundColor: disabled ? "#ccc" : "#007BFF",
+        color: "white",
+        padding: "10px 20px",
+        borderRadius: "6px",
+        border: "none",
+        cursor: disabled ? "not-allowed" : "pointer",
+      }}
     >
       {children}
-    </Button>
+    </button>
   );
-}
+};
+
+export default ConfirmationButton;

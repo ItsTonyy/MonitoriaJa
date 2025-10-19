@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { TextField } from '@mui/material';
 import ConfirmationButton from '../botaoTemporario/botaoTemporario';
 import DescriptionBox from './Descricao/Descricao';
-import CampoFormulario from './CampoFormulario/CampoFormulario';
 import UploadButton from './UploadButton/UploadButton';
 import StatusModal from '../AlterarSenha/StatusModal/StatusModal';
 import PersonIcon from '@mui/icons-material/Person';
@@ -14,7 +14,10 @@ import { RootState } from '../../redux/root-reducer';
 import { AppDispatch } from '../../redux/store';
 import {
   fetchMonitor,
-  updateMonitor
+  updateMonitor,
+  validateField,
+  clearValidationErrors,
+  clearError
 } from '../../redux/features/perfilMonitor/slice';
 
 const MATERIAS = [
@@ -27,23 +30,25 @@ const PerfilMonitorPage: React.FC = () => {
   const navigate = useNavigate();
 
   const authUser = useSelector((state: RootState) => state.login.user);
-const monitor = useSelector((state: RootState) => state.perfilMonitor.currentMonitor);
-const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
+  const monitor = useSelector((state: RootState) => state.perfilMonitor.currentMonitor);
+  const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
+  const error = useSelector((state: RootState) => state.perfilMonitor.error);
+  const validationErrors = useSelector((state: RootState) => state.perfilMonitor.validationErrors);
 
   // Estados locais para inputs
+  const [nomeInput, setNomeInput] = useState('');
   const [telefoneInput, setTelefoneInput] = useState('');
   const [emailInput, setEmailInput] = useState('');
   const [descricaoInput, setDescricaoInput] = useState('');
   const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>([]);
 
-  const [erros, setErros] = useState<{ telefone?: string; email?: string }>({});
   const [open, setOpen] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   // Buscar dados do monitor ao carregar a página
   useEffect(() => {
-    if (authUser && authUser.id) {
-      const userId = Number(authUser.id);
-      dispatch(fetchMonitor(userId));
+    if (authUser?.id) {
+      dispatch(fetchMonitor(Number(authUser.id)));
     } else {
       navigate('/MonitoriaJa/login');
     }
@@ -52,6 +57,7 @@ const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
   // Atualizar estados locais quando o monitor for carregado
   useEffect(() => {
     if (monitor) {
+      setNomeInput(monitor.nome || '');
       setTelefoneInput(monitor.telefone || '');
       setEmailInput(monitor.email || '');
       setDescricaoInput(monitor.descricao || '');
@@ -59,36 +65,70 @@ const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
     }
   }, [monitor]);
 
-  const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  const validarCampos = () => {
-    const novosErros: { telefone?: string; email?: string } = {};
-
-    if (!telefoneRegex.test(telefoneInput)) {
-      novosErros.telefone = 'Telefone inválido. Use o formato (XX) 9XXXX-XXXX';
+  // Limpar erro global quando o usuário interagir
+  useEffect(() => {
+    if (error) {
+      dispatch(clearError());
     }
-    if (!emailRegex.test(emailInput)) {
-      novosErros.email = 'Email inválido';
-    }
+  }, [nomeInput, telefoneInput, emailInput, descricaoInput, materiasSelecionadas, error, dispatch]);
 
-    setErros(novosErros);
-    return Object.keys(novosErros).length === 0;
+  // Handlers com validação
+  const handleNomeChange = (value: string) => {
+    setNomeInput(value);
+    if (hasSubmitted) {
+      dispatch(validateField({ field: 'nome', value }));
+    }
+  };
+
+  const handleTelefoneChange = (value: string) => {
+    setTelefoneInput(value);
+    if (hasSubmitted) {
+      dispatch(validateField({ field: 'telefone', value }));
+    }
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmailInput(value);
+    if (hasSubmitted) {
+      dispatch(validateField({ field: 'email', value }));
+    }
+  };
+
+  const handleDescricaoChange = (value: string) => {
+    setDescricaoInput(value);
+    if (hasSubmitted) {
+      dispatch(validateField({ field: 'descricao', value }));
+    }
   };
 
   const handleSalvar = async () => {
-    if (validarCampos() && monitor) {
-      try {
-        await dispatch(updateMonitor({
-          telefone: telefoneInput,
-          email: emailInput,
-          descricao: descricaoInput,
-          materias: materiasSelecionadas
-        })).unwrap();
-        setOpen(true);
-      } catch (error) {
-        console.error('Erro ao salvar:', error);
-      }
+    if (!monitor) return;
+
+    setHasSubmitted(true);
+
+    // Validar todos os campos
+    dispatch(validateField({ field: 'nome', value: nomeInput }));
+    dispatch(validateField({ field: 'telefone', value: telefoneInput }));
+    dispatch(validateField({ field: 'email', value: emailInput }));
+    dispatch(validateField({ field: 'descricao', value: descricaoInput }));
+
+    // Verificar se há erros
+    const hasValidationErrors = Object.values(validationErrors).some(error => error !== undefined);
+    if (hasValidationErrors) {
+      return;
+    }
+
+    try {
+      await dispatch(updateMonitor({
+        nome: nomeInput,
+        telefone: telefoneInput,
+        email: emailInput,
+        descricao: descricaoInput,
+        materias: materiasSelecionadas
+      })).unwrap();
+      setOpen(true);
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
     }
   };
 
@@ -97,18 +137,36 @@ const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
     setMateriasSelecionadas(novasMaterias);
   };
 
-  if (loading) return <div className={styles.centralizeContent}>Carregando...</div>;
+  // Loading global
+  if (loading && !monitor) {
+    return <div className={styles.centralizeContent}>Carregando...</div>;
+  }
 
-  if (!monitor) return (
-    <div className={styles.centralizeContent}>
-      <div className={styles.profileCard}>
-        <p>Monitor não encontrado</p>
+  // Erro global apenas se não conseguir carregar o monitor
+  if (error && !monitor) {
+    return (
+      <div className={styles.centralizeContent}>
+        <p>{error}</p>
         <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
           Fazer Login
         </ConfirmationButton>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // Monitor não encontrado
+  if (!monitor) {
+    return (
+      <div className={styles.centralizeContent}>
+        <div className={styles.profileCard}>
+          <p>Monitor não encontrado</p>
+          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
+            Fazer Login
+          </ConfirmationButton>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className={styles.centralizeContent}>
@@ -123,9 +181,14 @@ const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
               role="textbox"
               aria-label="Nome do monitor"
               tabIndex={0}
+              onBlur={(e) => handleNomeChange(e.currentTarget.textContent || '')}
+              onInput={(e) => handleNomeChange(e.currentTarget.textContent || '')}
             >
-              {monitor.nome}
+              {nomeInput}
             </div>
+            {hasSubmitted && validationErrors.nome && (
+              <span className={styles.error}>{validationErrors.nome}</span>
+            )}
           </div>
         </div>
 
@@ -175,31 +238,41 @@ const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
         <div className={styles.descriptionBox}>
           <DescriptionBox
             value={descricaoInput}
-            onChange={setDescricaoInput}
+            onChange={handleDescricaoChange}
             rows={4}
             placeholder="Escreva uma descrição sobre o monitor..."
           />
+          {hasSubmitted && validationErrors.descricao && (
+            <span className={styles.error}>{validationErrors.descricao}</span>
+          )}
         </div>
 
         {/* Campos de Telefone e Email */}
         <div className={styles.fieldsContainer}>
-          <CampoFormulario
+          <TextField
             label="Telefone"
+            variant="outlined"
+            fullWidth
             value={telefoneInput}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setTelefoneInput(e.target.value)
-            }
+            onChange={(e) => handleTelefoneChange(e.target.value)}
+            required
+            error={hasSubmitted && !!validationErrors.telefone}
+            helperText={hasSubmitted && validationErrors.telefone ? validationErrors.telefone : ""}
+            inputProps={{
+              maxLength: 15
+            }}
           />
-          {erros.telefone && <span className={styles.error}>{erros.telefone}</span>}
 
-          <CampoFormulario
+          <TextField
             label="Email"
+            variant="outlined"
+            fullWidth
             value={emailInput}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setEmailInput(e.target.value)
-            }
+            onChange={(e) => handleEmailChange(e.target.value)}
+            required
+            error={hasSubmitted && !!validationErrors.email}
+            helperText={hasSubmitted && validationErrors.email ? validationErrors.email : ""}
           />
-          {erros.email && <span className={styles.error}>{erros.email}</span>}
 
           {/* Campo para adicionar matérias */}
           <AtualizarMateria
@@ -218,7 +291,7 @@ const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
           </div>
 
           <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={handleSalvar}>
+            <ConfirmationButton onClick={handleSalvar} disabled={loading}>
               Confirmar Mudanças
             </ConfirmationButton>
           </div>
@@ -231,7 +304,7 @@ const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
         </div>
       </div>
 
-      {/* Modal de status */}
+      {/* Modal de sucesso */}
       <StatusModal
         open={open}
         onClose={() => setOpen(false)}

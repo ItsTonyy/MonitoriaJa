@@ -2,77 +2,79 @@ import React, { useEffect, useState } from 'react';
 import styles from './ListaCartaoPage.module.css';
 import Title from '../../../AlterarSenha/Titulo/Titulo';
 import CartaoItem from '../CartaoItem/CartaoItem';
+import StatusModal from '../../../AlterarSenha/StatusModal/StatusModal';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationButton from '../../../botaoTemporario/botaoTemporario';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
 import { RootState } from '../../../../redux/root-reducer';
-import { selectAllCartoes } from '../../../../redux/features/listaCartao/slice';
+import { selectAllCartoes, resetStatus } from '../../../../redux/features/listaCartao/slice';
 import {
   fetchCartoes,
   removerCartao
 } from '../../../../redux/features/listaCartao/actions';
 
+
+
 const ListaCartaoPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [usuarioId, setUsuarioId] = useState<number | null>(null);
-  const [carregando, setCarregando] = useState(true);
 
-  // Seleciona os cartões do estado Redux
+  const handleCancel = () => {
+    navigate(-1);
+  };
+
+  // ✅ Seleciona os cartões e estados do Redux
   const cartoes = useSelector((state: RootState) => selectAllCartoes(state));
+  const { status, errorMessage, operacao } = useSelector((state: RootState) => state.cartoes);
 
-  // Carrega os cartões do usuário logado
+  // ✅ Carrega os cartões do usuário logado
   useEffect(() => {
-    // No useEffect do ListaCartaoPage - SUBSTITUA:
-const carregarUsuario = async () => {
-  try {
-    console.log('🔍 Verificando usuário logado...');
-    
-    // ✅ CORREÇÃO: Usar 'user' em vez de 'currentUser'
-    const usuarioStorage = localStorage.getItem('user');
-    console.log('🔍 Conteúdo do localStorage user:', usuarioStorage);
-    
-    if (!usuarioStorage) {
-      console.error('❌ user não encontrado no localStorage');
-      setCarregando(false);
-      return;
-    }
+    const carregarUsuario = async () => {
+      try {
+        console.log('🔍 Verificando usuário logado...');
 
-    const usuarioLogado = JSON.parse(usuarioStorage);
-    console.log('🔍 Usuário logado objeto:', usuarioLogado);
-    
-    const id = usuarioLogado?.id;
-    console.log('🔍 usuarioId encontrado:', id);
+        const usuarioStorage = localStorage.getItem('user');
+        console.log('🔍 Conteúdo do localStorage user:', usuarioStorage);
 
-    if (id) {
-      setUsuarioId(id);
-      console.log('✅ Buscando cartões do usuário:', id);
-      await dispatch(fetchCartoes(id));
-    } else {
-      console.error('❌ ID do usuário não encontrado no objeto');
-    }
-  } catch (error) {
-    console.error('💥 Erro ao carregar usuário:', error);
-  } finally {
-    setCarregando(false);
-  }
-};
+        if (!usuarioStorage) {
+          console.error('❌ user não encontrado no localStorage');
+          return;
+        }
+
+        const usuarioLogado = JSON.parse(usuarioStorage);
+        console.log('🔍 Usuário logado objeto:', usuarioLogado);
+
+        const id = usuarioLogado?.id;
+        console.log('🔍 usuarioId encontrado:', id);
+
+        if (id) {
+          setUsuarioId(id);
+          console.log('✅ Buscando cartões do usuário:', id);
+          await dispatch(fetchCartoes(id));
+        } else {
+          console.error('❌ ID do usuário não encontrado no objeto');
+        }
+      } catch (error) {
+        console.error('💥 Erro ao carregar usuário:', error);
+      }
+    };
 
     carregarUsuario();
   }, [dispatch]);
 
-  // Filtra cartões por usuário
-  const cartoesDoUsuario = cartoes.filter(cartao => 
+  // ✅ Filtra cartões por usuário
+  const cartoesDoUsuario = cartoes.filter(cartao =>
     usuarioId ? cartao.usuarioId === usuarioId : false
   );
 
-  if (carregando) {
+  // ✅ Loading state
+  if (status === 'loading' && operacao === 'fetch') {
     return (
       <main className={styles.centralizeContent}>
         <div className={styles.profileCard}>
-          <p>Carregando...</p>
+          <p>Carregando cartões...</p>
         </div>
       </main>
     );
@@ -113,7 +115,26 @@ const carregarUsuario = async () => {
         >
           Cadastrar Novo Cartão
         </ConfirmationButton>
+        <ConfirmationButton onClick={handleCancel}>
+          Cancelar
+        </ConfirmationButton>
       </div>
+
+      {/* ✅ Modal de Sucesso ao Remover */}
+      <StatusModal
+        open={status === 'success' && operacao === 'remove'}
+        onClose={() => dispatch(resetStatus())}
+        status="sucesso"
+        mensagem="Cartão removido com sucesso!"
+      />
+
+      {/* ✅ Modal de Erro - apenas para operações que falharam */}
+      <StatusModal
+        open={status === 'error' && operacao !== null}
+        onClose={() => dispatch(resetStatus())}
+        status="falha"
+        mensagem={errorMessage || 'Erro ao processar operação. Tente novamente.'}
+      />
     </main>
   );
 };

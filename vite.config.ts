@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/MonitoriaJa',
   server: {
-    port: 3001,
+    port: 3000,
     open: true,
   },
 });

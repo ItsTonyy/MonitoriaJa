@@ -38,19 +38,20 @@
       "id": "1",
       "name": "adminTeste",
       "email": "admin@teste.com",
-      "telefone": "21900000001",
+      "telefone": "21900000000",
       "password": "123456",
       "description": "",
       "role": "admin"
     },
     {
       "id": "2",
-      "name": "monitorTeste",
-      "email": "monitor@teste.com",
+      "name": "monitorTest",
+      "email": "monitor@teste.co",
       "telefone": "21900000000",
       "password": "123456",
       "description": "Me chamo monitor e estou cursando BCC a 3 anos, com metodologia de estudo e ensinamentos direcionados para computação espero poder te ajudar a alcançar suas melhores notas",
-      "role": "monitor"
+      "role": "monitor",
+      "materias": []
     },
     {
       "id": "3",
@@ -165,11 +166,25 @@
   ],
   "cartoes": [
     {
-      "id": "28e1",
-      "numero": "1234567891234567",
-      "nome": "Ruy Anderson",
+      "id": "2519",
+      "numero": "3",
+      "nome": "3",
       "bandeira": "Elo",
       "usuarioId": "1"
+    },
+    {
+      "id": "2bb5",
+      "numero": "1111111111111111",
+      "nome": "Ruy",
+      "bandeira": "Elo",
+      "usuarioId": "2"
+    },
+    {
+      "id": "997f",
+      "numero": "1234567891234567",
+      "nome": "Ruy",
+      "bandeira": "MasterCard",
+      "usuarioId": "2"
     }
   ]
 }
