@@ -17,84 +17,11 @@ import ModalAcessar from "./ModalAcessar";
 import ModalRemarcar from "./ModalRemarcar";
 import ModalCancelamento from "./ModalCancelamento";
 import { Agendamento } from "../models/agendamento.model";
-import { MONITORES } from "./ListaMonitores";
 import { useAppDispatch } from "../redux/hooks";
 import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
+import { listarAgendamentos } from "../redux/features/agendamento/fetch";
 
-const AGENDAMENTOS: Agendamento[] = [
-  {
-    id: 1,
-    monitor: MONITORES[0],
-    data: "12/09/2025",
-    hora: "14h",
-  },
-  {
-    id: 2,
-    monitor: MONITORES[1],
-    data: "15/09/2025",
-    hora: "10h",
-  },
-  {
-    id: 3,
-    monitor: MONITORES[2],
-    data: "20/09/2025",
-    hora: "16h",
-  },
-  {
-    id: 4,
-    monitor: MONITORES[3],
-    data: "22/09/2025",
-    hora: "09h",
-  },
-  {
-    id: 5,
-    monitor: MONITORES[4],
-    data: "12/09/2025",
-    hora: "14h",
-  },
-  {
-    id: 6,
-    monitor: MONITORES[5],
-    data: "15/09/2025",
-    hora: "10h",
-  },
-  {
-    id: 7,
-    monitor: MONITORES[6],
-    data: "20/09/2025",
-    hora: "16h",
-  },
-  {
-    id: 8,
-    monitor: MONITORES[7],
-    data: "22/09/2025",
-    hora: "09h",
-  },
-  {
-    id: 9,
-    monitor: MONITORES[8],
-    data: "12/09/2025",
-    hora: "14h",
-  },
-  {
-    id: 10,
-    monitor: MONITORES[9],
-    data: "15/09/2025",
-    hora: "10h",
-  },
-  {
-    id: 11,
-    monitor: MONITORES[10],
-    data: "20/09/2025",
-    hora: "16h",
-  },
-  {
-    id: 12,
-    monitor: MONITORES[11],
-    data: "22/09/2025",
-    hora: "09h",
-  }
-];
+
 
 function getGridCols() {
   if (typeof window === "undefined") return 2;
@@ -130,6 +57,23 @@ function ListaAgendamentos() {
   const [modalRemarcarOpen, setModalRemarcarOpen] = useState(false);
   const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
   
+  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState<string | null>(null);
+
+
+  useEffect(() => {
+    listarAgendamentos()
+      .then((data) => {
+        setAgendamentos(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Erro ao carregar agendamentos");
+        setLoading(false);
+      });
+  }, []);
+
   useEffect(() => {
     function handleResize() {
       setCardsPorPagina(getCardsPerPage());
@@ -140,7 +84,7 @@ function ListaAgendamentos() {
 
   const totalPaginas = Math.max(
     1,
-    Math.ceil(AGENDAMENTOS.length / cardsPorPagina)
+    Math.ceil(agendamentos.length / cardsPorPagina)
   );
 
   useEffect(() => {
@@ -149,11 +93,11 @@ function ListaAgendamentos() {
 
   const agendamentosPagina = useMemo(
     () =>
-      AGENDAMENTOS.slice(
+      agendamentos.slice(
         (pagina - 1) * cardsPorPagina,
         pagina * cardsPorPagina
       ),
-    [pagina, cardsPorPagina]
+    [agendamentos,pagina, cardsPorPagina]
   );
 
   return (

@@ -3,7 +3,7 @@ import { Cartao } from "./cartao.model";
 
 export interface Usuario {  
 id?: number;
-nome?: string;
+nome: string;
 email?: string;
 senha?: string;
 telefone?: string; 
