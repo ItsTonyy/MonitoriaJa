@@ -1,5 +1,6 @@
-import { Monitor } from "../components/ListaMonitores";
+
 import { Agendamento } from "./agendamento.model";
+import { Monitor } from "./monitor.model";
 import { Usuario } from "./usuario.model";
 
 export interface Avaliacao {

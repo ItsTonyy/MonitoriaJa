@@ -1,8 +1,7 @@
 import { Monitor } from "./monitor.model";
-import { Aluno} from "./usuario.model";
 
 export interface Agendamento{
-  id?: number;
+  id?: string;
   monitor?:Monitor;
   servico?: 'Aula' | 'Exercícios';  //aula ou exercicios
   data?: string;

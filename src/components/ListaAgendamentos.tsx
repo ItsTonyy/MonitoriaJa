@@ -63,7 +63,7 @@ function ListaAgendamentos() {
 const usuarioLogado = useAppSelector((state) => state.login.user);
 
   useEffect(() => {
-   listarAgendamentosPorUsuarioId(usuarioLogado!.id)
+   listarAgendamentosPorUsuarioId(usuarioLogado!.id.toString())
       .then((data) => {
         setAgendamentos(data);
         setLoading(false);

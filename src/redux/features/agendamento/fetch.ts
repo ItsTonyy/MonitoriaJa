@@ -9,27 +9,25 @@ export async function listarAgendamentos(): Promise<Agendamento[]> {
   return response.json();
 }
 
-export async function buscarAgendamentoPorId(id: number): Promise<Agendamento> {
+export async function buscarAgendamentoPorId(id: string): Promise<Agendamento> {
   const response = await fetch(`${BASE_URL}/${id}`);
   if (!response.ok) throw new Error("Agendamento não encontrado");
   return response.json();
 }
 
-export async function listarAgendamentosPorUsuarioId(id: string | number): Promise<Agendamento[]> {
-  const response = await fetch(BASE_URL);
+export async function listarAgendamentosPorUsuarioId(id: string): Promise<Agendamento[]> {
+   const response = await fetch(BASE_URL);
   if (!response.ok) throw new Error("Erro ao buscar agendamentos");
   const agendamentos: Agendamento[] = await response.json();
-
-  if (id == 1) {
+  if (id == "1") {
     // Admin vê todos
     return agendamentos;
   }
-
-  // Usuário comum vê apenas seus agendamentos (como aluno ou monitor)
+  // Usuário comum vê apenas seus agendamentos ativos (como aluno ou monitor)
   return agendamentos.filter(
     (ag) =>
-      ag.alunoId == id ||
-      (ag.monitor && ag.monitor.id == id)
+      ag.status !== "CANCELADO" && ag.status !== "CONCLUIDO" &&
+      (ag.alunoId == Number(id) || (ag.monitor && ag.monitor.id == id))
   );
 }
 
@@ -43,7 +41,7 @@ export async function criarAgendamento(agendamento: Agendamento): Promise<Agenda
   return response.json();
 }
 
-export async function atualizarAgendamento(id: number, agendamento: Partial<Agendamento>): Promise<Agendamento> {
+export async function atualizarAgendamento(id: string, agendamento: Partial<Agendamento>): Promise<Agendamento> {
   const response = await fetch(`${BASE_URL}/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -53,7 +51,7 @@ export async function atualizarAgendamento(id: number, agendamento: Partial<Agen
   return response.json();
 }
 
-export async function removerAgendamento(id: number): Promise<boolean> {
+export async function removerAgendamento(id: string): Promise<boolean> {
   const response = await fetch(`${BASE_URL}/${id}`, {
     method: "DELETE",
   });

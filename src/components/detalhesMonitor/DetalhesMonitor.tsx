@@ -61,7 +61,7 @@ function DetalhesMonitor() {
     }); // formato: hh:mm
     // Cria um novo agendamento com base no monitor selecionado
     const novoAgendamento: Agendamento = {
-      id: Date.now(), // Gera um id único baseado no timestamp
+      id: Date.now().toString(), // Gera um id único baseado no timestamp
       monitor: monitor,
       data: dataFormatada,
       hora: horaFormatada,

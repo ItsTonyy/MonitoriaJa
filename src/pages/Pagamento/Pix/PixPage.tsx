@@ -23,7 +23,8 @@ const PixPage: React.FC = () => {
     return;
   }
   try {
-    await criarAgendamento(currentAgendamento);
+    const novoAgendamento= {...currentAgendamento, statusPagamento: 'PAGO' as const, status: "CONFIRMADO" as const };
+    await criarAgendamento(novoAgendamento);
     setSuccess(true);
       navigate("/MonitoriaJa/lista-agendamentos");
   } catch (error) {
