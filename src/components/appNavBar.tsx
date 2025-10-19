@@ -220,39 +220,47 @@ export default function AppNavBar() {
               </Button>
             )}
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Anonymous User" src={anonUser} />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                <MenuItem onClick={handleClickPerfil}>
-                  <Typography sx={{ textAlign: "center" }}>Perfil</Typography>
-                </MenuItem>
-                <MenuItem onClick={handleClickHistorico}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    Histórico
-                  </Typography>
-                </MenuItem>
-                <MenuItem onClick={handleClickLogout}>
-                  <Typography sx={{ textAlign: "center" }}>Logout</Typography>
-                </MenuItem>
-              </Menu>
+              {isAuthenticated && (
+                <div>
+                  <Tooltip title="Open settings">
+                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                      <Avatar alt="Anonymous User" src={anonUser} />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    id="menu-appbar"
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                  >
+                    <MenuItem onClick={handleClickPerfil}>
+                      <Typography sx={{ textAlign: "center" }}>
+                        Perfil
+                      </Typography>
+                    </MenuItem>
+                    <MenuItem onClick={handleClickHistorico}>
+                      <Typography sx={{ textAlign: "center" }}>
+                        Histórico
+                      </Typography>
+                    </MenuItem>
+                    <MenuItem onClick={handleClickLogout}>
+                      <Typography sx={{ textAlign: "center" }}>
+                        Logout
+                      </Typography>
+                    </MenuItem>
+                  </Menu>
+                </div>
+              )}
             </Box>
           </Box>
 
