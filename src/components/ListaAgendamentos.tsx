@@ -17,9 +17,9 @@ import ModalAcessar from "./ModalAcessar";
 import ModalRemarcar from "./ModalRemarcar";
 import ModalCancelamento from "./ModalCancelamento";
 import { Agendamento } from "../models/agendamento.model";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
-import { listarAgendamentos } from "../redux/features/agendamento/fetch";
+import { listarAgendamentosPorUsuarioId } from "../redux/features/agendamento/fetch";
 
 
 
@@ -60,10 +60,10 @@ function ListaAgendamentos() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
-
+const usuarioLogado = useAppSelector((state) => state.login.user);
 
   useEffect(() => {
-    listarAgendamentos()
+   listarAgendamentosPorUsuarioId(usuarioLogado!.id)
       .then((data) => {
         setAgendamentos(data);
         setLoading(false);

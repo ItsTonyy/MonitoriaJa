@@ -17,6 +17,7 @@ function DetalhesMonitor() {
   const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
+  const usuarioLogado = useAppSelector((state) => state.login.user);
 
   // Horários mockados - idealmente viriam da disponibilidade do monitor
   const horarios = [
@@ -51,6 +52,7 @@ function DetalhesMonitor() {
   };
 
   const handleAgendar = () => {
+    console.log("usuarioLogado:", usuarioLogado);
     const agora = new Date();
     const dataFormatada = agora.toLocaleDateString("pt-BR"); // formato: dd/mm/aaaa
     const horaFormatada = agora.toLocaleTimeString("pt-BR", {
@@ -64,8 +66,9 @@ function DetalhesMonitor() {
       data: dataFormatada,
       hora: horaFormatada,
       status: "AGUARDANDO",
-      valor: monitor.valorHora,
+      valor: monitor.valor,
       statusPagamento: "PENDENTE",
+      alunoId:usuarioLogado?.id
     };
 
     dispatch(setCurrentAgendamento(novoAgendamento));
@@ -98,7 +101,7 @@ function DetalhesMonitor() {
             <div className="monitor-materia-valor">
               <h2>{monitor.materia}</h2>
               <p className="traço">-</p>
-              <h2>R$ {monitor.valorHora}/hora</h2>
+              <h2>R$ {monitor.valor}/hora</h2>
             </div>
           </div>
         </div>

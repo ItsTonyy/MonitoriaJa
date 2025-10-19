@@ -15,6 +15,24 @@ export async function buscarAgendamentoPorId(id: number): Promise<Agendamento> {
   return response.json();
 }
 
+export async function listarAgendamentosPorUsuarioId(id: string | number): Promise<Agendamento[]> {
+  const response = await fetch(BASE_URL);
+  if (!response.ok) throw new Error("Erro ao buscar agendamentos");
+  const agendamentos: Agendamento[] = await response.json();
+
+  if (id == 1) {
+    // Admin vê todos
+    return agendamentos;
+  }
+
+  // Usuário comum vê apenas seus agendamentos (como aluno ou monitor)
+  return agendamentos.filter(
+    (ag) =>
+      ag.alunoId == id ||
+      (ag.monitor && ag.monitor.id == id)
+  );
+}
+
 export async function criarAgendamento(agendamento: Agendamento): Promise<Agendamento> {
   const response = await fetch(BASE_URL, {
     method: "POST",
