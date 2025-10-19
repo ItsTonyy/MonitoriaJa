@@ -253,11 +253,6 @@ export default function AppNavBar() {
                         Histórico
                       </Typography>
                     </MenuItem>
-                    <MenuItem onClick={handleClickLogout}>
-                      <Typography sx={{ textAlign: "center" }}>
-                        Logout
-                      </Typography>
-                    </MenuItem>
                   </Menu>
                 </div>
               )}
@@ -267,11 +262,16 @@ export default function AppNavBar() {
           <Box sx={{ display: { xs: "flex", md: "none" }, gap: 1 }}>
             <NotificacaoCard />
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Anonymous User" src={anonUser} />
-                </IconButton>
-              </Tooltip>
+              {isAuthenticated && (
+                <>
+                  <Tooltip title="Open settings">
+                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                      <Avatar alt="Anonymous User" src={anonUser} />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              )}
+
               <Menu
                 sx={{ mt: "45px" }}
                 id="menu-appbar"
@@ -295,9 +295,6 @@ export default function AppNavBar() {
                   <Typography sx={{ textAlign: "center" }}>
                     Histórico
                   </Typography>
-                </MenuItem>
-                <MenuItem onClick={handleClickLogout}>
-                  <Typography sx={{ textAlign: "center" }}>Logout</Typography>
                 </MenuItem>
               </Menu>
             </Box>
