@@ -4,14 +4,36 @@ import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import ModalSelect from './ModalSelect';
 import { useNavigate } from 'react-router-dom';
+import { Aluno } from '../models/usuario.model';
+import { Monitor } from '../models/monitor.model';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import { styled } from '@mui/material/styles';
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+
+const VisuallyHiddenInput = styled('input')({
+    clip: 'rect(0 0 0 0)',
+    clipPath: 'inset(50%)',
+    height: 1,
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    whiteSpace: 'nowrap',
+    width: 1,
+});
+
 
 function CadastroForm() {
+  const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [nome, setNome] = useState('');
   const [erroNome, setErroNome] = useState('');
   const [cpf, setCpf] = useState('');
   const [erroCpf, setErroCpf] = useState('');
   const [email, setEmail] = useState('');
   const [erroEmail, setErroEmail] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [erroTelefone, setErroTelefone] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmacaoSenha, setConfirmacaoSenha] = useState('');
   const [erroSenha, setErroSenha] = useState('');
@@ -33,6 +55,18 @@ function CadastroForm() {
     { label: 'Inglês', value: 'ingles' },
     { label: 'Programação', value: 'programacao' },
   ];
+
+  const mudarAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAvatar(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   function handleOpcaoMonitor(opcao: string) {
     setOpcaoMonitor(opcao);
@@ -63,6 +97,19 @@ function CadastroForm() {
     return cpf;
   }
 
+  function aplicarMascaraTelefone(telefone: string) {
+    telefone = telefone.replace(/\D/g, '');
+    
+    if (telefone.length > 11) telefone = telefone.slice(0, 11);
+
+    if (telefone.length > 7) {
+      return telefone.replace(/(\d{2})(\d{5})(\d{1,4})/, '($1) $2-$3');
+    } else if (telefone.length > 2) {
+      return telefone.replace(/(\d{2})(\d{1,4})/, '($1) $2');
+    }
+    return telefone;
+  }
+
   function validarNome(nome: string) {
     return nome.trim().length > 0;
   }
@@ -74,6 +121,11 @@ function CadastroForm() {
 
   function validarEmail(email: string) {
     return /^[\w-.]+@[\w-]+\.[a-zA-Z]{2,}$/.test(email);
+  }
+
+  function validarTelefone(telefone: string) {
+    const digitos = telefone.replace(/\D/g, '');
+    return digitos.length >= 10 && digitos.length <= 11;
   }
 
   function validarSenha(senha: string) {
@@ -109,6 +161,13 @@ function CadastroForm() {
       setErroEmail('');
     }
 
+    if (!validarTelefone(telefone)) {
+      setErroTelefone('Número de telefone inválido.');
+      valido = false;
+    } else {
+      setErroTelefone('');
+    }
+
     if (!validarSenha(senha)) {
       setErroSenha('A senha deve ter no mínimo 6 caracteres.');
       valido = false;
@@ -131,123 +190,176 @@ function CadastroForm() {
   }
 
   return (
-    <Box
-      component="form"
-      onSubmit={onSubmit}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: { xs: 1, sm: 1 },
-        alignItems: 'center',
-        marginTop: { xs: 3, sm: 5 },
-        marginBottom: { xs: 3, sm: 5 },
-        width: '100%',
-      }}
-    >
-      <TextField
-        id="nome"
-        label="Nome"
-        placeholder="Insira o seu nome completo"
-        value={nome}
-        onChange={e => setNome(e.target.value)}
-        error={!!erroNome}
-        helperText={erroNome}
-        fullWidth
-        margin="normal"
-        autoComplete="name"
-      />
-      <TextField
-        id="email"
-        label="E-mail"
-        placeholder="exemplo@email.com"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        error={!!erroEmail}
-        helperText={erroEmail}
-        fullWidth
-        margin="normal"
-        autoComplete="email"
-        type="email"
-      />
-      <TextField
-        id="cpf"
-        label="CPF"
-        placeholder="123.456.789-12"
-        value={cpf}
-        onChange={e => setCpf(aplicarMascaraCpf(e.target.value))}
-        error={!!erroCpf}
-        helperText={erroCpf}
-        fullWidth
-        margin="normal"
-        inputProps={{ maxLength: 14, inputMode: 'numeric' }}
-        autoComplete="off"
-      />
-      <TextField
-        id="senha"
-        label="Senha"
-        placeholder="********"
-        type="password"
-        value={senha}
-        onChange={e => setSenha(e.target.value)}
-        error={!!erroSenha}
-        helperText={erroSenha}
-        fullWidth
-        margin="normal"
-        autoComplete="new-password"
-      />
-      <TextField
-        id="senhaConfirmacao"
-        label="Confirmar Senha"
-        placeholder="********"
-        type="password"
-        value={confirmacaoSenha}
-        onChange={e => setConfirmacaoSenha(e.target.value)}
-        error={!!erroConfirmacao}
-        helperText={erroConfirmacao}
-        fullWidth
-        margin="normal"
-        autoComplete="new-password"
-      />
-      <Button
-        variant="contained"
-        type="submit"
-        fullWidth
-        sx={
-          { 
-            maxWidth: { xs: '100%', sm: 400, md: 500 }, 
-            py: 1.5, 
-            marginTop: { xs: 1, sm: 2}
-          }
-        }
-      >
-        Cadastrar
-      </Button>
-      
-      <ModalSelect
-        open={abrirModalMonitor}
-        header="Cadastrar-se como monitor?"
-        opcoes={[{label: 'Sim', value: 'sim'}, {label: 'Não', value: 'não'}]}
-        onClose={() => setAbrirModalMonitor(false)}
-        onConfirm={(opcao) => {
-          handleOpcaoMonitor(opcao);
-          setAbrirModalMonitor(false);
-          if (opcao.toLowerCase() === "não")
-            navigate('/MonitoriaJa/login');
-        }}
-      />
-
-      <ModalSelect
-        open={abrirModalEspecialidade}
-        header="Selecione sua especialidade"
-        opcoes={opcoesEspecialidades}
-        onClose={() => setAbrirModalEspecialidade(false)}
-        onConfirm={(especialidade) => {
-          handleEspecialidadeMonitor(especialidade);
-          setAbrirModalEspecialidade(false);
-          navigate('/MonitoriaJa/login');
-        }}
+    <Box>
+      <Box sx={{ justifySelf: 'center' }}>
+        <Typography variant="h4" component="h1" gutterBottom>Cadastre-se</Typography>
+        <Avatar
+          sx={{
+              width: 100,
+              height: 100,
+              justifySelf: 'center',
+              marginBottom: 3,
+              border: '1px solid gray',
+          }}
+          src={avatar || '/broken-image.jpg'}
         />
+        <Button
+          component="label"
+          role={undefined}
+          variant="contained"
+          tabIndex={-1}
+          startIcon={<AddAPhotoIcon />}
+        >
+          Insira sua foto
+          <VisuallyHiddenInput
+              type="file"
+              accept="image/*"
+              onChange={mudarAvatar}
+          />
+        </Button>
+      </Box>
+    
+      <Box
+        component="form"
+        onSubmit={onSubmit}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: { xs: 1, sm: 1 },
+          alignItems: 'center',
+          marginTop: { xs: 3, sm: 5 },
+          marginBottom: { xs: 3, sm: 5 },
+          width: '100%',
+        }}
+      >
+        <TextField
+          id="nome"
+          label="Nome"
+          placeholder="Insira o seu nome completo"
+          value={nome}
+          onChange={e => setNome(e.target.value)}
+          error={!!erroNome}
+          helperText={erroNome}
+          fullWidth
+          margin="normal"
+          autoComplete="name"
+        />
+        <TextField
+          id="email"
+          label="E-mail"
+          placeholder="exemplo@email.com"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          error={!!erroEmail}
+          helperText={erroEmail}
+          fullWidth
+          margin="normal"
+          autoComplete="email"
+          type="email"
+        />
+        <TextField
+          id="telefone"
+          label="Telefone"
+          placeholder="(99) 99999-9999"
+          value={telefone}
+          onChange={e => setTelefone(aplicarMascaraTelefone(e.target.value))}
+          error={!!erroTelefone}
+          helperText={erroTelefone}
+          fullWidth
+          margin="normal"
+          inputProps={{ maxLength: 15, inputMode: 'tel' }}
+          autoComplete="tel"
+        />
+        <TextField
+          id="cpf"
+          label="CPF"
+          placeholder="123.456.789-12"
+          value={cpf}
+          onChange={e => setCpf(aplicarMascaraCpf(e.target.value))}
+          error={!!erroCpf}
+          helperText={erroCpf}
+          fullWidth
+          margin="normal"
+          inputProps={{ maxLength: 14, inputMode: 'numeric' }}
+          autoComplete="off"
+        />
+        <TextField
+          id="senha"
+          label="Senha"
+          placeholder="********"
+          type="password"
+          value={senha}
+          onChange={e => setSenha(e.target.value)}
+          error={!!erroSenha}
+          helperText={erroSenha}
+          fullWidth
+          margin="normal"
+          autoComplete="new-password"
+        />
+        <TextField
+          id="senhaConfirmacao"
+          label="Confirmar Senha"
+          placeholder="********"
+          type="password"
+          value={confirmacaoSenha}
+          onChange={e => setConfirmacaoSenha(e.target.value)}
+          error={!!erroConfirmacao}
+          helperText={erroConfirmacao}
+          fullWidth
+          margin="normal"
+          autoComplete="new-password"
+        />
+        <Button
+          variant="contained"
+          type="submit"
+          fullWidth
+          sx={
+            { 
+              maxWidth: { xs: '100%', sm: 400, md: 500 }, 
+              py: 1.5, 
+              marginTop: { xs: 1, sm: 2}
+            }
+          }
+        >
+          Cadastrar
+        </Button>
         
+        <ModalSelect
+          open={abrirModalMonitor}
+          header="Cadastrar-se como monitor?"
+          opcoes={[{label: 'Sim', value: 'sim'}, {label: 'Não', value: 'não'}]}
+          onClose={() => setAbrirModalMonitor(false)}
+          onConfirm={(opcao) => {
+            handleOpcaoMonitor(opcao);
+            setAbrirModalMonitor(false);
+            if (opcao.toLowerCase() === "não") {
+              const novoAluno: Aluno = {
+                nome: nome,
+                telefone: telefone.replace(/\D/g, ''),
+                email: email,
+                senha: senha,
+                foto: avatar,
+                tipoUsuario: 'ALUNO',
+              };
+              // Aqui você pode adicionar a lógica para salvar o novo aluno
+              navigate('/MonitoriaJa/login');
+            }
+          }}
+        />
+
+        <ModalSelect
+          open={abrirModalEspecialidade}
+          header="Selecione sua especialidade"
+          opcoes={opcoesEspecialidades}
+          onClose={() => setAbrirModalEspecialidade(false)}
+          onConfirm={(especialidade) => {
+            handleEspecialidadeMonitor(especialidade);
+            setAbrirModalEspecialidade(false);
+            navigate('/MonitoriaJa/login');
+          }}
+          />
+          
+      </Box>
     </Box>
   );
 }
