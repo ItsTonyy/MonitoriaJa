@@ -21,15 +21,10 @@ export interface LoginCredentials {
 export const loginUserServer = createAsyncThunk<AuthResponse, LoginCredentials>(
   "auth/loginUserServer",
   async (credentials) => {
-<<<<<<< HEAD
-    const usuarios = await httpGet(`http://localhost:3001/usuarios?email=${credentials.email}`);
-    
-=======
     const usuarios = await httpGet(
       `http://localhost:3001/usuarios?email=${credentials.email}`
     );
 
->>>>>>> 69d9a21a9ecc33b72e2f993160dd7421106cba84
     if (!usuarios || usuarios.length === 0) {
       throw new Error("Email não encontrado.");
     }
@@ -53,12 +48,6 @@ export const loginUserServer = createAsyncThunk<AuthResponse, LoginCredentials>(
   }
 );
 
-<<<<<<< HEAD
-export const resetPasswordServer = createAsyncThunk<{ message: string }, string>(
-  'auth/resetPasswordServer',
-  async (email) => {
-    const usuarios = await httpGet(`http://localhost:3001/usuarios?email=${email}`);
-=======
 export const resetPasswordServer = createAsyncThunk<
   { message: string },
   string
@@ -66,7 +55,6 @@ export const resetPasswordServer = createAsyncThunk<
   const usuarios = await httpGet(
     `http://localhost:3001/usuarios?email=${email}`
   );
->>>>>>> 69d9a21a9ecc33b72e2f993160dd7421106cba84
 
   if (!usuarios || usuarios.length === 0) {
     throw new Error("Email não encontrado.");
@@ -82,27 +70,6 @@ export interface UpdatePasswordCredentials {
   newPassword: string;
 }
 
-<<<<<<< HEAD
-export const updatePasswordServer = createAsyncThunk<{ message: string }, UpdatePasswordCredentials>(
-  'auth/updatePasswordServer',
-  async (credentials) => {
-    const usuarios = await httpGet(`http://localhost:3001/usuarios?email=${credentials.email}`);
-
-    if (!usuarios || usuarios.length === 0) {
-      throw new Error('Email não encontrado.');
-    }
-
-    const usuario = usuarios[0];
-
-    await httpPut(`http://localhost:3001/usuarios/${usuario.id}`, {
-      ...usuario,
-      password: credentials.newPassword,
-    });
-
-    return {
-      message: 'Senha alterada com sucesso!',
-    };
-=======
 export const updatePasswordServer = createAsyncThunk<
   { message: string },
   UpdatePasswordCredentials
@@ -113,7 +80,6 @@ export const updatePasswordServer = createAsyncThunk<
 
   if (!usuarios || usuarios.length === 0) {
     throw new Error("Email não encontrado.");
->>>>>>> 69d9a21a9ecc33b72e2f993160dd7421106cba84
   }
 
   const usuario = usuarios[0];
