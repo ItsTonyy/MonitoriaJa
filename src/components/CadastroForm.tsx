@@ -10,6 +10,11 @@ import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import { styled } from '@mui/material/styles';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { criarMonitor } from '../redux/features/monitor/fetch';
+import { httpPost } from '../utils';
+import { User } from '../redux/features/login/fetch';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -43,17 +48,18 @@ function CadastroForm() {
   const [opcaoMonitor, setOpcaoMonitor] = useState('');
   const [especialidadeMonitor, setEspecialidadeMonitor] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   const opcoesEspecialidades = [
-    { label: 'Matemática', value: 'matematica' },
-    { label: 'Física', value: 'fisica' },
-    { label: 'Química', value: 'quimica' },
-    { label: 'Biologia', value: 'biologia' },
-    { label: 'História', value: 'historia' },
-    { label: 'Geografia', value: 'geografia' },
-    { label: 'Português', value: 'portugues' },
-    { label: 'Inglês', value: 'ingles' },
-    { label: 'Programação', value: 'programacao' },
+    { label: 'Matemática', value: 'Matemática' },
+    { label: 'Física', value: 'Física' },
+    { label: 'Química', value: 'Química' },
+    { label: 'Biologia', value: 'Biologia' },
+    { label: 'História', value: 'História' },
+    { label: 'Geografia', value: 'Geografia' },
+    { label: 'Português', value: 'Português' },
+    { label: 'Inglês', value: 'Inglês' },
+    { label: 'Programação', value: 'Programação' },
   ];
 
   const mudarAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -341,7 +347,7 @@ function CadastroForm() {
                 foto: avatar,
                 tipoUsuario: 'ALUNO',
               };
-              // Aqui você pode adicionar a lógica para salvar o novo aluno
+              httpPost('http://localhost:3001/usuarios', {... {name: novoAluno.nome, email: novoAluno.email, telefone: novoAluno.telefone, password: novoAluno.senha, description: "", role: "user" }});
               navigate('/MonitoriaJa/login');
             }
           }}
@@ -355,6 +361,18 @@ function CadastroForm() {
           onConfirm={(especialidade) => {
             handleEspecialidadeMonitor(especialidade);
             setAbrirModalEspecialidade(false);
+            const novoMonitor: Monitor = {
+              nome: nome,
+              telefone: telefone.replace(/\D/g, ''),
+              email: email,
+              senha: senha,
+              foto: avatar,
+              materia: especialidade,
+              formacao: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+              valor: "R$ 50/h",
+            };
+            criarMonitor(novoMonitor);
+            httpPost('http://localhost:3001/usuarios', {... {name: novoMonitor.nome, email: novoMonitor.email, telefone: novoMonitor.telefone, password: novoMonitor.senha, description: "", role: "monitor" }});
             navigate('/MonitoriaJa/login');
           }}
           />
