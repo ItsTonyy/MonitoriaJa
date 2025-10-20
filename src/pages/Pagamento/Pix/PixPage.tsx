@@ -1,34 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, } from "react";
 import { Box, Typography, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
 import ConfirmationButton from "../../botaoTemporario/botaoTemporario";
 import styles from "./PixPage.module.css";
 import Title from "../../AlterarSenha/Titulo/Titulo";
+import { criarAgendamento } from "../../../redux/features/agendamento/fetch";
+import { useAppSelector } from "../../../redux/hooks";
 
 const PixPage: React.FC = () => {
   const orderId = "#0000";
   const orderValue = "R$ 00,00";
   const navigate = useNavigate();
   const [success, setSuccess] = useState(false);
+  const currentAgendamento = useAppSelector(
+    (state) => state.agendamento.currentAgendamento
+  );
 
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        navigate("/MonitoriaJa/lista-agendamentos");
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [success, navigate]);
-
-  const handleCopyPixCode = () => {
+  const handleCopyPixCode = async () => {
+  if (!currentAgendamento) {
+    alert("Nenhum agendamento encontrado!");
+    return;
+  }
+  try {
+    const novoAgendamento= {...currentAgendamento, statusPagamento: 'PAGO' as const, status: "CONFIRMADO" as const };
+    await criarAgendamento(novoAgendamento);
     setSuccess(true);
-    // ...código para copiar, se necessário...
-  };
-
+      navigate("/MonitoriaJa/lista-agendamentos");
+  } catch (error) {
+    console.error("Erro ao salvar agendamento:", error);
+    alert("Erro ao salvar agendamento!");
+  }
+};
   const handleCancel = () => {
     navigate("/MonitoriaJa/agendamento-monitor");
   };
+
   if (success) {
     return (
       <main
@@ -78,10 +85,10 @@ const PixPage: React.FC = () => {
           <QrCode2Icon className={styles.qrCodeIcon} />
         </Box>
         <Box className={styles.buttonGroup}>
-          <ConfirmationButton onClick={handleCopyPixCode}>
+          <ConfirmationButton type="button" onClick={handleCopyPixCode}>
             Copiar Código Pix
           </ConfirmationButton>
-          <ConfirmationButton onClick={handleCancel}>
+          <ConfirmationButton type="button" onClick={handleCancel}>
             Cancelar
           </ConfirmationButton>
         </Box>

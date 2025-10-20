@@ -1,9 +1,10 @@
-import React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
-import './footer.css';
-//import GitHubIcon from "@mui/icons-material/GitHub";
+import React from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Link from "@mui/material/Link";
+import "./footer.css";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
 const Footer: React.FC = () => {
   return (
@@ -13,8 +14,8 @@ const Footer: React.FC = () => {
       sx={{
         py: 4,
         px: 4,
-        mt: 'auto',
-        backgroundColor: 'var(--cor-principal)',
+        mt: "auto",
+        backgroundColor: "var(--cor-principal)",
       }}
     >
       <Box
@@ -22,58 +23,67 @@ const Footer: React.FC = () => {
         paddingBottom={1}
         sx={{
           gridTemplateColumns: {
-            xs: '1fr',
-            sm: '1fr 1fr',
-            md: '1fr 1fr 1fr 1fr',
+            xs: "1fr",
+            sm: "1fr 1fr",
+            md: "1fr 1fr 1fr 1fr",
           },
           gap: 4,
           mb: 3,
-          textAlign: { xs: 'center', mb: 'center' },
+          textAlign: { xs: "center", mb: "center" },
 
-          borderBottom: '1px solid rgba(255,255,255,0.2)',
+          borderBottom: "1px solid rgba(255,255,255,0.2)",
           pt: 3,
         }}
       >
-        <Typography variant="h6" color="white" sx={{ fontWeight: 'bold', mb: 2 }}>
+        <Typography
+          variant="h6"
+          color="white"
+          sx={{ fontWeight: "bold", mb: 2 }}
+        >
           Monitoria Já
         </Typography>
         <Typography variant="body2" color="white">
           Conectando monitores e estudantes em todo o Brasil de forma remota.
         </Typography>
       </Box>
+
       <Box
         sx={{
-          display: 'grid',
+          display: "grid",
           gridTemplateColumns: {
-            xs: '1fr',
-            sm: '1fr 1fr',
-            md: '1fr 1fr 1fr',
+            xs: "1fr",
+            sm: "1fr 1fr",
+            md: "1fr 1fr 1fr",
           },
           gap: 10,
           mb: 3,
-          textAlign: { xs: 'center', md: 'center' },
-          maxWidth: '800px',
-          mx: 'auto',
+          textAlign: { xs: "center", md: "center" },
+          maxWidth: "800px",
+          mx: "auto",
         }}
       >
         {/* Coluna 1 - Links Úteis */}
         <Box>
-          <Typography variant="h6" color="white" sx={{ fontWeight: 'bold', mb: 2 }}>
+          <Typography
+            variant="h6"
+            color="white"
+            sx={{ fontWeight: "bold", mb: 2 }}
+          >
             Links Úteis
           </Typography>
           <Box
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
+              display: "flex",
+              flexDirection: "column",
               gap: 1,
-              justifyContent: 'center',
+              justifyContent: "center",
             }}
           >
             <Link
               className="link"
               sx={{
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' },
+                textDecoration: "none",
+                "&:hover": { textDecoration: "underline" },
               }}
             >
               Avaliações
@@ -81,8 +91,8 @@ const Footer: React.FC = () => {
             <Link
               className="link"
               sx={{
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' },
+                textDecoration: "none",
+                "&:hover": { textDecoration: "underline" },
               }}
             >
               Monitores
@@ -90,8 +100,8 @@ const Footer: React.FC = () => {
             <Link
               className="link"
               sx={{
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' },
+                textDecoration: "none",
+                "&:hover": { textDecoration: "underline" },
               }}
             >
               Sobre Nós
@@ -104,30 +114,26 @@ const Footer: React.FC = () => {
           <Typography
             variant="h6"
             color="white"
-            sx={{ fontWeight: 'bold', mb: 2, textAlign: 'center' }}
+            sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}
           >
             Desenvolvedores
           </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
             <div className="links-dev">
               <p className="nome-desenvolvedor">Tony Terra Nova - </p>
               <a
                 href="https://github.com/ItsTonyy"
                 className="link"
-                style={{ color: 'white', textDecoration: 'none' }}
+                style={{ color: "white", textDecoration: "none" }}
               >
-                <img src="src/assets/github-icon.webp" alt="icone do github" className="icon-img" />
+                <GitHubIcon />
               </a>
               <a
                 href="https://www.linkedin.com/in/tony-terra-nova/"
                 className="link"
-                style={{ color: 'white', textDecoration: 'none' }}
+                style={{ color: "white", textDecoration: "none" }}
               >
-                <img
-                  src="src/assets/LinkedIn_icon.svg.png"
-                  alt="icone do github"
-                  className="icon-img"
-                />
+                <LinkedInIcon />
               </a>
             </div>
 
@@ -136,20 +142,16 @@ const Footer: React.FC = () => {
               <a
                 href="https://github.com/GuilhermeAndradeTaveira"
                 className="link"
-                style={{ color: 'white', textDecoration: 'none' }}
+                style={{ color: "white", textDecoration: "none" }}
               >
-                <img src="src/assets/github-icon.webp" alt="icone do github" className="icon-img" />
+                <GitHubIcon />
               </a>
               <a
                 href="https://www.linkedin.com/in/profile/GuilhermeAndradeTaveira/?_l=pt_BR"
                 className="link"
-                style={{ color: 'white', textDecoration: 'none' }}
+                style={{ color: "white", textDecoration: "none" }}
               >
-                <img
-                  src="src/assets/LinkedIn_icon.svg.png"
-                  alt="icone do github"
-                  className="icon-img"
-                />
+                <LinkedInIcon />
               </a>
             </div>
 
@@ -158,20 +160,16 @@ const Footer: React.FC = () => {
               <a
                 href="https://github.com/RafaelPenela"
                 className="link"
-                style={{ color: 'white', textDecoration: 'none' }}
+                style={{ color: "white", textDecoration: "none" }}
               >
-                <img src="src/assets/github-icon.webp" alt="icone do github" className="icon-img" />
+                <GitHubIcon />
               </a>
               <a
                 href="https://www.linkedin.com/in/rafael-penela-342094348/?originalSubdomain=br"
                 className="link"
-                style={{ color: 'white', textDecoration: 'none' }}
+                style={{ color: "white", textDecoration: "none" }}
               >
-                <img
-                  src="src/assets/LinkedIn_icon.svg.png"
-                  alt="icone do github"
-                  className="icon-img"
-                />
+                <LinkedInIcon />
               </a>
             </div>
 
@@ -180,38 +178,34 @@ const Footer: React.FC = () => {
               <a
                 href="https://github.com/dev-otavio-henrique"
                 className="link"
-                style={{ color: 'white', textDecoration: 'none' }}
+                style={{ color: "white", textDecoration: "none" }}
               >
-                <img src="src/assets/github-icon.webp" alt="icone do github" className="icon-img" />
+                <GitHubIcon />
               </a>
               <a
                 href="https://www.linkedin.com/in/otavio-henrique-8b26b9275/?originalSubdomain=br"
                 className="link"
-                style={{ color: 'white', textDecoration: 'none' }}
+                style={{ color: "white", textDecoration: "none" }}
               >
-                <img
-                  src="src/assets/LinkedIn_icon.svg.png"
-                  alt="icone do github"
-                  className="icon-img"
-                />
+                <LinkedInIcon />
               </a>
             </div>
 
             <div className="links-dev">
-              <p className="nome-desenvolvedor">Paulo Eduardo- </p>
+              <p className="nome-desenvolvedor">Paulo Eduardo - </p>
               <a
                 href="https://github.com/paulo-eduardorj"
                 className="link"
-                style={{ color: 'white', textDecoration: 'none' }}
+                style={{ color: "white", textDecoration: "none" }}
               >
-                <img src="src/assets/github-icon.webp" alt="icone do github" className="icon-img" />
+                <GitHubIcon />
               </a>
-              <a href="#" className="link" style={{ color: 'white', textDecoration: 'none' }}>
-                <img
-                  src="src/assets/LinkedIn_icon.svg.png"
-                  alt="icone do github"
-                  className="icon-img"
-                />
+              <a
+                href="#"
+                className="link"
+                style={{ color: "white", textDecoration: "none" }}
+              >
+                <LinkedInIcon />
               </a>
             </div>
           </Box>
@@ -219,10 +213,14 @@ const Footer: React.FC = () => {
 
         {/* Coluna 3 - Contato */}
         <Box>
-          <Typography variant="h6" color="white" sx={{ fontWeight: 'bold', mb: 2 }}>
+          <Typography
+            variant="h6"
+            color="white"
+            sx={{ fontWeight: "bold", mb: 2 }}
+          >
             Contato
           </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
             <Typography variant="body2" color="white">
               contato@monitoriaja.com
             </Typography>
@@ -236,18 +234,18 @@ const Footer: React.FC = () => {
       {/* Copyright */}
       <Box
         sx={{
-          borderTop: '1px solid rgba(255,255,255,0.2)',
+          borderTop: "1px solid rgba(255,255,255,0.2)",
           pt: 3,
-          textAlign: 'center',
+          textAlign: "center",
         }}
       >
         <Typography variant="body2" color="white">
-          {'Copyright © '}
-          <Link href="#" color="inherit" sx={{ textDecoration: 'none' }}>
+          {"Copyright © "}
+          <Link href="#" color="inherit" sx={{ textDecoration: "none" }}>
             Monitoria Já
-          </Link>{' '}
+          </Link>{" "}
           {new Date().getFullYear()}
-          {'. Todos os direitos reservados.'}
+          {". Todos os direitos reservados."}
         </Typography>
       </Box>
     </Box>

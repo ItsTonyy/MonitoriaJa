@@ -23,7 +23,7 @@ function CadastroMonitor() {
           boxSizing: 'border-box',
         }}
       >
-        <CadastroHeader />
+        {/*<CadastroHeader />*/}
         <CadastroForm />
       </Paper>
     </Box>
