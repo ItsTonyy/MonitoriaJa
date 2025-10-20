@@ -2,8 +2,8 @@ import { Agendamento } from "./agendamento.model";
 import { Cartao } from "./cartao.model";
 
 export interface Usuario {  
-id?: number;
-nome?: string;
+id?: string;
+nome: string;
 email?: string;
 senha?: string;
 telefone?: string; 

@@ -31,7 +31,7 @@ const agendamentoSlice = createSlice({
     updateAgendamentoStatus: (
       state,
       action: PayloadAction<{
-        agendamentoId: number;
+        agendamentoId: string;
         status:
           | "AGUARDANDO"
           | "CONFIRMADO"
@@ -68,7 +68,7 @@ const agendamentoSlice = createSlice({
     updateAgendamentoPagamento: (
       state,
       action: PayloadAction<{
-        agendamentoId: number;
+        agendamentoId: string;
         statusPagamento: "PENDENTE" | "PAGO" | "REEMBOLSADO";
         formaPagamento?: "CARTAO" | "PIX";
       }>

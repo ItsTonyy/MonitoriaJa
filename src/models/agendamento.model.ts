@@ -1,8 +1,7 @@
 import { Monitor } from "./monitor.model";
-import { Usuario } from "./usuario.model";
 
 export interface Agendamento{
-  id?: number;
+  id?: string;
   monitor?:Monitor;
   servico?: 'Aula' | 'Exercícios';  //aula ou exercicios
   data?: string;
@@ -10,9 +9,9 @@ export interface Agendamento{
   duracao?: number; 
   link?: string;
   status?: 'AGUARDANDO' | 'CONFIRMADO' | 'CANCELADO' | 'REMARCADO' |  'CONCLUIDO';
-  usuario?:Usuario;
+  alunoId?:number;
   motivoCancelamento?: string;
-  valor?: number;
+  valor?: string;
   formaPagamento?: 'CARTAO' | 'PIX';
   statusPagamento?: 'PENDENTE' | 'PAGO' | 'REEMBOLSADO';
   topicos?: string;

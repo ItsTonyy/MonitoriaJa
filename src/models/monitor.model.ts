@@ -4,7 +4,8 @@ import { Usuario } from "./usuario.model";
 
 export interface Monitor extends Usuario {
   materia?: string; 
-  valorHora?: number;
+  valor?: string;
+  servico?: string;
   avaliacao?: number; // Média das avaliações em estrelas (1 a 5)
   listaAvaliacoes?: Avaliacao[];  // Lista de avaliações detalhadas
   listaDisponibilidades?: Disponibilidade[]; // Lista de horários disponíveis nos dias da semana
