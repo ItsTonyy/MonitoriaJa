@@ -34,7 +34,7 @@
 
 .txtColor {
   background-color: var(--cor-principal);
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-size: large;
 }
 
@@ -60,4 +60,8 @@
 .links-dev {
   display: flex;
   flex-direction: row;
+}
+
+.links-dev a {
+  margin-left: 7px;
 }
