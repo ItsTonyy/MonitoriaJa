@@ -2,6 +2,8 @@ import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import './appNavBar.css';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { logoutUserServer } from '../redux/features/login/fetch';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -15,6 +17,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 // @ts-ignore
 import ColorModeIconDropdown from '../templates/ColorModeIconDropdown.jsx';
+import NotificacaoCard from './Notificacoes/NotificacaoCard';
+import Menu from '@mui/material/Menu';
+import Tooltip from '@mui/material/Tooltip';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
+import logo from '/logoMonitoriaJá.png';
+import anonUser from '/anon-user.avif';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -32,29 +41,67 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   padding: '8px 12px',
 }));
 
+const settings = ['Perfil', 'Histórico', 'Logout'];
+
 export default function AppNavBar() {
   const [open, setOpen] = React.useState(false);
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector((state) => state.login);
 
   function handleClickHome() {
     navigate('/MonitoriaJa');
   }
 
   function handleClickMonitores() {
-    navigate('/MonitoriaJa/lista-monitores');
+    if(isAuthenticated){
+      navigate('/MonitoriaJa/lista-monitores');
+    }
   }
 
   function handleClickAgendamento() {
-    navigate('/MonitoriaJa/lista-agendamentos');
+    if(isAuthenticated){
+      navigate('/MonitoriaJa/lista-agendamentos');
+    }
   }
 
   function handleClickLogin() {
     navigate('/MonitoriaJa/login');
   }
 
+
+
+  function handleClickPerfil() {}
+
+  function handleClickHistorico() {}
+
+  async function handleClickLogout(event: React.MouseEvent<HTMLElement>) {
+    event.preventDefault();
+    localStorage.clear();
+    await dispatch(logoutUserServer());
+    navigate('/MonitoriaJa/login');
+  }
+
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
+  };
+
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   return (
@@ -77,7 +124,7 @@ export default function AppNavBar() {
             >
               <Box>
                 <img
-                  src="src/assets/logoMonitoriaJá-SomenteGlobo.png"
+                  src={logo}
                   alt="logoMonitoriaJá"
                   className="logo-img"
                 />
@@ -160,27 +207,76 @@ export default function AppNavBar() {
               alignItems: 'center',
             }}
           >
-            <Button
-              color="primary"
-              variant="text"
-              size="small"
-              sx={{ ':hover': { transform: 'none' } }}
-              onClick={handleClickLogin}
-            >
-              Sign in
-            </Button>
-            <Button
-              color="primary"
-              variant="contained"
-              size="small"
-              sx={{ ':hover': { transform: 'none' } }}
-              onClick={handleClickLogin}
-            >
-              Sign up
-            </Button>
-            <ColorModeIconDropdown />
+            {isAuthenticated && <NotificacaoCard />}
+            {!isAuthenticated ? (
+              <>
+                <Button
+                  color="primary"
+                  variant="text"
+                  size="small"
+                  sx={{ ':hover': { transform: 'none' } }}
+                  onClick={handleClickLogin}
+                >
+                  Sign in
+                </Button>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  size="small"
+                  sx={{ ':hover': { transform: 'none' } }}
+                  onClick={handleClickLogin}
+                >
+                  Sign up
+                </Button>
+              </>
+            ) : (
+              <Button
+                color="primary"
+                variant="outlined"
+                size="small"
+                sx={{ ':hover': { transform: 'none' } }}
+                onClick={handleClickLogout}
+              >
+                Logout
+              </Button>
+            )}
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Anonymous User" src={anonUser} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem onClick={handleClickPerfil}>
+                  <Typography sx={{ textAlign: 'center' }}>Perfil</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleClickHistorico}>
+                  <Typography sx={{ textAlign: 'center' }}>Histórico</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleClickLogout}>
+                  <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
+                </MenuItem>
+              </Menu>
+            </Box>
           </Box>
+
           <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
+            <NotificacaoCard />
             <ColorModeIconDropdown size="medium" />
             <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
               <MenuIcon />
@@ -213,16 +309,20 @@ export default function AppNavBar() {
                 <MenuItem>Dashboard</MenuItem>
                 <MenuItem>Sobre Nós</MenuItem>
                 <Divider sx={{ my: 3 }} />
-                <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth onClick={handleClickLogin}>
-                    Sign up
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth  onClick={handleClickLogin}>
-                    Sign in
-                  </Button>
-                </MenuItem>
+                {!isAuthenticated && (
+                  <>
+                    <MenuItem>
+                      <Button color="primary" variant="contained" fullWidth onClick={handleClickLogin}>
+                        Sign up
+                      </Button>
+                    </MenuItem>
+                    <MenuItem>
+                      <Button color="primary" variant="outlined" fullWidth onClick={handleClickLogin}>
+                        Sign in
+                      </Button>
+                    </MenuItem>
+                  </>
+                )}
               </Box>
             </Drawer>
           </Box>

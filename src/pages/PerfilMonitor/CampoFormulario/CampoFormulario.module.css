@@ -1,0 +1,14 @@
+:root {
+  --font-principal: 'Roboto', sans-serif;
+}
+
+/* Aplica Roboto globalmente */
+body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
+  font-family: var(--font-principal);
+}
+
+.CampoFormulario {
+  width: 100%;          
+  margin-bottom: 1rem !important;  
+  display: block;
+}

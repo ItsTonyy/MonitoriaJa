@@ -1,38 +1,41 @@
-import { useState } from 'react';
-import './detalhesMonitor.css';
-import Button from '@mui/material/Button';
-import { useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import "./detalhesMonitor.css";
+import Button from "@mui/material/Button";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { clearSelectedMonitor } from "../../redux/features/monitor/monitorSlice";
+import { setCurrentAgendamento } from "../../redux/features/agendamento/agendamentoSlice";
+import { Agendamento } from "../../models/agendamento.model";
 
-interface TimeSlot {
-  day: 'seg' | 'ter' | 'qua' | 'qui' | 'sex' | 'sab' | 'dom';
+/*interface TimeSlot {
+  day: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
   times: string[];
-}
+}*/
 
-interface DetalhesMonitorProps {
-  monitorImage?: string;
-  monitorName?: string;
-  materia?: string;
-  valor?: string;
-  duracao?: string;
-  formacao?: string;
-  horarios?: TimeSlot[];
-  onVoltar?: () => void;
-  onAgendar?: () => void;
-}
-
-function DetalhesMonitor(props: DetalhesMonitorProps) {
+function DetalhesMonitor() {
+  const dispatch = useAppDispatch();
+  const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
-  const location = useLocation();
   const navigate = useNavigate();
-  const monitor = location.state?.monitor;
-  const monitorImage = monitor?.foto || props.monitorImage;
-  const monitorName = monitor?.nome || props.monitorName;
-  const materia = monitor?.materia || props.materia;
-  const valor = monitor?.valor || props.valor;
-  const duracao = monitor?.duracao || props.duracao;
-  const formacao = monitor?.formacao || props.formacao;
-  const horarios = [{day: 'seg', times:["10:00","14:00","16:00","22:00"]},{day: 'ter', times:["10:00","14:00","16:00"]}, {day: 'qua', times:["10:00","14:00","16:00","20:00"]}, {day: 'qui', times:["10:00","14:00","16:00","20:00"]}, {day: 'sex', times:["7:00","10:00","20:00"]},{day: 'sab', times:["10:00" ]},{day: 'dom', times:["16:00","20:00"]}];
+
+  // Horários mockados - idealmente viriam da disponibilidade do monitor
+  const horarios = [
+    { day: "seg", times: ["10:00", "14:00", "16:00", "22:00"] },
+    { day: "ter", times: ["10:00", "14:00", "16:00"] },
+    { day: "qua", times: ["10:00", "14:00", "16:00", "20:00"] },
+    { day: "qui", times: ["10:00", "14:00", "16:00", "20:00"] },
+    { day: "sex", times: ["7:00", "10:00", "20:00"] },
+    { day: "sab", times: ["10:00"] },
+    { day: "dom", times: ["16:00", "20:00"] },
+  ];
+
+  useEffect(() => {
+    if (!monitor) {
+      navigate("/MonitoriaJa/lista-monitores");
+    }
+  }, [monitor, navigate]);
+
+  if (!monitor) return null;
 
   const handleTimeSlotClick = (day: string, time: string) => {
     const slotId = `${day}-${time}`;
@@ -47,20 +50,43 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
     });
   };
 
-  const numeroColunasHorarios = props.horarios ? props.horarios.length : 0;
-  console.log(numeroColunasHorarios);
+  const handleAgendar = () => {
+    const agora = new Date();
+    const dataFormatada = agora.toLocaleDateString("pt-BR"); // formato: dd/mm/aaaa
+    const horaFormatada = agora.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }); // formato: hh:mm
+    // Cria um novo agendamento com base no monitor selecionado
+    const novoAgendamento: Agendamento = {
+      id: Date.now(), // Gera um id único baseado no timestamp
+      monitor: monitor,
+      data: dataFormatada,
+      hora: horaFormatada,
+      status: "AGUARDANDO",
+      valor: monitor.valorHora,
+      statusPagamento: "PENDENTE",
+    };
+
+    dispatch(setCurrentAgendamento(novoAgendamento));
+    navigate("/MonitoriaJa/agendamento-monitor");
+  };
 
   return (
     <div className="main">
       <div className="monitor-details-detalhes">
         <div className="monitor-profile">
           <div>
-            <img src={monitorImage} alt="imagem do monitor" className="monitorImage" />
+            <img
+              src={monitor.foto}
+              alt="imagem do monitor"
+              className="monitorImage"
+            />
           </div>
           <div className="avaliacao">
-            <p className="nota">5.0</p>
+            <p className="nota">{monitor.avaliacao}</p>
             <img
-              src="./public/five-stars-rating-icon-png.webp"
+              src="/public/five-stars-rating-icon-png.webp"
               alt="avaliação do monitor"
               className="avaliação-monitor"
             />
@@ -68,25 +94,27 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
         </div>
         <div className="monitor-data">
           <div className="monitor-data-specific">
-            <h1>{monitorName}</h1>
+            <h1>{monitor.nome}</h1>
             <div className="monitor-materia-valor">
-              <h2>{materia}</h2>
+              <h2>{monitor.materia}</h2>
               <p className="traço">-</p>
-              <h2>{valor}</h2>
+              <h2>R$ {monitor.valorHora}/hora</h2>
             </div>
-            <h2 className="duração">{duracao}</h2>
           </div>
         </div>
       </div>
 
       <div className="formação">
         <h1 className="titulo">Formação e Cursos</h1>
-        <p className="formação-paragrafo">{formacao}</p>
+        <p className="formação-paragrafo">{monitor.formacao}</p>
       </div>
-
       <div
         className="horários"
-        style={{ '--numero-de-colunas': horarios ? horarios.length : 0 } as React.CSSProperties}
+        style={
+          {
+            "--numero-de-colunas": horarios ? horarios.length : 0,
+          } as React.CSSProperties
+        }
       >
         <h1 className="titulo">Horários</h1>
         <div className="outer-tabela">
@@ -101,7 +129,9 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
                     return (
                       <div
                         key={time}
-                        className={`time-slot ${isSelected ? 'selecionado' : ''}`}
+                        className={`time-slot ${
+                          isSelected ? "selecionado" : ""
+                        }`}
                         onClick={() => handleTimeSlotClick(day, time)}
                       >
                         {time}
@@ -117,26 +147,19 @@ function DetalhesMonitor(props: DetalhesMonitorProps) {
       <div className="botoes">
         <Button
           variant="outlined"
-          sx={{ padding: '5px 40px' }}
-          onClick={() => navigate('/MonitoriaJa/')}
+          sx={{ padding: "5px 40px" }}
+          onClick={() => {
+            dispatch(clearSelectedMonitor());
+            navigate("/MonitoriaJa/lista-monitores");
+          }}
         >
           Voltar
         </Button>
         <Button
           variant="contained"
-          sx={{ padding: '5px 40px' }}
-          onClick={() =>
-            navigate('/MonitoriaJa/agendamento-monitor', {
-              state: {
-                monitorImage, 
-                monitorName,
-                materia,
-                valor,
-                duracao,
-                // Adicione outros dados necessários aqui
-              },
-            })
-          }
+          sx={{ padding: "5px 40px" }}
+          onClick={handleAgendar}
+          disabled={selectedSlots.size === 0}
         >
           Agendar
         </Button>
