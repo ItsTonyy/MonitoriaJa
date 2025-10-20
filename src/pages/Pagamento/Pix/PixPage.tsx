@@ -3,15 +3,20 @@ import { Box, Typography, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
+
 import ConfirmationButton from "../../botaoTemporario/botaoTemporario";
 import styles from "./PixPage.module.css";
 import Title from "../../AlterarSenha/Titulo/Titulo";
+
 import {
   gerarCodigoPix,
   copiarCodigoPix,
   resetPixStatus,
   resetPix,
+  setOrderValueFromValorPorHora,
+  setOrderId,
 } from "../../../redux/features/pix/slice";
+
 import type { AppDispatch } from "../../../redux/store";
 import type { RootState } from "../../../redux/root-reducer";
 
@@ -19,19 +24,41 @@ const PixPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
-  // ✅ Seletor do Redux
+  // Redux Pix
   const { orderId, orderValue, pixCode, status, errorMessage } = useSelector(
     (state: RootState) => state.pix
   );
 
-  // ✅ Gerar código PIX ao montar componente
+  // Redux Agendamento
+  const currentAgendamento = useSelector(
+    (state: RootState) => state.agendamento.currentAgendamento
+  );
+
+  // Atualiza o orderId e orderValue com base no agendamento
+  useEffect(() => {
+    console.log("currentAgendamento no PixPage:", currentAgendamento);
+
+    if (currentAgendamento) {
+      dispatch(setOrderId(`#${currentAgendamento.id}`));
+
+      const valorMonitor = currentAgendamento.monitor?.valorHora ?? 0;
+      const valorFormatado = `R$ ${Number(valorMonitor)
+        .toFixed(2)
+        .replace(".", ",")}`;
+
+      console.log("Valor formatado para orderValue:", valorFormatado);
+      dispatch(setOrderValueFromValorPorHora(valorFormatado));
+    }
+  }, [dispatch, currentAgendamento]);
+
+  // Gerar código PIX ao montar componente
   useEffect(() => {
     if (!pixCode) {
       dispatch(gerarCodigoPix());
     }
   }, [dispatch, pixCode]);
 
-  // ✅ Redirecionar após sucesso
+  // Redirecionar após sucesso
   useEffect(() => {
     if (status === "success") {
       const timer = setTimeout(() => {
@@ -54,7 +81,7 @@ const PixPage: React.FC = () => {
     navigate(-1);
   };
 
-  // ✅ Tela de sucesso
+  // Tela de sucesso
   if (status === "success") {
     return (
       <main
@@ -92,7 +119,7 @@ const PixPage: React.FC = () => {
     );
   }
 
-  // ✅ Tela de erro
+  // Tela de erro
   if (status === "error") {
     return (
       <main
@@ -125,14 +152,18 @@ const PixPage: React.FC = () => {
     );
   }
 
+  // Tela principal
   return (
     <main className={styles.centralizeContent}>
       <Box className={styles.card}>
         <Title text="Pix" />
 
-        <Typography className={styles.infoText}>Pedido {orderId}</Typography>
         <Typography className={styles.infoText}>
-          Valor de compra: {orderValue}
+          Pedido {orderId || "#0000"}
+        </Typography>
+
+        <Typography className={styles.infoText}>
+          Valor de compra: {orderValue || "R$ 0,00"}
         </Typography>
 
         <Box className={styles.qrCodeContainer}>
@@ -147,7 +178,6 @@ const PixPage: React.FC = () => {
           <ConfirmationButton onClick={handleCopyPixCode}>
             {status === "loading" ? "Processando..." : "Copiar Código Pix"}
           </ConfirmationButton>
-
           <ConfirmationButton onClick={handleCancel}>
             Cancelar
           </ConfirmationButton>
