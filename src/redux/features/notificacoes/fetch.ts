@@ -11,7 +11,7 @@ export const fetchNotificacoes = createAsyncThunk<Notificacao[], FetchNotificaco
   'notificacoes/fetchNotificacoes',
   async ({userId, userRole}) => {
 
-     const notificacoes = await httpGet(`http://localhost:3000/notificacoes?userId=${userId}&role=${userRole}`);
+     const notificacoes = await httpGet(`http://localhost:3001/notificacoes?userId=${userId}&role=${userRole}`);
 
       return notificacoes;
   }
@@ -20,14 +20,14 @@ export const fetchNotificacoes = createAsyncThunk<Notificacao[], FetchNotificaco
 export const markAsReadServer = createAsyncThunk<Notificacao, string>(
   'notificacoes/markAsReadServer',
   async (notificacaoId) => {
-    const notificacao = await httpGet(`http://localhost:3000/notificacoes/${notificacaoId}`);
+    const notificacao = await httpGet(`http://localhost:3001/notificacoes/${notificacaoId}`);
     
     if (!notificacao) {
       throw new Error('Notificação não encontrada');
     }
     
     const updatedNotificacao = await httpPut(
-      `http://localhost:3000/notificacoes/${notificacaoId}`,
+      `http://localhost:3001/notificacoes/${notificacaoId}`,
       { ...notificacao, lida: true }
     );
     

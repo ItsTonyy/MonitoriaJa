@@ -8,17 +8,19 @@ import usuarioReducer from "./features/perfilUsuario/slice";
 import perfilMonitorReducer from "./features/perfilMonitor/slice";
 import alterarSenhaReducer from "./features/alterarSenha/slice"
 import pixReducer from "./features/pix/slice";
+import avaliacaoReducer from "./features/avaliacao/slice";
 
 const rootReducer = combineReducers({
   monitor: monitorReducer,
   agendamento: agendamentoReducer,
-  cartoes: listaCartaoReducer, 
+  cartoes: listaCartaoReducer,
   login: loginReducer,
   notificacoes: notificacoesReducer,
   usuario: usuarioReducer,
   perfilMonitor: perfilMonitorReducer,
   alterarSenha: alterarSenhaReducer,
   pix: pixReducer,
+  avaliacao: avaliacaoReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

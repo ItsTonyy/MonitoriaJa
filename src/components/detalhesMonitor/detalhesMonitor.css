@@ -17,7 +17,8 @@
 body {
   padding: 12px;
   margin: 0;
-  font-family: Roboto, Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  font-family: Roboto, Inter, system-ui, -apple-system, Segoe UI, Arial,
+    sans-serif;
   color: var(--cor-texto);
   background-color: rgb(240, 240, 240);
   min-height: 100vh;
@@ -63,11 +64,12 @@ body {
   text-align: center;
 }
 
-.monitor-profile {
+.dmonitor-profile {
   display: flex;
   justify-items: center;
   align-items: center;
   flex-direction: column;
+  gap: 5px;
 }
 
 .avaliacao {
@@ -102,35 +104,136 @@ body {
 }
 
 .monitor-data {
-  display: grid;
+  display: flex;
   align-content: start;
-  gap: 10px;
+  justify-content: space-between;
 }
 
 .monitor-data-specific h1 {
   font-size: clamp(1.5rem, 1rem + 1.2vw, 2rem);
   font-weight: 500;
-  display: flex;
-  justify-items: flex-start;
   color: var(--cor-primaria);
 }
 
-.monitor-materia-valor {
+.monitor-nome {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  width: 100%;
+}
+
+.monitor-status {
+  display: flex;
+  align-self: flex-start;
+}
+
+.status-online {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #2ecc71;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.online-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #2ecc71;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.monitor-atributos {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.monitor-detalhes-atributos {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  color: var(--texto-suave);
+  margin: 6px 0;
+  width: 100%;
+  justify-content: flex-start;
+  gap: 4px;
+}
+
+.monitor-detalhes-atributos p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.monitor-detalhes-atributos svg {
+  color: var(--cor-primaria);
+  width: 24px;
+  height: 24px;
 }
 
 .monitor-materia-valor h2,
 .monitor-materia-valor p {
   font-size: clamp(1rem, 0.9rem + 0.6vw, 1.25rem);
-  font-weight: 500;
 }
 
 .duração {
   font-size: clamp(0.95rem, 0.85rem + 0.5vw, 1.15rem);
   color: var(--texto-suave);
+}
+
+.materia {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  background: linear-gradient(
+    135deg,
+    var(--cor-primaria) 0%,
+    var(--cor-secundaria) 100%
+  );
+  color: white;
+  padding: 4px 12px;
+  margin: 2px 4px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(16, 76, 145, 0.2);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-weight: 600;
+  cursor: default;
+}
+
+.materia:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(16, 76, 145, 0.3);
+}
+
+.materia:first-child {
+  margin-left: 0;
+}
+
+.materia:last-child {
+  margin-right: 0;
 }
 
 .formação {
@@ -165,7 +268,6 @@ body {
   border: 1px solid var(--stroke);
   border-radius: var(--radius-md);
   padding: 14px 16px;
-  color: var(--texto-suave);
   line-height: 1.6;
   text-align: justify;
 }
@@ -186,22 +288,19 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  max-width: 80%;
+  margin: 0 auto;
 }
 
 .schedule-container {
   display: grid;
-  grid-template-columns: repeat(var(--numero-de-colunas), minmax(88px, 1fr));
+  grid-template-columns: repeat(var(--numero-de-colunas), minmax(100px, 1fr));
   gap: 0;
   width: max-content; /* allows container to shrink naturally and scroll */
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--cor-secundaria) 16%, white) 0%,
-    color-mix(in srgb, var(--cor-secundaria) 6%, white) 100%
-  );
+  background-color: var(--cor-fundo);
   border: 1px solid var(--stroke-strong);
   border-radius: var(--radius-lg);
   color: var(--cor-texto);
-  box-shadow: 6px 5px 20px #7272723f;
 }
 
 /* Garantir que o primeiro dia não seja cortado no mobile */
@@ -234,18 +333,23 @@ body {
   font-weight: 800;
   letter-spacing: 0.02em;
   color: var(--cor-principal);
+  font-size: 1.15rem;
+  padding: 5px 0;
 }
 
 .time-slot {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   color: var(--texto-suave);
-  transition: color 0.2s ease, background-color 0.2s ease, border 0.2s ease, box-shadow 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease, border 0.2s ease,
+    box-shadow 0.2s ease;
   background-color: transparent;
   border: 1px solid transparent;
-  padding: 4px 12px;
+  padding: 6px 16px;
   border-radius: var(--radius-lg);
   cursor: pointer;
   user-select: none;
+  min-width: 100px;
+  text-align: center;
 }
 
 .time-slot:hover {
@@ -263,7 +367,11 @@ body {
 .botão {
   appearance: none;
   border: 1px solid var(--stroke-strong);
-  background: linear-gradient(180deg, var(--cor-acento) 0%, var(--cor-primaria) 120%);
+  background: linear-gradient(
+    180deg,
+    var(--cor-acento) 0%,
+    var(--cor-primaria) 120%
+  );
   color: var(--cor-texto);
   padding: 10px 12px;
   border-radius: 999px;
@@ -278,7 +386,11 @@ body {
 }
 
 .botão:last-child {
-  background: linear-gradient(180deg, var(--cor-secundaria) 0%, var(--cor-principal) 120%);
+  background: linear-gradient(
+    180deg,
+    var(--cor-secundaria) 0%,
+    var(--cor-principal) 120%
+  );
   color: #ffffff;
   border-color: var(--cor-principal);
 }
@@ -324,7 +436,7 @@ body {
     font-size: 1.5rem;
   }
   .titulo {
-    font-size: 1.4rem;
+    font-size: 1.8rem;
   }
 }
 

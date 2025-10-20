@@ -1,6 +1,4 @@
-export interface Disponibilidade{
-
-    dia?: string;
-    horario?: string[];
-
+export interface Disponibilidade {
+  day?: string;
+  times?: string[];
 }

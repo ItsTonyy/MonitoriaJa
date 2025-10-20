@@ -48,6 +48,13 @@ export const loginUserServer = createAsyncThunk<AuthResponse, LoginCredentials>(
   }
 );
 
+export const logoutUserServer = createAsyncThunk<void, void>(
+  "auth/logoutUserServer",
+  async () => {
+    localStorage.removeItem("token");
+  }
+);
+
 export const resetPasswordServer = createAsyncThunk<
   { message: string },
   string

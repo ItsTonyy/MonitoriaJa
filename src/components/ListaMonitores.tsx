@@ -21,142 +21,12 @@ import StarIcon from "@mui/icons-material/Star";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../redux/hooks";
 import { setSelectedMonitor } from "../redux/features/monitor/monitorSlice";
+import { Monitor } from "../models/monitor.model";
+import { listarMonitores} from "../redux/features/monitor/fetch";
+import { Disciplina } from "../models/disciplina.model";
+import { listarDisciplinas } from "../redux/features/disciplina/fetch";
 
-export type Monitor = {
-  id: number;
-  nome: string;
-  materia: string;
-  valor: string;
-  servico: string;
-  foto: string;
-  avaliacao: number;
-  formacao?: string;
-};
 
-export const MONITORES: Monitor[] = [
-  {
-    id: 1,
-    nome: "João Silva",
-    materia: "Matemática",
-    valor: "R$ 50/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/men/1.jpg",
-    avaliacao: 4.9,
-    formacao:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
-  },
-  {
-    id: 2,
-    nome: "Maria Souza",
-    materia: "Física",
-    valor: "R$ 60/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/women/2.jpg",
-    avaliacao: 4.8,
-  },
-  {
-    id: 3,
-    nome: "Carlos Lima",
-    materia: "Química",
-    valor: "R$ 55/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/men/3.jpg",
-    avaliacao: 4.5,
-  },
-  {
-    id: 4,
-    nome: "Ana Paula",
-    materia: "Biologia",
-    valor: "R$ 58/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/women/4.jpg",
-    avaliacao: 4.7,
-  },
-  {
-    id: 5,
-    nome: "João Silva",
-    materia: "Matemática",
-    valor: "R$ 50/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/men/1.jpg",
-    avaliacao: 4.9,
-  },
-  {
-    id: 6,
-    nome: "Maria Souza",
-    materia: "Física",
-    valor: "R$ 60/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/women/2.jpg",
-    avaliacao: 4.8,
-  },
-  {
-    id: 7,
-    nome: "Carlos Lima",
-    materia: "Química",
-    valor: "R$ 55/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/men/3.jpg",
-    avaliacao: 4.5,
-  },
-  {
-    id: 8,
-    nome: "Ana Paula",
-    materia: "Biologia",
-    valor: "R$ 58/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/women/4.jpg",
-    avaliacao: 4.7,
-  },
-  {
-    id: 9,
-    nome: "Ana Paula",
-    materia: "Biologia",
-    valor: "R$ 58/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/women/4.jpg",
-    avaliacao: 4.7,
-  },
-  {
-    id: 10,
-    nome: "João Silva",
-    materia: "Matemática",
-    valor: "R$ 50/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/men/1.jpg",
-    avaliacao: 4.9,
-  },
-  {
-    id: 11,
-    nome: "Maria Souza",
-    materia: "Física",
-    valor: "R$ 60/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/women/2.jpg",
-    avaliacao: 4.8,
-  },
-  {
-    id: 12,
-    nome: "Carlos Lima",
-    materia: "Química",
-    valor: "R$ 55/h",
-    servico: "Serviço X",
-    foto: "https://randomuser.me/api/portraits/men/3.jpg",
-    avaliacao: 4.5,
-  },
-];
-
-const MATERIAS = [
-  "Matemática",
-  "Física",
-  "Química",
-  "Biologia",
-  "História",
-  "Geografia",
-  "Português",
-  "Inglês",
-  "Programação",
-];
 
 function matchStartOfWords(text: string, search: string) {
   if (!search) return true;
@@ -196,11 +66,36 @@ function getCardsPerPage() {
 function ListaMonitores() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [monitores, setmonitores] = useState<Monitor[]>([]);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState<string | null>(null);
   const [buscaNome, setBuscaNome] = useState("");
   const [buscaMateria, setBuscaMateria] = useState("");
   const [pagina, setPagina] = useState(1);
   const [, setCols] = useState(getGridCols());
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
+  const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
+
+  
+
+  useEffect(() => {
+  listarDisciplinas()
+    .then((data) => setDisciplinas(data))
+    .catch(() => setDisciplinas([]));
+}, []);
+
+    useEffect(() => {
+    listarMonitores()
+      .then((data) => {
+        setmonitores(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Erro ao carregar monitores");
+        setLoading(false);
+      });
+  }, []);
+
 
   useEffect(() => {
     function handleResize() {
@@ -211,13 +106,14 @@ function ListaMonitores() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   const monitoresFiltrados = useMemo(() => {
-    return MONITORES.filter(
+    return monitores.filter(
       (m) =>
         matchStartOfWords(m.nome, buscaNome) &&
-        matchStartOfWords(m.materia, buscaMateria)
+        matchStartOfWords(m.materia!, buscaMateria)
     );
-  }, [buscaNome, buscaMateria]);
+  }, [monitores, buscaNome, buscaMateria]);
 
   const totalPaginas = Math.max(
     1,
@@ -252,7 +148,7 @@ function ListaMonitores() {
           mb: 2,
         }}
       >
-        Lista de Monitores
+        Lista de monitores
       </Typography>
 
       <Stack
@@ -291,7 +187,7 @@ function ListaMonitores() {
         <Autocomplete
           fullWidth
           freeSolo
-          options={MATERIAS}
+          options={disciplinas.map((d) => d.nome)}
           value={buscaMateria}
           onInputChange={(_, value) => {
             setBuscaMateria(value);

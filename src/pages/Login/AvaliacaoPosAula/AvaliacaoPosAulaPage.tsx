@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Container } from "@mui/material";
-import Footer from "../../../components/footer";
 import AvaliacaoPosAula from "../../../components/AvaliacaoPosAula/AvaliacaoPosAula";
 import "./AvaliacaoPosAulaPage.css";
 
@@ -19,7 +18,6 @@ const AvaliacaoPosAulaPage: React.FC = () => {
       >
         <AvaliacaoPosAula />
       </Container>
-      <Footer></Footer>
     </Box>
   );
 };

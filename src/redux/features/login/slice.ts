@@ -1,7 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { loginUserServer, resetPasswordServer, updatePasswordServer, User, AuthResponse } from './fetch';
-
-export type UserRole = 'admin' | 'monitor' | 'user';
+import {
+  loginUserServer,
+  resetPasswordServer,
+  updatePasswordServer,
+  logoutUserServer,
+  User,
+  AuthResponse,
+} from './fetch';
 
 export interface AuthState {
   user: User | null;
@@ -19,9 +24,6 @@ export interface AuthState {
 
 const savedUser = localStorage.getItem('user');
 const savedToken = localStorage.getItem('token');
-
-console.log('Loading from localStorage - user:', savedUser);
-console.log('Loading from localStorage - token:', savedToken);
 
 const initialState: AuthState = {
   user: savedUser ? JSON.parse(savedUser) : null,
@@ -41,15 +43,6 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout: (state) => {
-      state.user = null;
-      state.token = null;
-      state.isAuthenticated = false;
-      state.loading = false;
-      state.error = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    },
     clearResetPasswordState: (state) => {
       state.resetPasswordLoading = false;
       state.resetPasswordSuccess = false;
@@ -63,24 +56,40 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // 🟢 LOGIN
       .addCase(loginUserServer.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(loginUserServer.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
-        console.log('Login successful - user:', action.payload.user);
-        console.log('Login successful - token:', action.payload.token);
         state.loading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;        
+        state.user = action.payload.user;
         state.token = action.payload.token;
         localStorage.setItem('user', JSON.stringify(action.payload.user));
-        console.log('Saved to localStorage - user:', JSON.stringify(action.payload.user));
+        localStorage.setItem('token', action.payload.token);
       })
       .addCase(loginUserServer.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? 'Falha no login';
       })
+
+      // 🟡 LOGOUT
+      .addCase(logoutUserServer.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(logoutUserServer.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(logoutUserServer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message ?? 'Falha ao fazer logout';
+      })
+
+      // 🔵 RESET PASSWORD
       .addCase(resetPasswordServer.pending, (state) => {
         state.resetPasswordLoading = true;
         state.resetPasswordError = null;
@@ -92,8 +101,11 @@ const authSlice = createSlice({
       })
       .addCase(resetPasswordServer.rejected, (state, action) => {
         state.resetPasswordLoading = false;
-        state.resetPasswordError = action.error.message ?? 'Falha ao enviar email de recuperação';
+        state.resetPasswordError =
+          action.error.message ?? 'Falha ao enviar email de recuperação';
       })
+
+
       .addCase(updatePasswordServer.pending, (state) => {
         state.updatePasswordLoading = true;
         state.updatePasswordError = null;
@@ -105,10 +117,11 @@ const authSlice = createSlice({
       })
       .addCase(updatePasswordServer.rejected, (state, action) => {
         state.updatePasswordLoading = false;
-        state.updatePasswordError = action.error.message ?? 'Falha ao redefinir senha';
+        state.updatePasswordError =
+          action.error.message ?? 'Falha ao redefinir senha';
       });
   },
 });
 
-export const { logout, clearResetPasswordState, clearUpdatePasswordState } = authSlice.actions;
+export const { clearResetPasswordState, clearUpdatePasswordState } = authSlice.actions;
 export default authSlice.reducer;
