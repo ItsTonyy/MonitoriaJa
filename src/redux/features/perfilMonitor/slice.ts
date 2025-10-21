@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { Disponibilidade } from '../../../models/disponibilidade.model';
 
 export interface Monitor {
   id: number;
@@ -8,7 +9,8 @@ export interface Monitor {
   role?: string;
   descricao: string;
   materias: string[];
-  fotoUrl?: string; // 🔹 Adicionado para suportar foto
+  fotoUrl?: string;
+  listaDisponibilidades: Disponibilidade[];
 }
 
 interface ValidationErrors {
@@ -38,8 +40,7 @@ const validateMonitorField = (field: keyof ValidationErrors, value: string): str
       if (!emailRegex.test(value)) return 'Email inválido';
       return undefined;
     case 'descricao':
-      if (value && value.trim().length > 0 && value.trim().length < 10)
-        return 'Descrição deve ter pelo menos 10 caracteres';
+      if (value && value.trim().length > 0 && value.trim().length < 10) return 'Descrição deve ter pelo menos 10 caracteres';
       return undefined;
     default:
       return undefined;
@@ -53,7 +54,6 @@ export const fetchMonitor = createAsyncThunk<Monitor, number>(
     const response = await fetch(`http://localhost:3001/usuarios/${id}`);
     if (!response.ok) throw new Error("Monitor não encontrado");
     const user = await response.json();
-
     return {
       id: user.id,
       nome: user.name,
@@ -62,7 +62,8 @@ export const fetchMonitor = createAsyncThunk<Monitor, number>(
       role: user.role || 'user',
       descricao: user.description || '',
       materias: user.materias || [],
-      fotoUrl: user.fotoUrl || '', // 🔹 Incluído
+      fotoUrl: user.fotoUrl || '',
+      listaDisponibilidades: user.listaDisponibilidades || [],
     };
   }
 );
@@ -79,7 +80,6 @@ export const updateMonitor = createAsyncThunk<
 
     // Validar campos antes de enviar
     const errors: ValidationErrors = {};
-
     if (updatedMonitor.nome !== undefined) {
       const nomeError = validateMonitorField('nome', updatedMonitor.nome);
       if (nomeError) errors.nome = nomeError;
@@ -101,18 +101,24 @@ export const updateMonitor = createAsyncThunk<
       return rejectWithValue(errors);
     }
 
-    const newMonitor = { ...currentMonitor, ...updatedMonitor };
+    const newMonitor = {
+      ...currentMonitor,
+      ...updatedMonitor
+    };
 
     const response = await fetch(`http://localhost:3001/usuarios/${currentMonitor.id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         name: newMonitor.nome,
         email: newMonitor.email,
         telefone: newMonitor.telefone,
         description: newMonitor.descricao,
         materias: newMonitor.materias,
-        fotoUrl: newMonitor.fotoUrl || '', // 🔹 Incluído
+        fotoUrl: newMonitor.fotoUrl || '',
+        listaDisponibilidades: newMonitor.listaDisponibilidades,
       }),
     });
 
@@ -149,8 +155,40 @@ const monitorSlice = createSlice({
       if (error) state.validationErrors[field] = error;
       else delete state.validationErrors[field];
     },
-    clearValidationErrors: (state) => { state.validationErrors = {}; },
-    clearError: (state) => { state.error = null; },
+    clearValidationErrors: (state) => {
+      state.validationErrors = {};
+    },
+    clearError: (state) => {
+      state.error = null;
+    },
+    // Reducers do segundo código
+    atualizarDescricao: (state, action: PayloadAction<string>) => {
+      if (state.currentMonitor) {
+        state.currentMonitor.descricao = action.payload;
+      }
+    },
+    atualizarContato: (
+      state,
+      action: PayloadAction<{ telefone: string; email: string }>
+    ) => {
+      if (state.currentMonitor) {
+        state.currentMonitor.telefone = action.payload.telefone;
+        state.currentMonitor.email = action.payload.email;
+      }
+    },
+    atualizarMaterias: (state, action: PayloadAction<string[]>) => {
+      if (state.currentMonitor) {
+        state.currentMonitor.materias = action.payload;
+      }
+    },
+    atualizarDisponibilidades: (
+      state,
+      action: PayloadAction<Disponibilidade[]>
+    ) => {
+      if (state.currentMonitor) {
+        state.currentMonitor.listaDisponibilidades = action.payload;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -167,7 +205,9 @@ const monitorSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Monitor não encontrado";
       })
-      .addCase(updateMonitor.pending, (state) => { state.loading = true; })
+      .addCase(updateMonitor.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(updateMonitor.fulfilled, (state, action: PayloadAction<Monitor>) => {
         state.loading = false;
         state.currentMonitor = action.payload;
@@ -182,5 +222,14 @@ const monitorSlice = createSlice({
   },
 });
 
-export const { validateField, clearValidationErrors, clearError } = monitorSlice.actions;
+export const {
+  validateField,
+  clearValidationErrors,
+  clearError,
+  atualizarDescricao,
+  atualizarContato,
+  atualizarMaterias,
+  atualizarDisponibilidades,
+} = monitorSlice.actions;
+
 export default monitorSlice.reducer;
