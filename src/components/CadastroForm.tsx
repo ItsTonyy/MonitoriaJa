@@ -13,18 +13,17 @@ import { Monitor } from '../models/monitor.model';
 import { httpPost, httpGet } from '../utils';
 import { criarMonitor } from '../redux/features/monitor/fetch';
 
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
 });
-
 
 function CadastroForm() {
   async function getNextId(endpoint: string): Promise<number> {
@@ -44,39 +43,39 @@ function CadastroForm() {
   }
 
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
-  const [nome, setNome] = useState('');
-  const [erroNome, setErroNome] = useState('');
-  const [cpf, setCpf] = useState('');
-  const [erroCpf, setErroCpf] = useState('');
-  const [email, setEmail] = useState('');
-  const [erroEmail, setErroEmail] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [erroTelefone, setErroTelefone] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmacaoSenha, setConfirmacaoSenha] = useState('');
-  const [erroSenha, setErroSenha] = useState('');
-  const [erroConfirmacao, setErroConfirmacao] = useState('');
+  const [nome, setNome] = useState("");
+  const [erroNome, setErroNome] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [erroCpf, setErroCpf] = useState("");
+  const [email, setEmail] = useState("");
+  const [erroEmail, setErroEmail] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [erroTelefone, setErroTelefone] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmacaoSenha, setConfirmacaoSenha] = useState("");
+  const [erroSenha, setErroSenha] = useState("");
+  const [erroConfirmacao, setErroConfirmacao] = useState("");
   const [abrirModalMonitor, setAbrirModalMonitor] = useState(false);
   const [abrirModalEspecialidade, setAbrirModalEspecialidade] = useState(false);
   
   const navigate = useNavigate();
 
   const opcoesEspecialidades = [
-    { label: 'Matemática', value: 'Matemática' },
-    { label: 'Física', value: 'Física' },
-    { label: 'Química', value: 'Química' },
-    { label: 'Biologia', value: 'Biologia' },
-    { label: 'História', value: 'História' },
-    { label: 'Geografia', value: 'Geografia' },
-    { label: 'Português', value: 'Português' },
-    { label: 'Inglês', value: 'Inglês' },
-    { label: 'Programação', value: 'Programação' },
+    { label: "Matemática", value: "Matemática" },
+    { label: "Física", value: "Física" },
+    { label: "Química", value: "Química" },
+    { label: "Biologia", value: "Biologia" },
+    { label: "História", value: "História" },
+    { label: "Geografia", value: "Geografia" },
+    { label: "Português", value: "Português" },
+    { label: "Inglês", value: "Inglês" },
+    { label: "Programação", value: "Programação" },
   ];
 
   const mudarAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
-    if (file && file.type.startsWith('image/')) {
+    if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = (e) => {
         setAvatar(e.target?.result as string);
@@ -93,32 +92,30 @@ function CadastroForm() {
   }
 
   function aplicarMascaraCpf(cpf: string) {
-    cpf = cpf.replace(/\D/g, '');
+    cpf = cpf.replace(/\D/g, "");
 
     if (cpf.length > 11) cpf = cpf.slice(0, 11);
 
     if (cpf.length > 9) {
-      return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
-
+      return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, "$1.$2.$3-$4");
     } else if (cpf.length > 6) {
-      return cpf.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
-
+      return cpf.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
     } else if (cpf.length > 3) {
-      return cpf.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+      return cpf.replace(/(\d{3})(\d{1,3})/, "$1.$2");
     }
 
     return cpf;
   }
 
   function aplicarMascaraTelefone(telefone: string) {
-    telefone = telefone.replace(/\D/g, '');
-    
+    telefone = telefone.replace(/\D/g, "");
+
     if (telefone.length > 11) telefone = telefone.slice(0, 11);
 
     if (telefone.length > 7) {
-      return telefone.replace(/(\d{2})(\d{5})(\d{1,4})/, '($1) $2-$3');
+      return telefone.replace(/(\d{2})(\d{5})(\d{1,4})/, "($1) $2-$3");
     } else if (telefone.length > 2) {
-      return telefone.replace(/(\d{2})(\d{1,4})/, '($1) $2');
+      return telefone.replace(/(\d{2})(\d{1,4})/, "($1) $2");
     }
     return telefone;
   }
@@ -128,7 +125,7 @@ function CadastroForm() {
   }
 
   function validarCpf(cpf: string) {
-    const digitos = cpf.replace(/\D/g, '');
+    const digitos = cpf.replace(/\D/g, "");
     return digitos.length === 11;
   }
 
@@ -137,7 +134,7 @@ function CadastroForm() {
   }
 
   function validarTelefone(telefone: string) {
-    const digitos = telefone.replace(/\D/g, '');
+    const digitos = telefone.replace(/\D/g, "");
     return digitos.length >= 10 && digitos.length <= 11;
   }
 
@@ -154,49 +151,48 @@ function CadastroForm() {
     let valido = true;
 
     if (!validarNome(nome)) {
-      setErroNome('O nome é obrigatório.');
+      setErroNome("O nome é obrigatório.");
       valido = false;
     } else {
-      setErroNome('');
+      setErroNome("");
     }
 
     if (!validarCpf(cpf)) {
-      setErroCpf('CPF inválido.');
+      setErroCpf("CPF inválido.");
       valido = false;
     } else {
-      setErroCpf('');
+      setErroCpf("");
     }
 
     if (!validarEmail(email)) {
-      setErroEmail('Endereço de e-mail inválido.');
+      setErroEmail("Endereço de e-mail inválido.");
       valido = false;
     } else {
-      setErroEmail('');
+      setErroEmail("");
     }
 
     if (!validarTelefone(telefone)) {
-      setErroTelefone('Número de telefone inválido.');
+      setErroTelefone("Número de telefone inválido.");
       valido = false;
     } else {
-      setErroTelefone('');
+      setErroTelefone("");
     }
 
     if (!validarSenha(senha)) {
-      setErroSenha('A senha deve ter no mínimo 6 caracteres.');
+      setErroSenha("A senha deve ter no mínimo 6 caracteres.");
       valido = false;
     } else {
-      setErroSenha('');
+      setErroSenha("");
     }
 
     if (!validarConfirmacaoSenha(senha, confirmacaoSenha)) {
-      setErroConfirmacao('As senhas não coincidem.');
+      setErroConfirmacao("As senhas não coincidem.");
       valido = false;
     } else {
-      setErroConfirmacao('');
+      setErroConfirmacao("");
     }
 
-    if (!valido) { 
-      
+    if (!valido) {
     } else {
       setAbrirModalMonitor(true);
     }
@@ -204,17 +200,19 @@ function CadastroForm() {
 
   return (
     <Box>
-      <Box sx={{ justifySelf: 'center' }}>
-        <Typography variant="h4" component="h1" gutterBottom>Cadastre-se</Typography>
+      <Box sx={{ justifySelf: "center" }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Cadastre-se
+        </Typography>
         <Avatar
           sx={{
-              width: 100,
-              height: 100,
-              justifySelf: 'center',
-              marginBottom: 3,
-              border: '1px solid gray',
+            width: 100,
+            height: 100,
+            justifySelf: "center",
+            marginBottom: 3,
+            border: "1px solid gray",
           }}
-          src={avatar || '/broken-image.jpg'}
+          src={avatar || "/broken-image.jpg"}
         />
         <Button
           component="label"
@@ -225,24 +223,24 @@ function CadastroForm() {
         >
           Insira sua foto
           <VisuallyHiddenInput
-              type="file"
-              accept="image/*"
-              onChange={mudarAvatar}
+            type="file"
+            accept="image/*"
+            onChange={mudarAvatar}
           />
         </Button>
       </Box>
-    
+
       <Box
         component="form"
         onSubmit={onSubmit}
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
           gap: { xs: 1, sm: 1 },
-          alignItems: 'center',
+          alignItems: "center",
           marginTop: { xs: 3, sm: 5 },
           marginBottom: { xs: 3, sm: 5 },
-          width: '100%',
+          width: "100%",
         }}
       >
         <TextField
@@ -250,7 +248,7 @@ function CadastroForm() {
           label="Nome"
           placeholder="Insira o seu nome completo"
           value={nome}
-          onChange={e => setNome(e.target.value)}
+          onChange={(e) => setNome(e.target.value)}
           error={!!erroNome}
           helperText={erroNome}
           fullWidth
@@ -262,7 +260,7 @@ function CadastroForm() {
           label="E-mail"
           placeholder="exemplo@email.com"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           error={!!erroEmail}
           helperText={erroEmail}
           fullWidth
@@ -275,12 +273,12 @@ function CadastroForm() {
           label="Telefone"
           placeholder="(99) 99999-9999"
           value={telefone}
-          onChange={e => setTelefone(aplicarMascaraTelefone(e.target.value))}
+          onChange={(e) => setTelefone(aplicarMascaraTelefone(e.target.value))}
           error={!!erroTelefone}
           helperText={erroTelefone}
           fullWidth
           margin="normal"
-          inputProps={{ maxLength: 15, inputMode: 'tel' }}
+          inputProps={{ maxLength: 15, inputMode: "tel" }}
           autoComplete="tel"
         />
         <TextField
@@ -288,12 +286,12 @@ function CadastroForm() {
           label="CPF"
           placeholder="123.456.789-12"
           value={cpf}
-          onChange={e => setCpf(aplicarMascaraCpf(e.target.value))}
+          onChange={(e) => setCpf(aplicarMascaraCpf(e.target.value))}
           error={!!erroCpf}
           helperText={erroCpf}
           fullWidth
           margin="normal"
-          inputProps={{ maxLength: 14, inputMode: 'numeric' }}
+          inputProps={{ maxLength: 14, inputMode: "numeric" }}
           autoComplete="off"
         />
         <TextField
@@ -302,7 +300,7 @@ function CadastroForm() {
           placeholder="********"
           type="password"
           value={senha}
-          onChange={e => setSenha(e.target.value)}
+          onChange={(e) => setSenha(e.target.value)}
           error={!!erroSenha}
           helperText={erroSenha}
           fullWidth
@@ -315,7 +313,7 @@ function CadastroForm() {
           placeholder="********"
           type="password"
           value={confirmacaoSenha}
-          onChange={e => setConfirmacaoSenha(e.target.value)}
+          onChange={(e) => setConfirmacaoSenha(e.target.value)}
           error={!!erroConfirmacao}
           helperText={erroConfirmacao}
           fullWidth
@@ -326,21 +324,22 @@ function CadastroForm() {
           variant="contained"
           type="submit"
           fullWidth
-          sx={
-            { 
-              maxWidth: { xs: '100%', sm: 400, md: 500 }, 
-              py: 1.5, 
-              marginTop: { xs: 1, sm: 2}
-            }
-          }
+          sx={{
+            maxWidth: { xs: "100%", sm: 400, md: 500 },
+            py: 1.5,
+            marginTop: { xs: 1, sm: 2 },
+          }}
         >
           Cadastrar
         </Button>
-        
+
         <ModalSelect
           open={abrirModalMonitor}
           header="Cadastrar-se como monitor?"
-          opcoes={[{label: 'Sim', value: 'sim'}, {label: 'Não', value: 'não'}]}
+          opcoes={[
+            { label: "Sim", value: "sim" },
+            { label: "Não", value: "não" },
+          ]}
           onClose={() => setAbrirModalMonitor(false)}
           onConfirm={async (opcao) => {
             handleOpcaoMonitor(opcao);
@@ -403,8 +402,7 @@ function CadastroForm() {
               console.error('Erro ao criar monitor/usuario:', err);
             }
           }}
-          />
-          
+        />
       </Box>
     </Box>
   );

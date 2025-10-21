@@ -5,14 +5,14 @@ export interface Avaliacao {
   id: number;
   usuarioId: number;
   monitorId: number;
-  nota: number; // 0 a 5
+  nota: number;
   comentario: string;
   data: string;
 }
 
 export interface NovaAvaliacao {
   usuarioId: number;
-  monitorId: number;
+  monitorId: string;
   nota: number;
   comentario: string;
 }
