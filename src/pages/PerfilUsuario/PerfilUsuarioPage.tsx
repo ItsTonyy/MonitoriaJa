@@ -21,10 +21,11 @@ const PerfilUsuarioPage: React.FC = () => {
   const authUser = useSelector((state: RootState) => state.login.user);
   const { currentUser, loading, error, validationErrors } = useSelector((state: RootState) => state.usuario);
 
-  // Estado local controlado para campos editáveis
+  // Estados locais
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -46,86 +47,63 @@ const PerfilUsuarioPage: React.FC = () => {
     }
   }, [currentUser]);
 
-  // Limpar erro global quando o usuário interagir com os campos
+  // Limpar erro global
   useEffect(() => {
     if (error) {
       dispatch(clearError());
     }
   }, [nome, telefone, email, error, dispatch]);
 
-  // Funções de onChange
+  // onChange handlers
   const handleNomeChange = (value: string) => {
     setNome(value);
-    if (hasSubmitted) {
-      dispatch(validateField({ field: 'nome', value }));
-    }
+    if (hasSubmitted) dispatch(validateField({ field: 'nome', value }));
   };
-
   const handleTelefoneChange = (value: string) => {
     setTelefone(value);
-    if (hasSubmitted) {
-      dispatch(validateField({ field: 'telefone', value }));
-    }
+    if (hasSubmitted) dispatch(validateField({ field: 'telefone', value }));
   };
-
   const handleEmailChange = (value: string) => {
     setEmail(value);
-    if (hasSubmitted) {
-      dispatch(validateField({ field: 'email', value }));
-    }
+    if (hasSubmitted) dispatch(validateField({ field: 'email', value }));
   };
 
+  // Salvar usuário
   const handleSalvar = async () => {
     if (!currentUser) return;
-
     setHasSubmitted(true);
-    
-    // Valida todos os campos antes de enviar
+
     dispatch(validateField({ field: 'nome', value: nome }));
     dispatch(validateField({ field: 'telefone', value: telefone }));
     dispatch(validateField({ field: 'email', value: email }));
 
-    // Verifica se há erros de validação
-    const hasValidationErrors = Object.values(validationErrors).some(error => error !== undefined);
-    if (hasValidationErrors) {
-      return; // Não envia se houver erros de validação
-    }
+    const hasValidationErrors = Object.values(validationErrors).some(err => err !== undefined);
+    if (hasValidationErrors) return;
 
     try {
       await dispatch(updateUsuario({ nome, telefone, email })).unwrap();
-      setOpen(true); // Apenas modal de sucesso
+      setOpen(true);
     } catch (err) {
       console.error('Erro ao salvar:', err);
-      // Não abre modal de erro - os erros já aparecem nos campos
     }
   };
 
   // Loading global
   if (loading) return <div className={styles.centralizeContent}>Carregando...</div>;
-
-  // Erro global (apenas erros que não são de validação)
   if (error) return (
     <div className={styles.centralizeContent}>
       <p>{error}</p>
-      <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
-        Fazer Login
-      </ConfirmationButton>
+      <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>Fazer Login</ConfirmationButton>
     </div>
   );
-
-  // Usuário não encontrado
-  if (!currentUser) {
-    return (
-      <div className={styles.centralizeContent}>
-        <div className={styles.profileCard}>
-          <p>Usuário não encontrado</p>
-          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
-            Fazer Login
-          </ConfirmationButton>
-        </div>
+  if (!currentUser) return (
+    <div className={styles.centralizeContent}>
+      <div className={styles.profileCard}>
+        <p>Usuário não encontrado</p>
+        <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>Fazer Login</ConfirmationButton>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
     <main className={styles.centralizeContent}>
@@ -154,17 +132,27 @@ const PerfilUsuarioPage: React.FC = () => {
         {/* Foto e Upload */}
         <div className={styles.photoSection}>
           <div className={styles.photoContainer}>
-            <PersonIcon className={styles.profilePhotoIcon} />
+            {fotoPreview ? (
+              <img src={fotoPreview} alt="Foto do usuário" className={styles.profilePhoto} />
+            ) : (
+              <PersonIcon className={styles.profilePhotoIcon} />
+            )}
           </div>
           <div className={styles.uploadButtonContainer}>
             <UploadButton
               className={styles.uploadButton}
-              onFileSelect={(file) => console.log('Arquivo selecionado:', file)}
+              onFileSelect={(file) => {
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => setFotoPreview(reader.result as string);
+                  reader.readAsDataURL(file);
+                }
+              }}
             />
           </div>
         </div>
 
-        {/* Campos de formulário */}
+        {/* Campos */}
         <div className={styles.fieldsContainer}>
           <TextField
             label="Telefone"
@@ -175,11 +163,8 @@ const PerfilUsuarioPage: React.FC = () => {
             required
             error={hasSubmitted && !!validationErrors.telefone}
             helperText={hasSubmitted && validationErrors.telefone ? validationErrors.telefone : ""}
-            inputProps={{
-              maxLength: 15
-            }}
+            inputProps={{ maxLength: 15 }}
           />
-
           <TextField
             label="Email"
             variant="outlined"
@@ -194,17 +179,12 @@ const PerfilUsuarioPage: React.FC = () => {
 
         {/* Botões */}
         <div className={styles.buttonSection}>
-          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>
-            Trocar senha
-          </ConfirmationButton>
-          <ConfirmationButton onClick={handleSalvar} disabled={loading}>
-            Confirmar Mudanças
-          </ConfirmationButton>
+          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>Trocar senha</ConfirmationButton>
+          <ConfirmationButton onClick={handleSalvar} disabled={loading}>Confirmar Mudanças</ConfirmationButton>
           <ConfirmationButton onClick={() => navigate(-1)}>Voltar</ConfirmationButton>
         </div>
       </div>
 
-      {/* Modal de sucesso apenas - sem modal de falha */}
       <StatusModal
         open={open}
         onClose={() => setOpen(false)}

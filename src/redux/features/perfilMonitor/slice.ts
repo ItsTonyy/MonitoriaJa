@@ -8,6 +8,7 @@ export interface Monitor {
   role?: string;
   descricao: string;
   materias: string[];
+  fotoUrl?: string; // 🔹 Adicionado para suportar foto
 }
 
 interface ValidationErrors {
@@ -25,39 +26,21 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const validateMonitorField = (field: keyof ValidationErrors, value: string): string | undefined => {
   switch (field) {
     case 'nome':
-      if (!value || value.trim().length === 0) {
-        return 'Nome é obrigatório';
-      }
-      if (value.trim().length < 3) {
-        return 'Nome deve ter pelo menos 3 caracteres';
-      }
+      if (!value || value.trim().length === 0) return 'Nome é obrigatório';
+      if (value.trim().length < 3) return 'Nome deve ter pelo menos 3 caracteres';
       return undefined;
-
     case 'telefone':
-      if (!value || value.trim().length === 0) {
-        return 'Telefone é obrigatório';
-      }
-      if (!telefoneRegex.test(value)) {
-        return 'Telefone inválido. Use o formato (XX) 9XXXX-XXXX';
-      }
+      if (!value || value.trim().length === 0) return 'Telefone é obrigatório';
+      if (!telefoneRegex.test(value)) return 'Telefone inválido. Use o formato (XX) 9XXXX-XXXX';
       return undefined;
-
     case 'email':
-      if (!value || value.trim().length === 0) {
-        return 'Email é obrigatório';
-      }
-      if (!emailRegex.test(value)) {
-        return 'Email inválido';
-      }
+      if (!value || value.trim().length === 0) return 'Email é obrigatório';
+      if (!emailRegex.test(value)) return 'Email inválido';
       return undefined;
-
     case 'descricao':
-      // Descrição é opcional, mas se preenchida deve ter pelo menos 10 caracteres
-      if (value && value.trim().length > 0 && value.trim().length < 10) {
+      if (value && value.trim().length > 0 && value.trim().length < 10)
         return 'Descrição deve ter pelo menos 10 caracteres';
-      }
       return undefined;
-
     default:
       return undefined;
   }
@@ -68,11 +51,9 @@ export const fetchMonitor = createAsyncThunk<Monitor, number>(
   "monitor/fetchMonitor",
   async (id) => {
     const response = await fetch(`http://localhost:3001/usuarios/${id}`);
-   
     if (!response.ok) throw new Error("Monitor não encontrado");
     const user = await response.json();
-    console.log('📦 Dados recebidos do servidor:', user);
-   
+
     return {
       id: user.id,
       nome: user.name,
@@ -81,13 +62,14 @@ export const fetchMonitor = createAsyncThunk<Monitor, number>(
       role: user.role || 'user',
       descricao: user.description || '',
       materias: user.materias || [],
+      fotoUrl: user.fotoUrl || '', // 🔹 Incluído
     };
   }
 );
 
 // AsyncThunk: atualizar monitor
 export const updateMonitor = createAsyncThunk<
-  Monitor, 
+  Monitor,
   Partial<Omit<Monitor, 'id' | 'role'>>
 >(
   "monitor/updateMonitor",
@@ -97,22 +79,19 @@ export const updateMonitor = createAsyncThunk<
 
     // Validar campos antes de enviar
     const errors: ValidationErrors = {};
-    
+
     if (updatedMonitor.nome !== undefined) {
       const nomeError = validateMonitorField('nome', updatedMonitor.nome);
       if (nomeError) errors.nome = nomeError;
     }
-    
     if (updatedMonitor.telefone !== undefined) {
       const telefoneError = validateMonitorField('telefone', updatedMonitor.telefone);
       if (telefoneError) errors.telefone = telefoneError;
     }
-    
     if (updatedMonitor.email !== undefined) {
       const emailError = validateMonitorField('email', updatedMonitor.email);
       if (emailError) errors.email = emailError;
     }
-
     if (updatedMonitor.descricao !== undefined) {
       const descricaoError = validateMonitorField('descricao', updatedMonitor.descricao);
       if (descricaoError) errors.descricao = descricaoError;
@@ -126,15 +105,14 @@ export const updateMonitor = createAsyncThunk<
 
     const response = await fetch(`http://localhost:3001/usuarios/${currentMonitor.id}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: newMonitor.nome,
         email: newMonitor.email,
         telefone: newMonitor.telefone,
         description: newMonitor.descricao,
         materias: newMonitor.materias,
+        fotoUrl: newMonitor.fotoUrl || '', // 🔹 Incluído
       }),
     });
 
@@ -168,23 +146,14 @@ const monitorSlice = createSlice({
     validateField: (state, action: PayloadAction<{ field: keyof ValidationErrors; value: string }>) => {
       const { field, value } = action.payload;
       const error = validateMonitorField(field, value);
-      
-      if (error) {
-        state.validationErrors[field] = error;
-      } else {
-        delete state.validationErrors[field];
-      }
+      if (error) state.validationErrors[field] = error;
+      else delete state.validationErrors[field];
     },
-    clearValidationErrors: (state) => {
-      state.validationErrors = {};
-    },
-    clearError: (state) => {
-      state.error = null;
-    },
+    clearValidationErrors: (state) => { state.validationErrors = {}; },
+    clearError: (state) => { state.error = null; },
   },
   extraReducers: (builder) => {
     builder
-      // FETCH
       .addCase(fetchMonitor.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -198,10 +167,7 @@ const monitorSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Monitor não encontrado";
       })
-      // UPDATE
-      .addCase(updateMonitor.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(updateMonitor.pending, (state) => { state.loading = true; })
       .addCase(updateMonitor.fulfilled, (state, action: PayloadAction<Monitor>) => {
         state.loading = false;
         state.currentMonitor = action.payload;
@@ -210,13 +176,8 @@ const monitorSlice = createSlice({
       })
       .addCase(updateMonitor.rejected, (state, action) => {
         state.loading = false;
-        if (action.payload) {
-          // Erros de validação
-          state.validationErrors = action.payload as ValidationErrors;
-        } else {
-          // Erro de servidor
-          state.error = action.error.message || "Erro ao atualizar monitor";
-        }
+        if (action.payload) state.validationErrors = action.payload as ValidationErrors;
+        else state.error = action.error.message || "Erro ao atualizar monitor";
       });
   },
 });

@@ -35,12 +35,12 @@ const PerfilMonitorPage: React.FC = () => {
   const error = useSelector((state: RootState) => state.perfilMonitor.error);
   const validationErrors = useSelector((state: RootState) => state.perfilMonitor.validationErrors);
 
-  // Estados locais para inputs
   const [nomeInput, setNomeInput] = useState('');
   const [telefoneInput, setTelefoneInput] = useState('');
   const [emailInput, setEmailInput] = useState('');
   const [descricaoInput, setDescricaoInput] = useState('');
   const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>([]);
+  const [fotoUrl, setFotoUrl] = useState<string>(''); // 🔹 Estado local para foto
 
   const [open, setOpen] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -62,61 +62,47 @@ const PerfilMonitorPage: React.FC = () => {
       setEmailInput(monitor.email || '');
       setDescricaoInput(monitor.descricao || '');
       setMateriasSelecionadas(monitor.materias || []);
+      setFotoUrl(monitor.fotoUrl || ''); // 🔹 Foto carregada
     }
   }, [monitor]);
 
-  // Limpar erro global quando o usuário interagir
   useEffect(() => {
     if (error) {
       dispatch(clearError());
     }
   }, [nomeInput, telefoneInput, emailInput, descricaoInput, materiasSelecionadas, error, dispatch]);
 
-  // Handlers com validação
   const handleNomeChange = (value: string) => {
     setNomeInput(value);
-    if (hasSubmitted) {
-      dispatch(validateField({ field: 'nome', value }));
-    }
+    if (hasSubmitted) dispatch(validateField({ field: 'nome', value }));
   };
 
   const handleTelefoneChange = (value: string) => {
     setTelefoneInput(value);
-    if (hasSubmitted) {
-      dispatch(validateField({ field: 'telefone', value }));
-    }
+    if (hasSubmitted) dispatch(validateField({ field: 'telefone', value }));
   };
 
   const handleEmailChange = (value: string) => {
     setEmailInput(value);
-    if (hasSubmitted) {
-      dispatch(validateField({ field: 'email', value }));
-    }
+    if (hasSubmitted) dispatch(validateField({ field: 'email', value }));
   };
 
   const handleDescricaoChange = (value: string) => {
     setDescricaoInput(value);
-    if (hasSubmitted) {
-      dispatch(validateField({ field: 'descricao', value }));
-    }
+    if (hasSubmitted) dispatch(validateField({ field: 'descricao', value }));
   };
 
   const handleSalvar = async () => {
     if (!monitor) return;
-
     setHasSubmitted(true);
 
-    // Validar todos os campos
     dispatch(validateField({ field: 'nome', value: nomeInput }));
     dispatch(validateField({ field: 'telefone', value: telefoneInput }));
     dispatch(validateField({ field: 'email', value: emailInput }));
     dispatch(validateField({ field: 'descricao', value: descricaoInput }));
 
-    // Verificar se há erros
-    const hasValidationErrors = Object.values(validationErrors).some(error => error !== undefined);
-    if (hasValidationErrors) {
-      return;
-    }
+    const hasValidationErrors = Object.values(validationErrors).some(err => err !== undefined);
+    if (hasValidationErrors) return;
 
     try {
       await dispatch(updateMonitor({
@@ -124,45 +110,44 @@ const PerfilMonitorPage: React.FC = () => {
         telefone: telefoneInput,
         email: emailInput,
         descricao: descricaoInput,
-        materias: materiasSelecionadas
+        materias: materiasSelecionadas,
+        fotoUrl: fotoUrl // 🔹 Incluído
       })).unwrap();
       setOpen(true);
-    } catch (error) {
-      console.error('Erro ao salvar:', error);
+    } catch (err) {
+      console.error('Erro ao salvar:', err);
     }
   };
 
   const handleExcluirMateria = (materiaToDelete: string) => {
-    const novasMaterias = materiasSelecionadas.filter(materia => materia !== materiaToDelete);
+    const novasMaterias = materiasSelecionadas.filter(m => m !== materiaToDelete);
     setMateriasSelecionadas(novasMaterias);
   };
 
-  // Loading global
-  if (loading && !monitor) {
-    return <div className={styles.centralizeContent}>Carregando...</div>;
-  }
+  // Upload da foto
+  const handleFileSelect = (file: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFotoUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
-  // Erro global apenas se não conseguir carregar o monitor
+  if (loading && !monitor) return <div className={styles.centralizeContent}>Carregando...</div>;
   if (error && !monitor) {
     return (
       <div className={styles.centralizeContent}>
         <p>{error}</p>
-        <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
-          Fazer Login
-        </ConfirmationButton>
+        <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>Fazer Login</ConfirmationButton>
       </div>
     );
   }
-
-  // Monitor não encontrado
   if (!monitor) {
     return (
       <div className={styles.centralizeContent}>
         <div className={styles.profileCard}>
           <p>Monitor não encontrado</p>
-          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
-            Fazer Login
-          </ConfirmationButton>
+          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>Fazer Login</ConfirmationButton>
         </div>
       </div>
     );
@@ -186,27 +171,19 @@ const PerfilMonitorPage: React.FC = () => {
             >
               {nomeInput}
             </div>
-            {hasSubmitted && validationErrors.nome && (
-              <span className={styles.error}>{validationErrors.nome}</span>
-            )}
+            {hasSubmitted && validationErrors.nome && <span className={styles.error}>{validationErrors.nome}</span>}
           </div>
         </div>
 
-        {/* Display das matérias abaixo do nome */}
+        {/* Matérias */}
         {materiasSelecionadas.length > 0 && (
           <div className={styles.materiasAssociadas}>
             <label className={styles.materiasLabel}>Matérias Associadas:</label>
             <div className={styles.materiasChips}>
-              {materiasSelecionadas.map((materia, index) => (
-                <div key={index} className={styles.materiaChip}>
+              {materiasSelecionadas.map((materia, i) => (
+                <div key={i} className={styles.materiaChip}>
                   {materia}
-                  <button 
-                    type="button"
-                    className={styles.deleteButton}
-                    onClick={() => handleExcluirMateria(materia)}
-                  >
-                    ×
-                  </button>
+                  <button type="button" className={styles.deleteButton} onClick={() => handleExcluirMateria(materia)}>×</button>
                 </div>
               ))}
             </div>
@@ -216,13 +193,14 @@ const PerfilMonitorPage: React.FC = () => {
         {/* Foto */}
         <div className={styles.photoSection}>
           <div className={styles.photoContainer}>
-            <PersonIcon className={styles.profilePhotoIcon} />
+            {fotoUrl ? (
+              <img src={fotoUrl} alt="Foto do monitor" className={styles.profilePhoto} />
+            ) : (
+              <PersonIcon className={styles.profilePhotoIcon} />
+            )}
           </div>
           <div className={styles.uploadButtonContainer}>
-            <UploadButton
-              className={styles.uploadButton}
-              onFileSelect={(file) => console.log('Arquivo selecionado:', file)}
-            />
+            <UploadButton onFileSelect={handleFileSelect} />
           </div>
         </div>
 
@@ -242,12 +220,10 @@ const PerfilMonitorPage: React.FC = () => {
             rows={4}
             placeholder="Escreva uma descrição sobre o monitor..."
           />
-          {hasSubmitted && validationErrors.descricao && (
-            <span className={styles.error}>{validationErrors.descricao}</span>
-          )}
+          {hasSubmitted && validationErrors.descricao && <span className={styles.error}>{validationErrors.descricao}</span>}
         </div>
 
-        {/* Campos de Telefone e Email */}
+        {/* Campos */}
         <div className={styles.fieldsContainer}>
           <TextField
             label="Telefone"
@@ -258,11 +234,8 @@ const PerfilMonitorPage: React.FC = () => {
             required
             error={hasSubmitted && !!validationErrors.telefone}
             helperText={hasSubmitted && validationErrors.telefone ? validationErrors.telefone : ""}
-            inputProps={{
-              maxLength: 15
-            }}
+            inputProps={{ maxLength: 15 }}
           />
-
           <TextField
             label="Email"
             variant="outlined"
@@ -273,38 +246,24 @@ const PerfilMonitorPage: React.FC = () => {
             error={hasSubmitted && !!validationErrors.email}
             helperText={hasSubmitted && validationErrors.email ? validationErrors.email : ""}
           />
-
-          {/* Campo para adicionar matérias */}
-          <AtualizarMateria
-            value={materiasSelecionadas}
-            onChange={setMateriasSelecionadas}
-            options={MATERIAS}
-          />
+          <AtualizarMateria value={materiasSelecionadas} onChange={setMateriasSelecionadas} options={MATERIAS} />
         </div>
 
         {/* Botões */}
         <div className={styles.buttonSection}>
           <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>
-              Trocar senha
-            </ConfirmationButton>
+            <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>Trocar senha</ConfirmationButton>
           </div>
-
           <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={handleSalvar} disabled={loading}>
-              Confirmar Mudanças
-            </ConfirmationButton>
+            <ConfirmationButton onClick={handleSalvar} disabled={loading}>Confirmar Mudanças</ConfirmationButton>
           </div>
-
           <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={() => navigate(-1)}>
-              Voltar
-            </ConfirmationButton>
+            <ConfirmationButton onClick={() => navigate(-1)}>Voltar</ConfirmationButton>
           </div>
         </div>
       </div>
 
-      {/* Modal de sucesso */}
+      {/* Modal */}
       <StatusModal
         open={open}
         onClose={() => setOpen(false)}
