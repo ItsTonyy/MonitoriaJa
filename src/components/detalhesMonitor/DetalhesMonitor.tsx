@@ -12,6 +12,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { Agendamento } from "../../models/agendamento.model";
+import { buscarAvaliacoesPorMonitor } from "../../redux/features/avaliacao/actions";
 
 /*interface TimeSlot {
   day: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
@@ -56,6 +57,18 @@ function DetalhesMonitor() {
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
   const usuarioLogado = useAppSelector((state) => state.login.user);
+  const { avaliacoes, loading } = useAppSelector((state) => state.avaliacao);
+
+  useEffect(() => {
+    if (monitor?.id) {
+      dispatch(buscarAvaliacoesPorMonitor(Number(monitor.id)));
+    }
+  }, [monitor?.id, dispatch]);
+
+  const totalAvaliacoes = avaliacoes.length;
+  const somaNotas = avaliacoes.reduce((soma, av) => soma + (av.nota || 0), 0);
+  const notaMedia =
+    totalAvaliacoes > 0 ? (somaNotas / totalAvaliacoes).toFixed(1) : "0.0";
 
   // Horários do monitor - idealmente viriam da disponibilidade do monitor no Redux
   const horarios = monitor?.listaDisponibilidades || [
@@ -127,8 +140,8 @@ function DetalhesMonitor() {
           </div>
           <div className="avaliacao">
             <StarIcon sx={{ color: "gold" }} />
-            <p className="nota">{monitor.avaliacao}</p>
-            <p>{`(${getRandomInt(50, 10000)})`}</p>
+            <p className="nota">{notaMedia}</p>
+            <p>{`(${totalAvaliacoes})`}</p>
           </div>
         </div>
         <div className="monitor-data">

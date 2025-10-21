@@ -40,9 +40,13 @@ body {
 
   @media (width <= 640px) {
     margin: 0;
+    margin-left: 0;
+    margin-right: 0;
     padding-top: 0rem;
     width: auto;
     border-radius: 0;
+    height: 100%;
+    width: 100%;
   }
 
   @media (width <= 1200px) and (width >= 640px) {

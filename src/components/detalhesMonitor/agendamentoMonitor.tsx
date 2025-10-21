@@ -74,32 +74,17 @@ function AgendamentoMonitor() {
       <div className="monitorDetails">
         <div className="monitorProfile">
           <div>
+            <h1 className="titulo-monitor-agendamento">
+              {currentAgendamento.monitor?.nome}
+            </h1>
             <img
               src={currentAgendamento.monitor?.foto}
               alt="imagem do monitor"
               className="monitorImage"
             />
           </div>
-
-          <div className="avaliacao">
-            <p className="nota">{currentAgendamento.monitor?.avaliacao}</p>
-            <img
-              src="/public/five-stars-rating-icon-png.webp"
-              alt="avaliação do monitor"
-              className="avaliação-monitor"
-            />
-          </div>
         </div>
         <div className="monitor-data">
-          <div className="monitor-data-specific">
-            <h1 className="titulo-monitor">
-              {currentAgendamento.monitor?.nome}
-            </h1>
-            <div className="monitor-materia-valor">
-              <h2>{currentAgendamento.monitor?.materia}</h2>
-            </div>
-          </div>
-
           <div className="agendamento">
             <div className="agendamento-details">
               <div className="agendamento-details-row-1">
@@ -110,7 +95,7 @@ function AgendamentoMonitor() {
 
                 <div className="agendamento-details-attributes">
                   <AttachMoneyIcon />
-                  <p>R$ {currentAgendamento.valor}/hora</p>
+                  <p>{currentAgendamento.valor}</p>
                 </div>
               </div>
 
