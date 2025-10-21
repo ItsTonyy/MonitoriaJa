@@ -175,6 +175,13 @@
       "numero": "8765432187654321",
       "nome": "Maria Silva",
       "bandeira": "MasterCard"
+    },
+    {
+      "id": "4ace",
+      "numero": "1111111111111",
+      "nome": "11",
+      "bandeira": "MasterCard",
+      "usuarioId": "2"
     }
   ],
   "agendamentos": [
@@ -437,6 +444,105 @@
       "statusPagamento": "PAGO",
       "alunoId": "2",
       "motivoCancelamento": "necessidades  medicas"
+    },
+    {
+      "id": "1760993852576",
+      "monitor": {
+        "id": "4",
+        "nome": "João Silva",
+        "materia": "Matemática",
+        "valor": "R$ 50/h",
+        "servico": "Serviço X",
+        "foto": "https://randomuser.me/api/portraits/men/1.jpg",
+        "avaliacao": 4.9,
+        "formacao": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
+      },
+      "data": "20/10/2025",
+      "hora": "17:57",
+      "status": "CANCELADO",
+      "valor": "R$ 50/h",
+      "statusPagamento": "PAGO",
+      "alunoId": "2",
+      "motivoCancelamento": "medico"
+    },
+    {
+      "id": "1760994227050",
+      "monitor": {
+        "id": "4",
+        "nome": "João Silva",
+        "materia": "Matemática",
+        "valor": "R$ 50/h",
+        "servico": "Serviço X",
+        "foto": "https://randomuser.me/api/portraits/men/1.jpg",
+        "avaliacao": 4.9,
+        "formacao": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
+      },
+      "data": "20/10/2025",
+      "hora": "18:03",
+      "status": "CANCELADO",
+      "valor": "R$ 50/h",
+      "statusPagamento": "PAGO",
+      "alunoId": "2",
+      "motivoCancelamento": "necessidades medicas"
+    },
+    {
+      "id": "1760994433581",
+      "monitor": {
+        "id": "5",
+        "nome": "Maria Souza",
+        "materia": "Física",
+        "valor": "R$ 60/h",
+        "servico": "Serviço X",
+        "foto": "https://randomuser.me/api/portraits/women/2.jpg",
+        "avaliacao": 4.8,
+        "formacao": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
+      },
+      "data": "20/10/2025",
+      "hora": "18:07",
+      "status": "CANCELADO",
+      "valor": "R$ 60/h",
+      "statusPagamento": "PAGO",
+      "alunoId": "2",
+      "motivoCancelamento": "."
+    },
+    {
+      "id": "1761015086580",
+      "monitor": {
+        "id": "4",
+        "nome": "João Silva",
+        "materia": "Matemática",
+        "valor": "R$ 50/h",
+        "servico": "Serviço X",
+        "foto": "https://randomuser.me/api/portraits/men/1.jpg",
+        "avaliacao": 4.9,
+        "formacao": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
+      },
+      "data": "20/10/2025",
+      "hora": "23:51",
+      "status": "CANCELADO",
+      "valor": "R$ 50/h",
+      "statusPagamento": "PAGO",
+      "alunoId": "2",
+      "motivoCancelamento": ","
+    },
+    {
+      "id": "1761016895265",
+      "monitor": {
+        "id": "6",
+        "nome": "Carlos Lima",
+        "materia": "Química",
+        "valor": "R$ 55/h",
+        "servico": "Serviço X",
+        "foto": "https://randomuser.me/api/portraits/men/3.jpg",
+        "avaliacao": 4.5,
+        "formacao": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum"
+      },
+      "data": "21/10/2025",
+      "hora": "00:21",
+      "status": "CONFIRMADO",
+      "valor": "R$ 55/h",
+      "statusPagamento": "PAGO",
+      "alunoId": "2"
     }
   ],
   "monitores": [
