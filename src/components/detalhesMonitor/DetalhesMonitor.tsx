@@ -107,7 +107,7 @@ function DetalhesMonitor() {
       status: "AGUARDANDO",
       valor: monitor.valor,
       statusPagamento: "PENDENTE",
-      alunoId:usuarioLogado?.id
+      alunoId: usuarioLogado?.id,
     };
 
     dispatch(setCurrentAgendamento(novoAgendamento));
@@ -170,7 +170,7 @@ function DetalhesMonitor() {
       </div>
 
       <div className="formação">
-        <h1 className="titulo">Formação e Cursos</h1>
+        <h1 className="titulo">Sobre o Monitor e Suas Formações</h1>
         <p className="formação-paragrafo">
           {monitor.formacao || "Informação não disponível"}
         </p>
@@ -187,7 +187,7 @@ function DetalhesMonitor() {
         <div className="outer-tabela">
           <div className="schedule-container">
             {horarios &&
-              horarios.map(({ day , times }) => (
+              horarios.map(({ day, times }) => (
                 <div key={day} className="day-column">
                   <div className="day-header">{day}</div>
                   {times!.map((time) => {

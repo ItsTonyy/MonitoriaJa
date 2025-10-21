@@ -43,6 +43,15 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 
 const settings = ["Perfil", "Histórico", "Logout"];
 
+interface IUser {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  description: string;
+  telefone: string;
+}
+
 export default function AppNavBar() {
   const [open, setOpen] = React.useState(false);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -76,7 +85,16 @@ export default function AppNavBar() {
     navigate("/MonitoriaJa/login");
   }
 
-  function handleClickPerfil() {}
+  function handleClickPerfil() {
+    const user: IUser = JSON.parse(localStorage.getItem("user") || "{}");
+    const isMonitor: boolean = user.role === "monitor" ? true : false;
+
+    if (isMonitor) {
+      navigate("/MonitoriaJa/perfil-monitor");
+    } else {
+      navigate("/MonitoriaJa/perfil-usuario");
+    }
+  }
 
   function handleClickHistorico() {}
 
