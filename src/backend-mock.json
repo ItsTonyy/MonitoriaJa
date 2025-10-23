@@ -45,7 +45,7 @@
     },
     {
       "id": "2",
-      "name": "monitorTeste",
+      "name": "monitorTest",
       "email": "monitor@teste.com",
       "telefone": "21900000000",
       "password": "123456",
@@ -115,7 +115,7 @@
       "previa": "Olá, monitorTeste! Passando pra avisar que sua aula com Aluno y foi cancelada.",
       "descricao": "Sua aula com Aluno y foi cancelada.",
       "tempo": "há 2 dias",
-      "lida": false,
+      "lida": true,
       "role": "monitor"
     },
     {
@@ -175,6 +175,13 @@
       "numero": "8765432187654321",
       "nome": "Maria Silva",
       "bandeira": "MasterCard"
+    },
+    {
+      "id": "4ace",
+      "numero": "1111111111111",
+      "nome": "11",
+      "bandeira": "MasterCard",
+      "usuarioId": "2"
     }
   ],
   "agendamentos": [

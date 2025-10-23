@@ -1,107 +1,90 @@
-import React, { useEffect, useState } from "react";
-import styles from "./ListaCartaoPage.module.css";
-import Title from "../../../AlterarSenha/Titulo/Titulo";
-import CartaoItem from "../CartaoItem/CartaoItem";
-import { useNavigate } from "react-router-dom";
-import ConfirmationButton from "../../../botaoTemporario/botaoTemporario";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../../../redux/store";
-import { RootState } from "../../../../redux/root-reducer";
-import {
-  fetchCartoes,
-  removerCartao,
-  selectAllCartoes,
-} from "../../../../redux/features/listaCartao/slice";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
-import { Alert } from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../../redux/store';
+import { fetchCartoes, removerCartao, resetStatus, selectAllCartoes } from '../../../../redux/features/listaCartao/slice';
+import Title from '../../../AlterarSenha/Titulo/Titulo';
+import CartaoItem from '../CartaoItem/CartaoItem';
+import StatusModal from '../../../AlterarSenha/StatusModal/StatusModal';
+import ConfirmationButton from '../../../botaoTemporario/botaoTemporario';
+import styles from './ListaCartaoPage.module.css';
 
 const ListaCartaoPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const [success, setSuccess] = useState(false);
+  const [usuarioId, setUsuarioId] = useState<number | null>(null);
 
-  // Seleciona os cartões do estado Redux
   const cartoes = useSelector((state: RootState) => selectAllCartoes(state));
+  const { status, errorMessage, operacao } = useSelector((state: RootState) => state.cartoes);
 
-  // Carrega os cartões ao montar o componente
   useEffect(() => {
-    dispatch(fetchCartoes());
+    const carregarUsuario = async () => {
+      const usuarioStorage = localStorage.getItem('user');
+      if (!usuarioStorage) return;
+      const usuarioLogado = JSON.parse(usuarioStorage);
+      const id = usuarioLogado?.id;
+      if (id) {
+        setUsuarioId(id);
+        await dispatch(fetchCartoes(id));
+      }
+    };
+    carregarUsuario();
   }, [dispatch]);
 
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        navigate("/MonitoriaJa/lista-agendamentos");
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [success, navigate]);
+  const cartoesDoUsuario = cartoes.filter(cartao => usuarioId ? cartao.usuarioId === usuarioId : false);
 
-  const handleEscolherCartao = (cartao: any) => {
-    setSuccess(true);
-    console.log("cartao escolhido:", cartao);
-    // Aqui você pode adicionar lógica de pagamento se necessário
-    // navigate("/MonitoriaJa/confirma-pagamento", { state: { cartao } }); // Removido para seguir o novo fluxo
-  };
-
-  const handleCancel = () => {
-    navigate("/MonitoriaJa/agendamento-monitor");
-  };
-
-
-   if (success) {
+  if (status === 'loading' && operacao === 'fetch') {
     return (
-      <main style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "80vh" }}>
-        <Alert
-          severity="success"
-          sx={{
-            width: "100%",
-            maxWidth: 400,
-            bgcolor: "primary.main",
-            color: "#fff",
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            alignItems: "center",
-            py: 3,
-            boxShadow: 4,
-            letterSpacing: 1,
-            textAlign: "center",
-          }}
-          iconMapping={{
-            success: <CreditCardIcon sx={{ fontSize: 50, mr: 2, color: "#ffffff" }} />,
-          }}
-        >
-          Pagamento realizado com sucesso!
-        </Alert>
+      <main className={styles.centralizeContent}>
+        <div className={styles.profileCard}>
+          <p>Carregando cartões...</p>
+        </div>
       </main>
     );
   }
+
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
         <Title text="Cartões Cadastrados" />
-
         <div className={styles.cardContainer}>
-          {cartoes.map((cartao) => (
-            <CartaoItem
-              key={cartao.id}
-              numero={cartao.numero}
-              nome={cartao.nome}
-              bandeira={cartao.bandeira}
-              mostrarBotoes={true}
-              onEscolher={() => handleEscolherCartao(cartao)}
-              onRemover={() => dispatch(removerCartao(cartao.id))}
-            />
-          ))}
+          {cartoesDoUsuario.length === 0 ? (
+            <div className={styles.semCartoes}>
+              <p>Nenhum cartão cadastrado</p>
+              <p className={styles.textoPequeno}>Cadastre um cartão para realizar pagamentos</p>
+            </div>
+          ) : (
+            cartoesDoUsuario.map(cartao => (
+              <CartaoItem
+                key={cartao.id}
+                numero={cartao.numero}
+                nome={cartao.nome}
+                bandeira={cartao.bandeira}
+                mostrarBotoes={true}
+                onEscolher={() => navigate('/MonitoriaJa/confirma-pagamento', { state: { cartao } })}
+                onRemover={() => dispatch(removerCartao(cartao.id))}
+              />
+            ))
+          )}
         </div>
-
-        <ConfirmationButton
-          onClick={() => navigate("/MonitoriaJa/cadastra-cartao")}
-        >
+        <ConfirmationButton onClick={() => navigate('/MonitoriaJa/cadastra-cartao')}>
           Cadastrar Novo Cartão
         </ConfirmationButton>
-        <ConfirmationButton onClick={handleCancel}>Cancelar</ConfirmationButton>
+        <ConfirmationButton onClick={() => navigate(-1)}>Cancelar</ConfirmationButton>
       </div>
+
+      <StatusModal
+        open={status === 'success' && operacao === 'remove'}
+        onClose={() => dispatch(resetStatus())}
+        status="sucesso"
+        mensagem="Cartão removido com sucesso!"
+      />
+      <StatusModal
+        open={status === 'error' && operacao !== null}
+        onClose={() => dispatch(resetStatus())}
+        status="falha"
+        mensagem={errorMessage || 'Erro ao processar operação. Tente novamente.'}
+      />
     </main>
   );
 };

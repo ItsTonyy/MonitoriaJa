@@ -1,9 +1,19 @@
-.button {
-    background-color: #1976d2 !important;
+.confirmation-button {
+    background-color: #1976d2;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
     cursor: pointer;
-    color: #ffffff !important;
+    transition: background-color 0.2s;
 }
 
-.button:hover {
-    background-color: #1565c0 !important;
+.confirmation-button:hover:not(:disabled) {
+    background-color: #1565c0;
+}
+
+.confirmation-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    color: #666;
 }

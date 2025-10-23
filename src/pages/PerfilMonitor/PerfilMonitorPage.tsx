@@ -1,31 +1,46 @@
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Box, Menu, MenuItem } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import ConfirmationButton from "../botaoTemporario/botaoTemporario";
-import DescriptionBox from "./Descricao/Descricao";
-import CampoFormulario from "./CampoFormulario/CampoFormulario";
-import UploadButton from "./UploadButton/UploadButton";
-import StatusModal from "../AlterarSenha/StatusModal/StatusModal";
-import PersonIcon from "@mui/icons-material/Person";
-import styles from "./PerfilMonitorPage.module.css";
-import Estrela from "../../../public/five-stars-rating-icon-png.webp";
-import AtualizarMateria from "./AtualizarMateria/AtualizarMateria";
-import { RootState } from "../../redux/root-reducer";
-import {
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { 
+  TextField, 
+  Box, 
+  Menu, 
+  MenuItem, 
+  Select, 
+  Checkbox, 
+  InputLabel, 
+  OutlinedInput, 
+  ListItemText,
+  SelectChangeEvent 
+} from '@mui/material';
+import ConfirmationButton from '../botaoTemporario/botaoTemporario';
+import DescriptionBox from './Descricao/Descricao';
+import CampoFormulario from './CampoFormulario/CampoFormulario';
+import UploadButton from './UploadButton/UploadButton';
+import StatusModal from '../AlterarSenha/StatusModal/StatusModal';
+import PersonIcon from '@mui/icons-material/Person';
+import styles from './PerfilMonitorPage.module.css';
+import Estrela from '../../../public/five-stars-rating-icon-png.webp';
+import AtualizarMateria from './AtualizarMateria/AtualizarMateria';
+import { RootState } from '../../redux/root-reducer';
+import { AppDispatch } from '../../redux/store';
+import { 
+  fetchMonitor, 
+  updateMonitor, 
+  validateField, 
+  clearValidationErrors, 
+  clearError,
   atualizarDescricao,
   atualizarContato,
   atualizarMaterias,
-  atualizarDisponibilidades,
-} from "../../redux/features/perfilMonitor/slice";
-import { DateTimeField } from "@mui/x-date-pickers";
-import dayjs from "dayjs";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import Checkbox from "@mui/material/Checkbox";
-import InputLabel from "@mui/material/InputLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import ListItemText from "@mui/material/ListItemText";
-import { Disponibilidade } from "../../models/disponibilidade.model";
+  atualizarDisponibilidades
+} from '../../redux/features/perfilMonitor/slice';
+
+// Definindo a interface Disponibilidade corretamente
+export interface Disponibilidade {
+  dia: string;
+  horarios: string[];
+}
 
 const MATERIAS = [
   "Matemática",
@@ -36,34 +51,12 @@ const MATERIAS = [
   "Geografia",
   "Português",
   "Inglês",
-  "Programação",
+  "Programação"
 ];
 
 const HORARIOS = [
-  "00:00",
-  "01:00",
-  "02:00",
-  "03:00",
-  "04:00",
-  "05:00",
-  "06:00",
-  "07:00",
-  "08:00",
-  "09:00",
-  "10:00",
-  "11:00",
-  "12:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-  "18:00",
-  "19:00",
-  "20:00",
-  "21:00",
-  "22:00",
-  "23:00",
+  "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00",
+  "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00",
 ];
 
 const DIAS = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"];
@@ -80,32 +73,107 @@ const MenuProps = {
 };
 
 const PerfilMonitorPage: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-
-  const monitor = useSelector((state: RootState) => state.perfilMonitor);
-
+  
+  // Redux state
+  const authUser = useSelector((state: RootState) => state.login.user);
+  const monitor = useSelector((state: RootState) => state.perfilMonitor.currentMonitor);
+  const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
+  const error = useSelector((state: RootState) => state.perfilMonitor.error);
+  const validationErrors = useSelector((state: RootState) => state.perfilMonitor.validationErrors);
+  
   // Local state para inputs
-  const [telefoneInput, setTelefoneInput] = useState(monitor.telefone);
-  const [emailInput, setEmailInput] = useState(monitor.email);
-  const [descricaoInput, setDescricaoInput] = useState(monitor.descricao);
-  const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>(
-    monitor.materias
-  );
-
-  const [erros, setErros] = useState<{ telefone?: string; email?: string }>({});
+  const [nomeInput, setNomeInput] = useState('');
+  const [telefoneInput, setTelefoneInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [descricaoInput, setDescricaoInput] = useState('');
+  const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>([]);
+  const [fotoUrl, setFotoUrl] = useState<string>('');
   const [open, setOpen] = useState(false);
-
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  
+  // Estado para disponibilidades (do segundo código)
   const [dias, setDias] = useState<string[]>([]);
-  const [horariosPorDia, setHorariosPorDia] = useState<
-    Record<string, string[]>
-  >({});
-  const [disponibilidades, setDisponibilidades] = useState<Disponibilidade[]>(
-    []
-  );
+  const [horariosPorDia, setHorariosPorDia] = useState<Record<string, string[]>>({});
+  const [disponibilidades, setDisponibilidades] = useState<Disponibilidade[]>([]);
+  const [erros, setErros] = useState<{ telefone?: string; email?: string }>({});
 
-  console.log(disponibilidades);
+  // Regex de validação (do segundo código)
+  const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  // Buscar dados do monitor ao carregar a página
+  useEffect(() => {
+    if (authUser?.id) {
+      dispatch(fetchMonitor(Number(authUser.id)));
+    } else {
+      navigate('/MonitoriaJa/login');
+    }
+  }, [dispatch, navigate, authUser]);
+
+  // Atualizar estados locais quando o monitor for carregado
+  useEffect(() => {
+    if (monitor) {
+      setNomeInput(monitor.nome || '');
+      setTelefoneInput(monitor.telefone || '');
+      setEmailInput(monitor.email || '');
+      setDescricaoInput(monitor.descricao || '');
+      setMateriasSelecionadas(monitor.materias || []);
+      setFotoUrl(monitor.fotoUrl || '');
+      setDisponibilidades(monitor.listaDisponibilidades || []);
+      
+      // Inicializar dias e horários baseado nas disponibilidades existentes
+      if (monitor.listaDisponibilidades && monitor.listaDisponibilidades.length > 0) {
+        const diasFromDisponibilidades = monitor.listaDisponibilidades.map(d => d.dia);
+        setDias(diasFromDisponibilidades);
+        
+        const horariosFromDisponibilidades: Record<string, string[]> = {};
+        monitor.listaDisponibilidades.forEach(d => {
+          horariosFromDisponibilidades[d.dia] = d.horarios || [];
+        });
+        setHorariosPorDia(horariosFromDisponibilidades);
+      }
+    }
+  }, [monitor]);
+
+  useEffect(() => {
+    if (error) {
+      dispatch(clearError());
+    }
+  }, [nomeInput, telefoneInput, emailInput, descricaoInput, materiasSelecionadas, error, dispatch]);
+
+  // Atualizar disponibilidades quando dias ou horariosPorDia mudam
+  useEffect(() => {
+    const novasDisponibilidades = dias.map((dia) => ({
+      dia,
+      horarios: horariosPorDia[dia] ?? []
+    }));
+    setDisponibilidades(novasDisponibilidades);
+  }, [dias, horariosPorDia]);
+
+  // Handlers do primeiro código
+  const handleNomeChange = (value: string) => {
+    setNomeInput(value);
+    if (hasSubmitted) dispatch(validateField({ field: 'nome', value }));
+  };
+
+  const handleTelefoneChange = (value: string) => {
+    setTelefoneInput(value);
+    if (hasSubmitted) dispatch(validateField({ field: 'telefone', value }));
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmailInput(value);
+    if (hasSubmitted) dispatch(validateField({ field: 'email', value }));
+  };
+
+  const handleDescricaoChange = (value: string) => {
+    setDescricaoInput(value);
+    if (hasSubmitted) dispatch(validateField({ field: 'descricao', value }));
+  };
+
+  // Handlers do segundo código para disponibilidades
   const handleChangeDias = (event: SelectChangeEvent<typeof dias>) => {
     const { value } = event.target;
     const novosDias = typeof value === "string" ? value.split(",") : value;
@@ -119,48 +187,104 @@ const PerfilMonitorPage: React.FC = () => {
     });
   };
 
-  const handleChangeHorariosPorDia =
-    (dia: string) => (event: SelectChangeEvent<string[]>) => {
-      const val = event.target.value as unknown as string[] | string;
-      const selecionados =
-        typeof val === "string" ? val.split(",") : (val as string[]);
-      setHorariosPorDia((prev) => ({ ...prev, [dia]: selecionados }));
-    };
+  const handleChangeHorariosPorDia = (dia: string) => (event: SelectChangeEvent<string[]>) => {
+    const val = event.target.value as unknown as string[] | string;
+    const selecionados = typeof val === "string" ? val.split(",") : (val as string[]);
+    setHorariosPorDia((prev) => ({
+      ...prev,
+      [dia]: selecionados
+    }));
+  };
 
-  const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  useEffect(() => {
-    setDisponibilidades(
-      dias.map((day) => ({ day, times: horariosPorDia[day] ?? [] }))
-    );
-  }, [dias, horariosPorDia]);
-
+  // Validação do segundo código
   const validarCampos = () => {
     const novosErros: { telefone?: string; email?: string } = {};
-
     if (!telefoneRegex.test(telefoneInput)) {
       novosErros.telefone = "Telefone inválido. Use o formato (XX) 9XXXX-XXXX";
     }
     if (!emailRegex.test(emailInput)) {
       novosErros.email = "Email inválido";
     }
-
     setErros(novosErros);
     return Object.keys(novosErros).length === 0;
   };
 
-  const handleSalvar = () => {
-    if (validarCampos()) {
-      dispatch(
-        atualizarContato({ telefone: telefoneInput, email: emailInput })
-      );
+  const handleExcluirMateria = (materiaToDelete: string) => {
+    const novasMaterias = materiasSelecionadas.filter(m => m !== materiaToDelete);
+    setMateriasSelecionadas(novasMaterias);
+  };
+
+  // Upload da foto
+  const handleFileSelect = (file: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFotoUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSalvar = async () => {
+    if (!monitor) return;
+    
+    setHasSubmitted(true);
+    
+    // Validações do primeiro código
+    dispatch(validateField({ field: 'nome', value: nomeInput }));
+    dispatch(validateField({ field: 'telefone', value: telefoneInput }));
+    dispatch(validateField({ field: 'email', value: emailInput }));
+    dispatch(validateField({ field: 'descricao', value: descricaoInput }));
+    
+    // Validações do segundo código
+    const camposValidos = validarCampos();
+    
+    const hasValidationErrors = Object.values(validationErrors).some(err => err !== undefined) || !camposValidos;
+    
+    if (hasValidationErrors) return;
+
+    try {
+      await dispatch(updateMonitor({
+        nome: nomeInput,
+        telefone: telefoneInput,
+        email: emailInput,
+        descricao: descricaoInput,
+        materias: materiasSelecionadas,
+        fotoUrl: fotoUrl,
+        listaDisponibilidades: disponibilidades
+      })).unwrap();
+      
+      // Atualizações locais do segundo código
+      dispatch(atualizarContato({ telefone: telefoneInput, email: emailInput }));
       dispatch(atualizarDescricao(descricaoInput));
       dispatch(atualizarMaterias(materiasSelecionadas));
       dispatch(atualizarDisponibilidades(disponibilidades));
+      
       setOpen(true);
+    } catch (err) {
+      console.error('Erro ao salvar:', err);
     }
   };
+
+  if (loading && !monitor) return <div className={styles.centralizeContent}>Carregando...</div>;
+  
+  if (error && !monitor) {
+    return (
+      <div className={styles.centralizeContent}>
+        <p>{error}</p>
+        <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>Fazer Login</ConfirmationButton>
+      </div>
+    );
+  }
+
+  if (!monitor) {
+    return (
+      <div className={styles.centralizeContent}>
+        <div className={styles.profileCard}>
+          <p>Monitor não encontrado</p>
+          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>Fazer Login</ConfirmationButton>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className={styles.centralizeContent}>
@@ -168,29 +292,54 @@ const PerfilMonitorPage: React.FC = () => {
         {/* Cabeçalho */}
         <div className={styles.profileHeader}>
           <div className={styles.editableGroup}>
-            <div
-              className={styles.name}
-              contentEditable
-              suppressContentEditableWarning
-              role="textbox"
-              aria-label="Nome do monitor"
+            <div 
+              className={styles.name} 
+              contentEditable 
+              suppressContentEditableWarning 
+              role="textbox" 
+              aria-label="Nome do monitor" 
               tabIndex={0}
+              onBlur={(e) => handleNomeChange(e.currentTarget.textContent || '')}
+              onInput={(e) => handleNomeChange(e.currentTarget.textContent || '')}
             >
-              {monitor.nome}
+              {nomeInput}
             </div>
+            {hasSubmitted && validationErrors.nome && <span className={styles.error}>{validationErrors.nome}</span>}
           </div>
         </div>
+
+        {/* Matérias */}
+        {materiasSelecionadas.length > 0 && (
+          <div className={styles.materiasAssociadas}>
+            <label className={styles.materiasLabel}>Matérias Associadas:</label>
+            <div className={styles.materiasChips}>
+              {materiasSelecionadas.map((materia, i) => (
+                <div key={i} className={styles.materiaChip}>
+                  {materia}
+                  <button 
+                    type="button" 
+                    className={styles.deleteButton}
+                    onClick={() => handleExcluirMateria(materia)}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Foto */}
         <div className={styles.photoSection}>
           <div className={styles.photoContainer}>
-            <PersonIcon className={styles.profilePhotoIcon} />
+            {fotoUrl ? (
+              <img src={fotoUrl} alt="Foto do monitor" className={styles.profilePhoto} />
+            ) : (
+              <PersonIcon className={styles.profilePhotoIcon} />
+            )}
           </div>
           <div className={styles.uploadButtonContainer}>
-            <UploadButton
-              className={styles.uploadButton}
-              onFileSelect={(file) => console.log("Arquivo selecionado:", file)}
-            />
+            <UploadButton onFileSelect={handleFileSelect} />
           </div>
         </div>
 
@@ -204,45 +353,50 @@ const PerfilMonitorPage: React.FC = () => {
 
         {/* Descrição */}
         <div className={styles.descriptionBox}>
-          <DescriptionBox
-            value={descricaoInput}
-            onChange={setDescricaoInput}
-            rows={4}
-            placeholder="Escreva uma descrição sobre o monitor..."
+          <DescriptionBox 
+            value={descricaoInput} 
+            onChange={handleDescricaoChange}
+            rows={4} 
+            placeholder="Escreva uma descrição sobre o monitor..." 
           />
+          {hasSubmitted && validationErrors.descricao && <span className={styles.error}>{validationErrors.descricao}</span>}
         </div>
 
-        {/* Campos de Telefone e Email */}
+        {/* Campos */}
         <div className={styles.fieldsContainer}>
-          <CampoFormulario
-            label="Telefone"
+          {/* Campos do primeiro código */}
+          <TextField 
+            label="Telefone" 
+            variant="outlined" 
+            fullWidth 
             value={telefoneInput}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setTelefoneInput(e.target.value)
-            }
+            onChange={(e) => handleTelefoneChange(e.target.value)}
+            required
+            error={hasSubmitted && (!!validationErrors.telefone || !!erros.telefone)}
+            helperText={hasSubmitted ? (validationErrors.telefone || erros.telefone || "") : ""}
+            inputProps={{ maxLength: 15 }}
           />
-          {erros.telefone && (
-            <span className={styles.error}>{erros.telefone}</span>
-          )}
-
-          <CampoFormulario
-            label="Email"
+          
+          <TextField 
+            label="Email" 
+            variant="outlined" 
+            fullWidth 
             value={emailInput}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setEmailInput(e.target.value)
-            }
-          />
-          {erros.email && <span className={styles.error}>{erros.email}</span>}
-
-          {/* Matérias - somente expositivo */}
-          <AtualizarMateria
-            value={materiasSelecionadas}
-            onChange={setMateriasSelecionadas}
-            options={MATERIAS}
+            onChange={(e) => handleEmailChange(e.target.value)}
+            required
+            error={hasSubmitted && (!!validationErrors.email || !!erros.email)}
+            helperText={hasSubmitted ? (validationErrors.email || erros.email || "") : ""}
           />
 
+          <AtualizarMateria 
+            value={materiasSelecionadas} 
+            onChange={setMateriasSelecionadas} 
+            options={MATERIAS} 
+          />
+
+          {/* Seção de disponibilidades do segundo código */}
           <div className="monitor-horarios">
-            <InputLabel id="demo-multiple-checkbox-label-dia">Dia</InputLabel>
+            <InputLabel id="demo-multiple-checkbox-label-dia">Dias Disponíveis</InputLabel>
             <Select
               labelId="demo-multiple-checkbox-label-dia"
               id="demo-multiple-checkbox-label-dia"
@@ -280,9 +434,7 @@ const PerfilMonitorPage: React.FC = () => {
                 >
                   {HORARIOS.map((horario) => (
                     <MenuItem key={`${dia}-${horario}`} value={horario}>
-                      <Checkbox
-                        checked={(horariosPorDia[dia] ?? []).includes(horario)}
-                      />
+                      <Checkbox checked={(horariosPorDia[dia] ?? []).includes(horario)} />
                       <ListItemText primary={horario} />
                     </MenuItem>
                   ))}
@@ -295,19 +447,15 @@ const PerfilMonitorPage: React.FC = () => {
         {/* Botões */}
         <div className={styles.buttonSection}>
           <div className={styles.buttonGroup}>
-            <ConfirmationButton
-              onClick={() => navigate("/MonitoriaJa/alterar-senha")}
-            >
+            <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>
               Trocar senha
             </ConfirmationButton>
           </div>
-
           <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={handleSalvar}>
+            <ConfirmationButton onClick={handleSalvar} disabled={loading}>
               Confirmar Mudanças
             </ConfirmationButton>
           </div>
-
           <div className={styles.buttonGroup}>
             <ConfirmationButton onClick={() => navigate(-1)}>
               Voltar
@@ -316,12 +464,12 @@ const PerfilMonitorPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal de status */}
-      <StatusModal
-        open={open}
-        onClose={() => setOpen(false)}
-        status="sucesso"
-        mensagem="Alterações salvas com sucesso!"
+      {/* Modal */}
+      <StatusModal 
+        open={open} 
+        onClose={() => setOpen(false)} 
+        status="sucesso" 
+        mensagem="Alterações salvas com sucesso!" 
       />
     </main>
   );

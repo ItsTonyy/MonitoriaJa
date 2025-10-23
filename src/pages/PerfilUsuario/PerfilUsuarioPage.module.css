@@ -23,6 +23,54 @@
   min-height: 100vh;
 }
 
+.nomeField {
+  margin-bottom: 16px;
+}
+
+.nomeField .MuiInputBase-root {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nomeField .MuiInputLabel-root {
+  font-size: 1rem;
+}
+
+.photoContainer {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  margin-bottom: 8px;
+}
+
+.profilePhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profilePhotoIcon {
+  font-size: 80px;
+  color: #9e9e9e;
+}
+
+.uploadButtonContainer {
+  margin-top: 8px;
+}
+
+
+.fieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
 .profileCard {
   background-color: var(--cor-fundo);
   box-shadow: var(--shadow);
