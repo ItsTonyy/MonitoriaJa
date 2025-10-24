@@ -50,11 +50,17 @@
       "telefone": "21900000000",
       "password": "123456",
       "description": "",
-      "role": "monitor"
+      "role": "monitor",
+      "materias": [
+        "Filosofia",
+        "Design"
+      ],
+      "fotoUrl": "",
+      "listaDisponibilidades": []
     },
     {
       "id": "3",
-      "name": "userTeste",
+      "name": "Guilherme",
       "email": "user@teste.com",
       "telefone": "21900000000",
       "password": "123456",
@@ -181,6 +187,13 @@
       "numero": "1111111111111",
       "nome": "11",
       "bandeira": "MasterCard",
+      "usuarioId": "2"
+    },
+    {
+      "id": "bac2",
+      "numero": "1111111111111",
+      "nome": "21",
+      "bandeira": "Elo",
       "usuarioId": "2"
     }
   ],
@@ -612,18 +625,6 @@
     {
       "id": "21",
       "nome": "Design"
-    },
-    {
-      "id": "1",
-      "numero": "1234567812345678",
-      "nome": "Rafael Penela",
-      "bandeira": "Visa"
-    },
-    {
-      "id": "2",
-      "numero": "8765432187654321",
-      "nome": "Maria Silva",
-      "bandeira": "MasterCard"
     }
   ]
 }
