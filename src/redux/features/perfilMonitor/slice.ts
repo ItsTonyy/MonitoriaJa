@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Disponibilidade } from '../../../models/disponibilidade.model';
 
+// Tipos
 export interface Monitor {
   id: number;
   nome: string;
@@ -78,7 +79,6 @@ export const updateMonitor = createAsyncThunk<
     const state = getState() as any;
     const currentMonitor: Monitor = state.perfilMonitor.currentMonitor!;
 
-    // Validar campos antes de enviar
     const errors: ValidationErrors = {};
     if (updatedMonitor.nome !== undefined) {
       const nomeError = validateMonitorField('nome', updatedMonitor.nome);
@@ -131,8 +131,24 @@ export const updateMonitor = createAsyncThunk<
   }
 );
 
+// AsyncThunk: buscar disciplinas do backend
+export const fetchDisciplinas = createAsyncThunk<{ id: string; nome: string }[]>(
+  "perfilMonitor/fetchDisciplinas",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch("http://localhost:3001/disciplinas");
+      if (!response.ok) throw new Error("Erro ao buscar disciplinas");
+      const data = await response.json();
+      return data; // array de objetos {id, nome}
+    } catch (err: any) {
+      return rejectWithValue(err.message || "Erro ao buscar disciplinas");
+    }
+  }
+);
+
 interface MonitorState {
   currentMonitor: Monitor | null;
+  materiasDisponiveis: { id: string; nome: string }[];
   loading: boolean;
   error: string | null;
   validationErrors: ValidationErrors;
@@ -140,6 +156,7 @@ interface MonitorState {
 
 const initialState: MonitorState = {
   currentMonitor: null,
+  materiasDisponiveis: [],
   loading: false,
   error: null,
   validationErrors: {},
@@ -161,41 +178,25 @@ const monitorSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    // Reducers do segundo código
     atualizarDescricao: (state, action: PayloadAction<string>) => {
-      if (state.currentMonitor) {
-        state.currentMonitor.descricao = action.payload;
-      }
+      if (state.currentMonitor) state.currentMonitor.descricao = action.payload;
     },
-    atualizarContato: (
-      state,
-      action: PayloadAction<{ telefone: string; email: string }>
-    ) => {
+    atualizarContato: (state, action: PayloadAction<{ telefone: string; email: string }>) => {
       if (state.currentMonitor) {
         state.currentMonitor.telefone = action.payload.telefone;
         state.currentMonitor.email = action.payload.email;
       }
     },
     atualizarMaterias: (state, action: PayloadAction<string[]>) => {
-      if (state.currentMonitor) {
-        state.currentMonitor.materias = action.payload;
-      }
+      if (state.currentMonitor) state.currentMonitor.materias = action.payload;
     },
-    atualizarDisponibilidades: (
-      state,
-      action: PayloadAction<Disponibilidade[]>
-    ) => {
-      if (state.currentMonitor) {
-        state.currentMonitor.listaDisponibilidades = action.payload;
-      }
+    atualizarDisponibilidades: (state, action: PayloadAction<Disponibilidade[]>) => {
+      if (state.currentMonitor) state.currentMonitor.listaDisponibilidades = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchMonitor.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
+      .addCase(fetchMonitor.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(fetchMonitor.fulfilled, (state, action: PayloadAction<Monitor>) => {
         state.loading = false;
         state.currentMonitor = action.payload;
@@ -205,9 +206,7 @@ const monitorSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Monitor não encontrado";
       })
-      .addCase(updateMonitor.pending, (state) => {
-        state.loading = true;
-      })
+      .addCase(updateMonitor.pending, (state) => { state.loading = true; })
       .addCase(updateMonitor.fulfilled, (state, action: PayloadAction<Monitor>) => {
         state.loading = false;
         state.currentMonitor = action.payload;
@@ -218,6 +217,15 @@ const monitorSlice = createSlice({
         state.loading = false;
         if (action.payload) state.validationErrors = action.payload as ValidationErrors;
         else state.error = action.error.message || "Erro ao atualizar monitor";
+      })
+      .addCase(fetchDisciplinas.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(fetchDisciplinas.fulfilled, (state, action: PayloadAction<{ id: string; nome: string }[]>) => {
+        state.loading = false;
+        state.materiasDisponiveis = action.payload;
+      })
+      .addCase(fetchDisciplinas.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || "Erro ao buscar disciplinas";
       });
   },
 });

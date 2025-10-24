@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
@@ -12,7 +12,13 @@ import styles from './PerfilUsuarioPage.module.css';
 
 import { AppDispatch } from '../../redux/store';
 import { RootState } from '../../redux/root-reducer';
-import { fetchUsuario, updateUsuario, clearValidationErrors, validateField, clearError } from '../../redux/features/perfilUsuario/slice';
+import {
+  fetchUsuario,
+  updateUsuario,
+  clearValidationErrors,
+  validateField,
+  clearError
+} from '../../redux/features/perfilUsuario/slice';
 
 const PerfilUsuarioPage: React.FC = () => {
   const navigate = useNavigate();
@@ -29,6 +35,8 @@ const PerfilUsuarioPage: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
+  const nomeRef = useRef<HTMLDivElement | null>(null);
+
   // Buscar usuário
   useEffect(() => {
     if (authUser?.id) {
@@ -44,6 +52,11 @@ const PerfilUsuarioPage: React.FC = () => {
       setNome(currentUser.nome || '');
       setTelefone(currentUser.telefone || '');
       setEmail(currentUser.email || '');
+
+      // Atualiza o conteúdo visual do nome sem re-renderizar
+      if (nomeRef.current) {
+        nomeRef.current.textContent = currentUser.nome || '';
+      }
     }
   }, [currentUser]);
 
@@ -55,17 +68,21 @@ const PerfilUsuarioPage: React.FC = () => {
   }, [nome, telefone, email, error, dispatch]);
 
   // onChange handlers
-  const handleNomeChange = (value: string) => {
-    setNome(value);
-    if (hasSubmitted) dispatch(validateField({ field: 'nome', value }));
-  };
   const handleTelefoneChange = (value: string) => {
     setTelefone(value);
     if (hasSubmitted) dispatch(validateField({ field: 'telefone', value }));
   };
+
   const handleEmailChange = (value: string) => {
     setEmail(value);
     if (hasSubmitted) dispatch(validateField({ field: 'email', value }));
+  };
+
+  // Nome só é atualizado no blur para não causar salto do cursor
+  const handleNomeBlur = () => {
+    const newNome = nomeRef.current?.textContent?.trim() || '';
+    setNome(newNome);
+    if (hasSubmitted) dispatch(validateField({ field: 'nome', value: newNome }));
   };
 
   // Salvar usuário
@@ -73,7 +90,9 @@ const PerfilUsuarioPage: React.FC = () => {
     if (!currentUser) return;
     setHasSubmitted(true);
 
-    dispatch(validateField({ field: 'nome', value: nome }));
+    const nomeFinal = nomeRef.current?.textContent?.trim() || nome;
+
+    dispatch(validateField({ field: 'nome', value: nomeFinal }));
     dispatch(validateField({ field: 'telefone', value: telefone }));
     dispatch(validateField({ field: 'email', value: email }));
 
@@ -81,7 +100,7 @@ const PerfilUsuarioPage: React.FC = () => {
     if (hasValidationErrors) return;
 
     try {
-      await dispatch(updateUsuario({ nome, telefone, email })).unwrap();
+      await dispatch(updateUsuario({ nome: nomeFinal, telefone, email })).unwrap();
       setOpen(true);
     } catch (err) {
       console.error('Erro ao salvar:', err);
@@ -89,21 +108,26 @@ const PerfilUsuarioPage: React.FC = () => {
   };
 
   // Loading global
-  if (loading) return <div className={styles.centralizeContent}>Carregando...</div>;
-  if (error) return (
-    <div className={styles.centralizeContent}>
-      <p>{error}</p>
-      <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>Fazer Login</ConfirmationButton>
-    </div>
-  );
-  if (!currentUser) return (
-    <div className={styles.centralizeContent}>
-      <div className={styles.profileCard}>
-        <p>Usuário não encontrado</p>
+  if (loading)
+    return <div className={styles.centralizeContent}>Carregando...</div>;
+
+  if (error)
+    return (
+      <div className={styles.centralizeContent}>
+        <p>{error}</p>
         <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>Fazer Login</ConfirmationButton>
       </div>
-    </div>
-  );
+    );
+
+  if (!currentUser)
+    return (
+      <div className={styles.centralizeContent}>
+        <div className={styles.profileCard}>
+          <p>Usuário não encontrado</p>
+          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>Fazer Login</ConfirmationButton>
+        </div>
+      </div>
+    );
 
   return (
     <main className={styles.centralizeContent}>
@@ -112,17 +136,15 @@ const PerfilUsuarioPage: React.FC = () => {
         <div className={styles.profileHeader}>
           <div className={styles.editableGroup}>
             <div
+              ref={nomeRef}
               className={styles.name}
               contentEditable
               suppressContentEditableWarning
               role="textbox"
               aria-label="Nome do aluno"
               tabIndex={0}
-              onBlur={(e) => handleNomeChange(e.currentTarget.textContent || '')}
-              onInput={(e) => handleNomeChange(e.currentTarget.textContent || '')}
-            >
-              {nome}
-            </div>
+              onBlur={handleNomeBlur}
+            />
             {hasSubmitted && validationErrors.nome && (
               <span className={styles.error}>{validationErrors.nome}</span>
             )}
