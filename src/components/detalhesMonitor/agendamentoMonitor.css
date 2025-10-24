@@ -70,7 +70,8 @@ main {
 }
 
 .monitor-profile {
-  display: grid;
+  display: flex;
+  justify-content: flex-start;
   gap: 12px;
   justify-items: center;
 }
@@ -115,20 +116,33 @@ main {
 
 .agendamento-titulo {
   background-color: var(--cor-fundo);
-  font-weight: 400;
+  color: var(--cor-primaria);
+  font-weight: 500;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   padding-bottom: 20px;
-
   width: 100%;
 }
 
+.titulo-monitor-agendamento {
+  color: var(--cor-primaria);
+  font-size: 24px;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
 }
 
 .agendamento {
-  background: linear-gradient(135deg, rgba(16, 76, 145, 0.05) 0%, rgba(31, 138, 192, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(16, 76, 145, 0.05) 0%,
+    rgba(31, 138, 192, 0.05) 100%
+  );
   border: 1px solid rgba(16, 76, 145, 0.2);
   border-radius: 16px;
   padding: 20px;
@@ -141,13 +155,17 @@ main {
 }
 
 .agendamento::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--cor-primaria), var(--cor-secundaria));
+  background: linear-gradient(
+    90deg,
+    var(--cor-primaria),
+    var(--cor-secundaria)
+  );
 }
 
 .agendamento-details {
@@ -171,6 +189,7 @@ main {
 .agendamento-details-attributes {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 8px;
   padding: 12px 16px;
   background: rgba(255, 255, 255, 0.8);
@@ -245,7 +264,11 @@ main {
   gap: 12px;
   padding: 12px 16px;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, rgba(16, 76, 145, 0.02) 0%, rgba(31, 138, 192, 0.02) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(16, 76, 145, 0.02) 0%,
+    rgba(31, 138, 192, 0.02) 100%
+  );
   border: 1px solid var(--stroke);
   transition: all 0.3s ease;
   cursor: pointer;
@@ -253,7 +276,11 @@ main {
 }
 
 .checkboxes-box:hover {
-  background: linear-gradient(135deg, rgba(16, 76, 145, 0.08) 0%, rgba(31, 138, 192, 0.08) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(16, 76, 145, 0.08) 0%,
+    rgba(31, 138, 192, 0.08) 100%
+  );
   border-color: rgba(16, 76, 145, 0.2);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(16, 76, 145, 0.15);
@@ -277,7 +304,11 @@ main {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  background: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-secundaria) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--cor-primaria) 0%,
+    var(--cor-secundaria) 100%
+  );
   color: white;
   padding: 4px 12px;
   margin: 2px 4px;
@@ -342,7 +373,7 @@ main {
 }
 
 .checkbox:checked::after {
-  content: '✓';
+  content: "✓";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -353,7 +384,7 @@ main {
 }
 
 /* Estilos modernos para radio buttons */
-input[type='radio'] {
+input[type="radio"] {
   appearance: none;
   width: 20px;
   height: 20px;
@@ -367,18 +398,18 @@ input[type='radio'] {
   z-index: 1;
 }
 
-input[type='radio']:hover {
+input[type="radio"]:hover {
   border-color: var(--cor-primaria);
   box-shadow: 0 0 0 3px rgba(16, 76, 145, 0.1);
 }
 
-input[type='radio']:checked {
+input[type="radio"]:checked {
   background-color: var(--cor-primaria);
   border-color: var(--cor-primaria);
 }
 
-input[type='radio']:checked::after {
-  content: '';
+input[type="radio"]:checked::after {
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -390,7 +421,7 @@ input[type='radio']:checked::after {
   z-index: 2;
 }
 
-input[type='radio']:focus {
+input[type="radio"]:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(16, 76, 145, 0.2);
 }
@@ -401,7 +432,11 @@ input[type='radio']:focus {
 
 /* Estados ativos para melhor feedback visual */
 .checkboxes-box:has(.checkbox:checked) {
-  background: linear-gradient(135deg, rgba(16, 76, 145, 0.12) 0%, rgba(31, 138, 192, 0.12) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(16, 76, 145, 0.12) 0%,
+    rgba(31, 138, 192, 0.12) 100%
+  );
   border-color: var(--cor-primaria);
   box-shadow: 0 2px 8px rgba(16, 76, 145, 0.2);
 }
@@ -450,12 +485,12 @@ input[type='radio']:focus {
     font-size: 14px;
   }
 
-  input[type='radio'] {
+  input[type="radio"] {
     width: 24px;
     height: 24px;
   }
 
-  input[type='radio']:checked::after {
+  input[type="radio"]:checked::after {
     width: 10px;
     height: 10px;
   }
@@ -555,13 +590,17 @@ input[type='radio']:focus {
 }
 
 .titulo::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   width: 250px;
   height: 3px;
-  background: linear-gradient(90deg, var(--cor-primaria), var(--cor-secundaria));
+  background: linear-gradient(
+    90deg,
+    var(--cor-primaria),
+    var(--cor-secundaria)
+  );
   border-radius: 2px;
 }
 

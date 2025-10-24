@@ -5,8 +5,10 @@ import Link from "@mui/material/Link";
 import "./footer.css";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import { useNavigate } from "react-router-dom";
 
 const Footer: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <Box
       component="footer"
@@ -67,7 +69,7 @@ const Footer: React.FC = () => {
           <Typography
             variant="h6"
             color="white"
-            sx={{ fontWeight: "bold", mb: 2 }}
+            sx={{ fontWeight: "bold", mb: 2, cursor: "pointer" }}
           >
             Links Úteis
           </Typography>
@@ -77,16 +79,19 @@ const Footer: React.FC = () => {
               flexDirection: "column",
               gap: 1,
               justifyContent: "center",
+              cursor: "pointer",
             }}
           >
             <Link
               className="link"
               sx={{
                 textDecoration: "none",
+                cursor: "pointer",
                 "&:hover": { textDecoration: "underline" },
               }}
+              onClick={() => navigate("/MonitoriaJa")}
             >
-              Avaliações
+              Home
             </Link>
             <Link
               className="link"
@@ -94,6 +99,7 @@ const Footer: React.FC = () => {
                 textDecoration: "none",
                 "&:hover": { textDecoration: "underline" },
               }}
+              onClick={() => navigate("/MonitoriaJa/lista-monitores")}
             >
               Monitores
             </Link>
@@ -103,8 +109,9 @@ const Footer: React.FC = () => {
                 textDecoration: "none",
                 "&:hover": { textDecoration: "underline" },
               }}
+              onClick={() => navigate("/MonitoriaJa/lista-agendamentos")}
             >
-              Sobre Nós
+              Agendamento
             </Link>
           </Box>
         </Box>

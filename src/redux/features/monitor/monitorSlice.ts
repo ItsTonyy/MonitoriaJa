@@ -32,7 +32,7 @@ const monitorSlice = createSlice({
     },
     updateMonitorAvaliacao: (
       state,
-      action: PayloadAction<{ monitorId: number; avaliacao: Avaliacao }>
+      action: PayloadAction<{ monitorId: string; avaliacao: Avaliacao }>
     ) => {
       const { monitorId, avaliacao } = action.payload;
       const monitor = state.monitorList.find((m) => m.id === monitorId);
@@ -54,7 +54,7 @@ const monitorSlice = createSlice({
     updateMonitorDisponibilidade: (
       state,
       action: PayloadAction<{
-        monitorId: number;
+        monitorId: string;
         disponibilidade: Disponibilidade;
       }>
     ) => {

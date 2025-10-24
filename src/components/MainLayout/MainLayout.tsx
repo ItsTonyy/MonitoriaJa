@@ -31,6 +31,13 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           minHeight: "600px",
           display: "flex",
           flexDirection: "column",
+          "@media (max-width: 640px)": {
+            paddingLeft: 0,
+            paddingRight: 0,
+            marginTop: 0,
+            marginBottom: 0,
+            paddingBottom: 0,
+          },
         }}
       >
         {children}

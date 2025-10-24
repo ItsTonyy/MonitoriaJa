@@ -22,11 +22,9 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../redux/hooks";
 import { setSelectedMonitor } from "../redux/features/monitor/monitorSlice";
 import { Monitor } from "../models/monitor.model";
-import { listarMonitores} from "../redux/features/monitor/fetch";
+import { listarMonitores } from "../redux/features/monitor/fetch";
 import { Disciplina } from "../models/disciplina.model";
 import { listarDisciplinas } from "../redux/features/disciplina/fetch";
-
-
 
 function matchStartOfWords(text: string, search: string) {
   if (!search) return true;
@@ -76,15 +74,13 @@ function ListaMonitores() {
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
   const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
 
-  
+  useEffect(() => {
+    listarDisciplinas()
+      .then((data) => setDisciplinas(data))
+      .catch(() => setDisciplinas([]));
+  }, []);
 
   useEffect(() => {
-  listarDisciplinas()
-    .then((data) => setDisciplinas(data))
-    .catch(() => setDisciplinas([]));
-}, []);
-
-    useEffect(() => {
     listarMonitores()
       .then((data) => {
         setmonitores(data);
@@ -95,7 +91,6 @@ function ListaMonitores() {
         setLoading(false);
       });
   }, []);
-
 
   useEffect(() => {
     function handleResize() {
@@ -136,6 +131,7 @@ function ListaMonitores() {
         borderRadius: 2,
         bgcolor: "background.default",
         maxWidth: 1200,
+        boxShadow: "0 8px 24px rgba(5, 3, 21, 0.08)",
       }}
     >
       <Typography

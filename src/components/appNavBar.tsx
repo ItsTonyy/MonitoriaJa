@@ -240,38 +240,9 @@ export default function AppNavBar() {
             <Box sx={{ flexGrow: 0 }}>
               {isAuthenticated && (
                 <div>
-                  <Tooltip title="Open settings">
-                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                      <Avatar alt="Anonymous User" src={anonUser} />
-                    </IconButton>
-                  </Tooltip>
-                  <Menu
-                    sx={{ mt: "45px" }}
-                    id="menu-appbar"
-                    anchorEl={anchorElUser}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    keepMounted
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    open={Boolean(anchorElUser)}
-                    onClose={handleCloseUserMenu}
-                  >
-                    <MenuItem onClick={handleClickPerfil}>
-                      <Typography sx={{ textAlign: "center" }}>
-                        Perfil
-                      </Typography>
-                    </MenuItem>
-                    <MenuItem onClick={handleClickHistorico}>
-                      <Typography sx={{ textAlign: "center" }}>
-                        Histórico
-                      </Typography>
-                    </MenuItem>
-                  </Menu>
+                  <IconButton onClick={handleClickPerfil} sx={{ p: 0 }}>
+                    <Avatar alt="Anonymous User" src={anonUser} />
+                  </IconButton>
                 </div>
               )}
             </Box>
@@ -282,11 +253,9 @@ export default function AppNavBar() {
             <Box sx={{ flexGrow: 0 }}>
               {isAuthenticated && (
                 <>
-                  <Tooltip title="Open settings">
-                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                      <Avatar alt="Anonymous User" src={anonUser} />
-                    </IconButton>
-                  </Tooltip>
+                  <IconButton onClick={handleClickPerfil} sx={{ p: 0 }}>
+                    <Avatar alt="Anonymous User" src={anonUser} />
+                  </IconButton>
                 </>
               )}
 

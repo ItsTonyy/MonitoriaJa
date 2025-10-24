@@ -12,7 +12,6 @@ import {
 import { styled } from "@mui/material/styles";
 import StarIcon from "@mui/icons-material/Star";
 import "./AvaliacaoPosAula .css";
-import ConfirmationButton from "../login-form/ConfirmationButton";
 
 const AvaliacaoCard = styled(Card)({
   width: "100%",

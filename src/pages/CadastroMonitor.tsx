@@ -1,4 +1,3 @@
-import CadastroHeader from "../components/CadastroHeader";
 import CadastroForm from "../components/CadastroForm";
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';

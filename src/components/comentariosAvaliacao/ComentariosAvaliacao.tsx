@@ -73,14 +73,12 @@ const ComentariosAvaliacao: React.FC = () => {
   });
   const dispatch = useAppDispatch();
   const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
-  const { avaliacoes, loading, error } = useAppSelector(
-    (state) => state.avaliacao
-  );
+  const { avaliacoes, loading } = useAppSelector((state) => state.avaliacao);
   const usuarioLogado = useAppSelector((state) => state.login.user);
 
   useEffect(() => {
     if (monitor?.id) {
-      dispatch(buscarAvaliacoesPorMonitor(monitor.id));
+      dispatch(buscarAvaliacoesPorMonitor(Number(monitor.id)));
     }
   }, [monitor?.id, dispatch]);
 
@@ -123,7 +121,7 @@ const ComentariosAvaliacao: React.FC = () => {
     );
     handleModalClose();
     alert("Avaliação enviada com sucesso!");
-    dispatch(buscarAvaliacoesPorMonitor(monitor.id));
+    dispatch(buscarAvaliacoesPorMonitor(Number(monitor.id)));
   };
 
   if (loading) {
