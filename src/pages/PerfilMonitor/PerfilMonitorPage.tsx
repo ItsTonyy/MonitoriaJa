@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -33,26 +33,14 @@ import {
   atualizarDescricao,
   atualizarContato,
   atualizarMaterias,
-  atualizarDisponibilidades
+  atualizarDisponibilidades,
+  fetchDisciplinas
 } from '../../redux/features/perfilMonitor/slice';
 
-// Definindo a interface Disponibilidade corretamente
 export interface Disponibilidade {
   dia: string;
   horarios: string[];
 }
-
-const MATERIAS = [
-  "Matemática",
-  "Física",
-  "Química",
-  "Biologia",
-  "História",
-  "Geografia",
-  "Português",
-  "Inglês",
-  "Programação"
-];
 
 const HORARIOS = [
   "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00",
@@ -76,14 +64,14 @@ const PerfilMonitorPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   
-  // Redux state
   const authUser = useSelector((state: RootState) => state.login.user);
   const monitor = useSelector((state: RootState) => state.perfilMonitor.currentMonitor);
   const loading = useSelector((state: RootState) => state.perfilMonitor.loading);
   const error = useSelector((state: RootState) => state.perfilMonitor.error);
   const validationErrors = useSelector((state: RootState) => state.perfilMonitor.validationErrors);
+  const materiasDisponiveis = useSelector((state: RootState) => state.perfilMonitor.materiasDisponiveis);
   
-  // Local state para inputs
+  // Local state
   const [nomeInput, setNomeInput] = useState('');
   const [telefoneInput, setTelefoneInput] = useState('');
   const [emailInput, setEmailInput] = useState('');
@@ -93,29 +81,29 @@ const PerfilMonitorPage: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   
-  // Estado para disponibilidades (do segundo código)
   const [dias, setDias] = useState<string[]>([]);
   const [horariosPorDia, setHorariosPorDia] = useState<Record<string, string[]>>({});
   const [disponibilidades, setDisponibilidades] = useState<Disponibilidade[]>([]);
   const [erros, setErros] = useState<{ telefone?: string; email?: string }>({});
 
-  // Regex de validação (do segundo código)
   const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // Buscar dados do monitor ao carregar a página
+  // Ref para o nome
+  const nomeRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (authUser?.id) {
       dispatch(fetchMonitor(Number(authUser.id)));
+      dispatch(fetchDisciplinas()); // Buscar disciplinas do backend
     } else {
       navigate('/MonitoriaJa/login');
     }
   }, [dispatch, navigate, authUser]);
 
-  // Atualizar estados locais quando o monitor for carregado
+  // Atualizar estados locais quando monitor é carregado
   useEffect(() => {
     if (monitor) {
-      setNomeInput(monitor.nome || '');
       setTelefoneInput(monitor.telefone || '');
       setEmailInput(monitor.email || '');
       setDescricaoInput(monitor.descricao || '');
@@ -123,7 +111,7 @@ const PerfilMonitorPage: React.FC = () => {
       setFotoUrl(monitor.fotoUrl || '');
       setDisponibilidades(monitor.listaDisponibilidades || []);
       
-      // Inicializar dias e horários baseado nas disponibilidades existentes
+      // Inicializar dias e horários
       if (monitor.listaDisponibilidades && monitor.listaDisponibilidades.length > 0) {
         const diasFromDisponibilidades = monitor.listaDisponibilidades.map(d => d.dia);
         setDias(diasFromDisponibilidades);
@@ -134,6 +122,12 @@ const PerfilMonitorPage: React.FC = () => {
         });
         setHorariosPorDia(horariosFromDisponibilidades);
       }
+
+      // Preencher o nome no DOM diretamente
+      if (nomeRef.current) {
+        nomeRef.current.textContent = monitor.nome || '';
+      }
+      setNomeInput(monitor.nome || '');
     }
   }, [monitor]);
 
@@ -143,7 +137,6 @@ const PerfilMonitorPage: React.FC = () => {
     }
   }, [nomeInput, telefoneInput, emailInput, descricaoInput, materiasSelecionadas, error, dispatch]);
 
-  // Atualizar disponibilidades quando dias ou horariosPorDia mudam
   useEffect(() => {
     const novasDisponibilidades = dias.map((dia) => ({
       dia,
@@ -152,10 +145,14 @@ const PerfilMonitorPage: React.FC = () => {
     setDisponibilidades(novasDisponibilidades);
   }, [dias, horariosPorDia]);
 
-  // Handlers do primeiro código
-  const handleNomeChange = (value: string) => {
-    setNomeInput(value);
-    if (hasSubmitted) dispatch(validateField({ field: 'nome', value }));
+  // Converter array de objetos {id, nome} para array de strings (nomes)
+  const opcoesMaterias = materiasDisponiveis.map(disciplina => disciplina.nome);
+
+  // Handlers
+  const handleNomeBlur = () => {
+    const newNome = nomeRef.current?.textContent?.trim() || '';
+    setNomeInput(newNome);
+    if (hasSubmitted) dispatch(validateField({ field: 'nome', value: newNome }));
   };
 
   const handleTelefoneChange = (value: string) => {
@@ -173,7 +170,6 @@ const PerfilMonitorPage: React.FC = () => {
     if (hasSubmitted) dispatch(validateField({ field: 'descricao', value }));
   };
 
-  // Handlers do segundo código para disponibilidades
   const handleChangeDias = (event: SelectChangeEvent<typeof dias>) => {
     const { value } = event.target;
     const novosDias = typeof value === "string" ? value.split(",") : value;
@@ -196,7 +192,6 @@ const PerfilMonitorPage: React.FC = () => {
     }));
   };
 
-  // Validação do segundo código
   const validarCampos = () => {
     const novosErros: { telefone?: string; email?: string } = {};
     if (!telefoneRegex.test(telefoneInput)) {
@@ -214,7 +209,6 @@ const PerfilMonitorPage: React.FC = () => {
     setMateriasSelecionadas(novasMaterias);
   };
 
-  // Upload da foto
   const handleFileSelect = (file: File) => {
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -227,16 +221,13 @@ const PerfilMonitorPage: React.FC = () => {
     if (!monitor) return;
     
     setHasSubmitted(true);
-    
-    // Validações do primeiro código
+
     dispatch(validateField({ field: 'nome', value: nomeInput }));
     dispatch(validateField({ field: 'telefone', value: telefoneInput }));
     dispatch(validateField({ field: 'email', value: emailInput }));
     dispatch(validateField({ field: 'descricao', value: descricaoInput }));
-    
-    // Validações do segundo código
+
     const camposValidos = validarCampos();
-    
     const hasValidationErrors = Object.values(validationErrors).some(err => err !== undefined) || !camposValidos;
     
     if (hasValidationErrors) return;
@@ -252,7 +243,6 @@ const PerfilMonitorPage: React.FC = () => {
         listaDisponibilidades: disponibilidades
       })).unwrap();
       
-      // Atualizações locais do segundo código
       dispatch(atualizarContato({ telefone: telefoneInput, email: emailInput }));
       dispatch(atualizarDescricao(descricaoInput));
       dispatch(atualizarMaterias(materiasSelecionadas));
@@ -289,21 +279,18 @@ const PerfilMonitorPage: React.FC = () => {
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
-        {/* Cabeçalho */}
         <div className={styles.profileHeader}>
           <div className={styles.editableGroup}>
             <div 
+              ref={nomeRef}
               className={styles.name} 
               contentEditable 
               suppressContentEditableWarning 
               role="textbox" 
               aria-label="Nome do monitor" 
               tabIndex={0}
-              onBlur={(e) => handleNomeChange(e.currentTarget.textContent || '')}
-              onInput={(e) => handleNomeChange(e.currentTarget.textContent || '')}
-            >
-              {nomeInput}
-            </div>
+              onBlur={handleNomeBlur}
+            />
             {hasSubmitted && validationErrors.nome && <span className={styles.error}>{validationErrors.nome}</span>}
           </div>
         </div>
@@ -329,7 +316,6 @@ const PerfilMonitorPage: React.FC = () => {
           </div>
         )}
 
-        {/* Foto */}
         <div className={styles.photoSection}>
           <div className={styles.photoContainer}>
             {fotoUrl ? (
@@ -343,7 +329,6 @@ const PerfilMonitorPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Avaliação e Formação */}
         <div className={styles.ratingAndFormation}>
           <div className={styles.rating}>
             <img src={Estrela} alt="Estrela" className={styles.starIcon} />
@@ -351,7 +336,6 @@ const PerfilMonitorPage: React.FC = () => {
           <h4>Formação e Cursos</h4>
         </div>
 
-        {/* Descrição */}
         <div className={styles.descriptionBox}>
           <DescriptionBox 
             value={descricaoInput} 
@@ -362,9 +346,7 @@ const PerfilMonitorPage: React.FC = () => {
           {hasSubmitted && validationErrors.descricao && <span className={styles.error}>{validationErrors.descricao}</span>}
         </div>
 
-        {/* Campos */}
         <div className={styles.fieldsContainer}>
-          {/* Campos do primeiro código */}
           <TextField 
             label="Telefone" 
             variant="outlined" 
@@ -391,10 +373,9 @@ const PerfilMonitorPage: React.FC = () => {
           <AtualizarMateria 
             value={materiasSelecionadas} 
             onChange={setMateriasSelecionadas} 
-            options={MATERIAS} 
+            options={opcoesMaterias} 
           />
 
-          {/* Seção de disponibilidades do segundo código */}
           <div className="monitor-horarios">
             <InputLabel id="demo-multiple-checkbox-label-dia">Dias Disponíveis</InputLabel>
             <Select
@@ -444,7 +425,6 @@ const PerfilMonitorPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Botões */}
         <div className={styles.buttonSection}>
           <div className={styles.buttonGroup}>
             <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>
@@ -464,7 +444,6 @@ const PerfilMonitorPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal */}
       <StatusModal 
         open={open} 
         onClose={() => setOpen(false)} 
