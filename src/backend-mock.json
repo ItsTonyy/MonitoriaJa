@@ -60,6 +60,49 @@
       "password": "123456",
       "description": "",
       "role": "user"
+    },{
+      "id": "4",
+      "nome": "João Silva",
+      "materia": "Matemática",
+      "valor": "R$ 50/h",
+      "servico": "Serviço X",
+      "foto": "https://randomuser.me/api/portraits/men/1.jpg",
+      "avaliacao": 4.9,
+      "role": "monitor",
+      "formacao": "🧑‍🏫 Conheça o João Silva: Olá! Sou o João Silva, e estou aqui para desmistificar o mundo dos números e te mostrar que a Matemática pode ser fácil e até divertida! 🚀.       🎓 Formação e Expertise: Minha paixão por ensinar é reforçada por uma sólida base acadêmica e prática. Sou Bacharel em Matemática pela Universidade Federal de Minas Gerais (UFMG). Além da graduação, completei cursos de extensão importantes, como 'Didática e Novas Metodologias de Ensino de Exatas' (pela Plataforma 'Aprenda Mais') e 'Programação em Python Aplicada à Modelagem Matemática'. Minha experiência prática inclui dois anos como monitor de Cálculo I, II e Geometria Analítica durante a faculdade, período em que ajudei centenas de alunos a alcançar a média e a excelência."
+    },
+    {
+      "id": "5",
+      "nome": "Maria Souza",
+      "materia": "Física",
+      "valor": "R$ 60/h",
+      "servico": "Serviço X",
+      "foto": "https://randomuser.me/api/portraits/women/2.jpg",
+      "avaliacao": 4.8,
+      "role": "monitor",
+      "formacao": "👩‍🔬 Conheça a Maria Souza: Olá a todos! Eu sou a Maria Souza, e estou aqui para te provar que Física não é um mistério, mas sim a chave para entender como o universo, desde a queda de uma maçã 🍎 até as leis do eletromagnetismo, realmente funciona. Seja qual for seu desafio – cinemática, dinâmica ou termodinâmica –, eu vou te ajudar a visualizar os conceitos e a aplicar a teoria de forma prática. 🎓 Formação e Expertise: Minha dedicação ao ensino é sustentada por uma formação robusta e experiência em sala de aula. Sou Licenciada em Física pela Universidade Estadual de Campinas (UNICAMP). Para complementar, realizei cursos de especialização como 'Simulações Computacionais em Ensino de Física' e 'Metodologias Ativas para o Aprendizado de Ciências' (pelo Instituto de Tecnologia Educacional)."
+    },
+    {
+      "id": "6",
+      "nome": "Carlos Lima",
+      "materia": "Química",
+      "valor": "R$ 55/h",
+      "servico": "Serviço X",
+      "foto": "https://randomuser.me/api/portraits/men/3.jpg",
+      "avaliacao": 4.5,
+      "role": "monitor",
+      "formacao": "🧪 Conheça o Carlos Lima: Meu nome é Carlos Lima, e sou o seu guia para explorar o fascinante mundo das transformações da matéria. Deixe de lado a ideia de que Química é só tabela periódica; eu vou te mostrar a beleza das reações, dos átomos e das moléculas que compõem tudo ao seu redor! 🌍. 🎓 Formação e Expertise: Minha paixão pelo laboratório e pelo ensino é sustentada por uma formação de qualidade e experiência prática. Sou Bacharel em Química Industrial pela Universidade Federal do Rio de Janeiro (UFRJ). Para aprimorar minhas habilidades, fiz os cursos de extensão 'Técnicas de Laboratório e Segurança Química' e 'Didática Aplicada ao Ensino de Ciências', focando em metodologias que simplificam temas complexos."
+    },
+    {
+      "id": "7",
+      "nome": "Ana Paula",
+      "materia": "Biologia",
+      "valor": "R$ 58/h",
+      "servico": "Serviço X",
+      "foto": "https://randomuser.me/api/portraits/women/4.jpg",
+      "avaliacao": 4.7,
+      "role": "monitor",
+      "formacao": "🌱 Conheça a Ana Paula: Olá! Eu sou a Ana Paula, e estou aqui para abrir as portas do mundo vivo! Desde o funcionamento da menor célula até a complexidade dos ecossistemas 🌳, a Biologia explica como somos e como interagimos com o planeta. 🎓 Formação e Expertise: Minha paixão pelo estudo da vida e pela educação é fundamentada em uma sólida base acadêmica e experiência prática. Sou Licenciada em Ciências Biológicas pela Universidade Federal de Santa Catarina (UFSC). Para garantir que meu ensino seja o mais eficaz, completei cursos de extensão importantes como 'Metodologias Ativas e Ensino de Biologia' e 'Recursos Digitais para o Laboratório de Ciências'."
     }
   ],
   "notificacoes": [
