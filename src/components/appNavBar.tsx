@@ -45,7 +45,7 @@ const settings = ["Perfil", "Histórico", "Logout"];
 
 interface IUser {
   id: number;
-  name: string;
+  nome: string;
   email: string;
   role: string;
   description: string;

@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Box, Typography, Avatar, TextField, Button, Stack } from "@mui/material";
 import { useAppSelector, useAppDispatch } from "../redux/hooks";
 import { updateAgendamentoStatus } from "../redux/features/agendamento/agendamentoSlice";
+import { atualizarAgendamento } from "../redux/features/agendamento/fetch";
 
 interface ModalRemarcarProps {
   open: boolean;
   onClose: () => void;
+  onRemarcarSuccess?: () => void;
 }
 
 function formatHora(hora: string) {
@@ -15,11 +17,18 @@ function formatHora(hora: string) {
   return h.padStart(2, "0") + ":00";
 }
 
-const ModalRemarcar: React.FC<ModalRemarcarProps> = ({ open, onClose }) => {
+const ModalRemarcar: React.FC<ModalRemarcarProps> = ({ open, onClose, onRemarcarSuccess  }) => {
   const dispatch = useAppDispatch();
   const agendamento = useAppSelector((state) => state.agendamento.currentAgendamento);
   const [novaData, setNovaData] = useState("");
   const [novoHorario, setNovoHorario] = useState("");
+
+   useEffect(() => {
+    if (open) {
+      setNovaData("");
+      setNovoHorario("");
+    }
+  }, [open]);
 
   if (!agendamento) return null;
 
@@ -38,18 +47,22 @@ const ModalRemarcar: React.FC<ModalRemarcarProps> = ({ open, onClose }) => {
   };
 
 
-   const handleRemarcar = () => {
-    if (!agendamento.id) return;
-    
-    dispatch(updateAgendamentoStatus({
-      agendamentoId: agendamento.id,
-      status: 'REMARCADO',
-      novaData,
-      novoHorario
-    }));
-    onClose();
-  };
+   const handleRemarcar = async () => {
+  if (!agendamento.id) return;
 
+  try {
+    await atualizarAgendamento(agendamento.id, {
+      ...agendamento,
+      status: "REMARCADO",
+      data: novaData.split("-").reverse().join("/"), // Formata para dd/mm/yyyy se necessário
+      hora: novoHorario,
+    });
+    onClose();
+    if (typeof onRemarcarSuccess === "function") onRemarcarSuccess();
+  } catch (error) {
+    alert("Erro ao remarcar agendamento!");
+  }
+};
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="modal-remarcar-title">

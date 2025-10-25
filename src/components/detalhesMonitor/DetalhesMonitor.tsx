@@ -54,7 +54,7 @@ let conquistas: string[] = [
 function DetalhesMonitor() {
   const dispatch = useAppDispatch();
   const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
-  const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
+ const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const navigate = useNavigate();
   const usuarioLogado = useAppSelector((state) => state.login.user);
   const { avaliacoes, loading } = useAppSelector((state) => state.avaliacao);
@@ -89,43 +89,42 @@ function DetalhesMonitor() {
 
   if (!monitor) return null;
 
-  const handleTimeSlotClick = (day: string | undefined, time: string) => {
-    if (!day) return;
-    const slotId = `${day}-${time}`;
-    setSelectedSlots((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(slotId)) {
-        newSet.delete(slotId);
-      } else {
-        newSet.add(slotId);
-      }
-      return newSet;
-    });
-  };
+ const handleTimeSlotClick = (day: string | undefined, time: string) => {
+  if (!day) return;
+  setSelectedSlot(`${day}-${time}`); // só um horário por vez
+};
 
   const handleAgendar = () => {
-    console.log("usuarioLogado:", usuarioLogado);
-    const agora = new Date();
-    const dataFormatada = agora.toLocaleDateString("pt-BR"); // formato: dd/mm/aaaa
-    const horaFormatada = agora.toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }); // formato: hh:mm
-    // Cria um novo agendamento com base no monitor selecionado
-    const novoAgendamento: Agendamento = {
-      id: Date.now().toString(), // Gera um id único baseado no timestamp
-      monitor: monitor,
-      data: dataFormatada,
-      hora: horaFormatada,
-      status: "AGUARDANDO",
-      valor: monitor.valor,
-      statusPagamento: "PENDENTE",
-      alunoId: usuarioLogado?.id,
-    };
+  if (!selectedSlot) return;
+  const [diaSelecionado, horarioSelecionado] = selectedSlot.split("-");
 
-    dispatch(setCurrentAgendamento(novoAgendamento));
-    navigate("/MonitoriaJa/agendamento-monitor");
+  // Calcula a data prevista (próximo dia da semana a partir de hoje)
+  const diasSemana = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
+  const hoje = new Date();
+  const hojeIndex = hoje.getDay(); // 0=domingo, 1=segunda, ...
+  const targetIndex = diasSemana.indexOf(diaSelecionado);
+
+  let diff = targetIndex - hojeIndex;
+  if (diff < 0) diff += 7; // pega o próximo dia, nunca o anterior
+
+  const dataPrevista = new Date(hoje);
+  dataPrevista.setDate(hoje.getDate() + diff);
+  const dataFormatada = dataPrevista.toLocaleDateString("pt-BR"); // dd/mm/aaaa
+
+  const novoAgendamento: Agendamento = {
+    id: Date.now().toString(),
+    monitor: monitor,
+    data: dataFormatada,
+    hora: horarioSelecionado,
+    status: "AGUARDANDO",
+    valor: monitor.valor,
+    statusPagamento: "PENDENTE",
+    alunoId: usuarioLogado?.id,
   };
+
+  dispatch(setCurrentAgendamento(novoAgendamento));
+  navigate("/MonitoriaJa/agendamento-monitor");
+};
 
   return (
     <div className="main">
@@ -205,7 +204,7 @@ function DetalhesMonitor() {
                   <div className="day-header">{day}</div>
                   {times!.map((time) => {
                     const slotId = `${day}-${time}`;
-                    const isSelected = selectedSlots.has(slotId);
+                    const isSelected = selectedSlot === slotId;
                     return (
                       <div
                         key={time}
@@ -239,7 +238,7 @@ function DetalhesMonitor() {
           variant="contained"
           sx={{ padding: "5px 40px" }}
           onClick={handleAgendar}
-          disabled={selectedSlots.size === 0}
+          disabled={!selectedSlot}
         >
           Agendar
         </Button>

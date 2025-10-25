@@ -48,7 +48,7 @@ export const fetchUsuario = createAsyncThunk<Usuario, number>(
     const response = await fetch(`http://localhost:3001/usuarios/${id}`);
     if (!response.ok) throw new Error("Usuário não encontrado");
     const user = await response.json();
-    return { id: user.id, nome: user.name, email: user.email, telefone: user.telefone || '', role: user.role || 'user' };
+    return { id: user.id, nome: user.nome, email: user.email, telefone: user.telefone || '', role: user.role || 'user' };
   }
 );
 
@@ -68,7 +68,7 @@ export const updateUsuario = createAsyncThunk<Usuario, { nome: string; telefone:
     const response = await fetch(`http://localhost:3001/usuarios/${currentUser.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newUser.nome, email: newUser.email, telefone: newUser.telefone }),
+      body: JSON.stringify({ nome: newUser.nome, email: newUser.email, telefone: newUser.telefone }),
     });
     if (!response.ok) throw new Error('Erro ao atualizar usuário');
     await response.json();
