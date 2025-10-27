@@ -37,52 +37,47 @@ export interface UsuarioCompleto {
 export const fetchUsuariosAdmin = createAsyncThunk<UsuarioCompleto[]>(
   'admin/fetchUsuarios',
   async () => {
-    const usuarios = await httpGet('http://localhost:3001/usuarios')
-
-    const usuariosMap = new Map<string, UsuarioCompleto>();
-
-    // Adiciona todos os usuários
-    usuarios.forEach((usuario: UsuarioAdmin) => {
-      usuariosMap.set(usuario.id, {
-        id: usuario.id,
-        name: usuario.name,
-        email: usuario.email || '',
-        telefone: usuario.telefone || '',
-        foto: usuario.foto,
-        role: usuario.role,
-      });
-      console.log("Se liga", usuario)
-    });
-    
-    // Enriquece dados dos monitores
-    usuarios.forEach((monitor: MonitorAdmin) => {
-      if (usuariosMap.has(monitor.id)) {
-        const usuario = usuariosMap.get(monitor.id)!;
-        usuariosMap.set(monitor.id, {
-          ...usuario,
-          name: monitor.nome,
-          materia: monitor.materia,
-          valor: monitor.valor,
-          avaliacao: monitor.avaliacao,
-          foto: monitor.foto || usuario.foto,
-          role: monitor.role
-        });
-      } else {
-        // Se monitor não existe em usuarios, adiciona com role monitor
-        usuariosMap.set(monitor.id, {
-          id: monitor.id,
-          name: monitor.nome,
-          email: monitor.email || '',
-          telefone: monitor.telefone || '',
-          role: 'monitor',
-          foto: monitor.foto,
-          materia: monitor.materia,
-          valor: monitor.valor,
-          avaliacao: monitor.avaliacao,
-        });
+    try {
+      const usuarios = await httpGet('http://localhost:3001/usuarios');
+      
+      console.log('===== FETCH USUARIOS =====');
+      console.log('Resposta da API:', usuarios);
+      console.log('Tipo:', typeof usuarios);
+      console.log('É array?', Array.isArray(usuarios));
+      
+      // Verifica se é array
+      if (!Array.isArray(usuarios)) {
+        console.error('API não retornou um array:', usuarios);
+        return [];
       }
-    });
-
-    return Array.from(usuariosMap.values());
+      
+      // Mapeia os usuários diretamente
+      const usuariosProcessados: UsuarioCompleto[] = usuarios.map((usuario: any) => {
+        console.log('Processando usuário:', usuario);
+        
+        return {
+          id: usuario.id || '',
+          name: usuario.name || usuario.nome || '',
+          email: usuario.email || '',
+          telefone: usuario.telefone || '',
+          role: usuario.role || 'user',
+          foto: usuario.foto,
+          // Campos específicos de monitor (se existirem)
+          materia: usuario.materia,
+          valor: usuario.valor,
+          avaliacao: usuario.avaliacao,
+        };
+      });
+      
+      console.log('Usuários processados:', usuariosProcessados);
+      console.log('Total:', usuariosProcessados.length);
+      console.log('==========================');
+      
+      return usuariosProcessados;
+      
+    } catch (error) {
+      console.error('ERRO ao buscar usuários:', error);
+      throw error;
+    }
   }
 );

@@ -50,11 +50,15 @@ const roleIcons = {
 
 function matchStartOfWords(text: string, search: string) {
   if (!search) return true;
-  const s = search.trim().toLowerCase();
-  return text
-    .toLowerCase()
-    .split(/\s+/)
-    .some((w) => w.startsWith(s));
+  if (!text) return false;
+  
+  const searchTerms = search.trim().toLowerCase().split(/\s+/);
+  const textWords = text.toLowerCase().split(/\s+/);
+  
+  // Cada termo da busca deve ter pelo menos uma palavra que comece com ele
+  return searchTerms.every(searchTerm => 
+    textWords.some(word => word.startsWith(searchTerm))
+  );
 }
 
 function getGridCols() {
