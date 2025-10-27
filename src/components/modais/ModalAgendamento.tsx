@@ -131,28 +131,23 @@ function ModalAgendamento(props: { onClose: () => void }) {
   const handleConfirmarDisponibilidade = async () => {
     if (!currentMonitor) return;
 
-    // Converter dados locais para formato Disponibilidade
     const novasDisponibilidades: Disponibilidade[] = dias.map((day) => ({
       day,
       times: horariosPorDia[day] ?? [],
     }));
 
     try {
-      // Atualizar estado local do Redux
       dispatch(atualizarDisponibilidades(novasDisponibilidades));
 
-      // Salvar no backend
       await dispatch(
         updateMonitor({
           listaDisponibilidades: novasDisponibilidades,
         })
       ).unwrap();
 
-      // Fechar modal após sucesso
       props.onClose();
     } catch (error) {
       console.error("Erro ao atualizar disponibilidades:", error);
-      // Aqui você pode adicionar uma notificação de erro se necessário
     }
   };
 

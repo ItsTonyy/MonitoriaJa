@@ -43,46 +43,6 @@ export interface Disponibilidade {
   horarios: string[];
 }
 
-const HORARIOS = [
-  "00:00",
-  "01:00",
-  "02:00",
-  "03:00",
-  "04:00",
-  "05:00",
-  "06:00",
-  "07:00",
-  "08:00",
-  "09:00",
-  "10:00",
-  "11:00",
-  "12:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-  "18:00",
-  "19:00",
-  "20:00",
-  "21:00",
-  "22:00",
-  "23:00",
-];
-
-const DIAS = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"];
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
 const modalStyle = {
   position: "absolute",
   top: "50%",
@@ -127,14 +87,6 @@ const PerfilMonitorPage: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const [dias, setDias] = useState<string[]>([]);
-  console.log(dias);
-  const [horariosPorDia, setHorariosPorDia] = useState<
-    Record<string, string[]>
-  >({});
-  const [disponibilidades, setDisponibilidades] = useState<Disponibilidade[]>(
-    []
-  );
   const [erros, setErros] = useState<{ telefone?: string; email?: string }>({});
 
   // Estado do modal
@@ -212,14 +164,6 @@ const PerfilMonitorPage: React.FC = () => {
     dispatch,
   ]);
 
-  useEffect(() => {
-    const novasDisponibilidades = dias.map((dia) => ({
-      dia,
-      horarios: horariosPorDia[dia] ?? [],
-    }));
-    setDisponibilidades(novasDisponibilidades);
-  }, [dias, horariosPorDia]);
-
   // Converter array de objetos {id, nome} para array de strings (nomes)
   const opcoesMaterias = materiasDisponiveis.map(
     (disciplina) => disciplina.nome
@@ -247,30 +191,6 @@ const PerfilMonitorPage: React.FC = () => {
     setDescricaoInput(value);
     if (hasSubmitted) dispatch(validateField({ field: "descricao", value }));
   };
-
-  const handleChangeDias = (event: SelectChangeEvent<typeof dias>) => {
-    const { value } = event.target;
-    const novosDias = typeof value === "string" ? value.split(",") : value;
-    setDias(novosDias);
-    setHorariosPorDia((prev) => {
-      const atualizado: Record<string, string[]> = {};
-      novosDias.forEach((d) => {
-        atualizado[d] = prev[d] ?? [];
-      });
-      return atualizado;
-    });
-  };
-
-  const handleChangeHorariosPorDia =
-    (dia: string) => (event: SelectChangeEvent<string[]>) => {
-      const val = event.target.value as unknown as string[] | string;
-      const selecionados =
-        typeof val === "string" ? val.split(",") : (val as string[]);
-      setHorariosPorDia((prev) => ({
-        ...prev,
-        [dia]: selecionados,
-      }));
-    };
 
   const validarCampos = () => {
     const novosErros: { telefone?: string; email?: string } = {};
@@ -506,7 +426,7 @@ const PerfilMonitorPage: React.FC = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <ModalAgendamento onClose={handleClose} />
+            <ModalAgendamento onClose={handleClose} dias={dias} />
           </Modal>
 
           <div className={styles.buttonGroup}>
