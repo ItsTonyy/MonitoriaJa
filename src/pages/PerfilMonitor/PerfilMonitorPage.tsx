@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
   TextField, 
   Box, 
@@ -63,6 +63,7 @@ const MenuProps = {
 const PerfilMonitorPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const { monitorId } = useParams<{ monitorId: string }>();
   
   const authUser = useSelector((state: RootState) => state.login.user);
   const monitor = useSelector((state: RootState) => state.perfilMonitor.currentMonitor);
@@ -92,14 +93,17 @@ const PerfilMonitorPage: React.FC = () => {
   // Ref para o nome
   const nomeRef = useRef<HTMLDivElement | null>(null);
 
+  // Buscar monitor
   useEffect(() => {
-    if (authUser?.id) {
-      dispatch(fetchMonitor(Number(authUser.id)));
-      dispatch(fetchDisciplinas()); // Buscar disciplinas do backend
+    const monitorToFetch = monitorId ? Number(monitorId) : (authUser?.id ? Number(authUser.id) : null);
+    
+    if (monitorToFetch) {
+      dispatch(fetchMonitor(monitorToFetch));
+      dispatch(fetchDisciplinas());
     } else {
       navigate('/MonitoriaJa/login');
     }
-  }, [dispatch, navigate, authUser]);
+  }, [dispatch, navigate, authUser, monitorId]);
 
   // Atualizar estados locais quando monitor é carregado
   useEffect(() => {
@@ -219,7 +223,7 @@ const PerfilMonitorPage: React.FC = () => {
 
   const handleSalvar = async () => {
     if (!monitor) return;
-    
+
     setHasSubmitted(true);
 
     dispatch(validateField({ field: 'nome', value: nomeInput }));
@@ -284,7 +288,7 @@ const PerfilMonitorPage: React.FC = () => {
             <div 
               ref={nomeRef}
               className={styles.name} 
-              contentEditable 
+              contentEditable
               suppressContentEditableWarning 
               role="textbox" 
               aria-label="Nome do monitor" 

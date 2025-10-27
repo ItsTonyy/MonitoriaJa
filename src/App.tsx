@@ -31,6 +31,8 @@ const App = () => {
       <AppNavBar />
       <MainLayout>
         <Routes>
+          <Route path="/MonitoriaJa/perfil-usuario/:userId" element={<PerfilUsuarioPage />} />
+          <Route path="/MonitoriaJa/perfil-monitor/:monitorId" element={<PerfilMonitorPage />} />
           <Route path="/MonitoriaJa" element={<LandingPage />} />
           <Route path="/MonitoriaJa/login" element={<LoginPage />} />
           <Route

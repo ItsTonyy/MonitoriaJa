@@ -23,6 +23,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import StarIcon from "@mui/icons-material/Star";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { fetchUsuariosAdmin } from "../../redux/features/admin/fetch";
+import { useNavigate } from "react-router-dom";
 
 interface UserData {
   id: string;
@@ -89,6 +90,7 @@ function getCardsPerPage() {
 
 function ListagemUsuarios() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { usuarios, loading } = useAppSelector((state) => state.admin);
   const [buscaNome, setBuscaNome] = useState("");
   const [buscaRole, setBuscaRole] = useState<string>("");
@@ -128,6 +130,15 @@ function ListagemUsuarios() {
     (pagina - 1) * cardsPorPagina,
     pagina * cardsPorPagina
   );
+
+  // Função para navegar para o perfil correto baseado na role
+  const handleVisualizarUsuario = (usuario: UserData) => {
+    if (usuario.role === 'monitor') {
+      navigate(`/MonitoriaJa/perfil-monitor/${usuario.id}`);
+    } else {
+      navigate(`/MonitoriaJa/perfil-usuario/${usuario.id}`);
+    }
+  };
 
   if (loading) {
     return (
@@ -454,9 +465,7 @@ function ListagemUsuarios() {
                         variant="contained"
                         color="primary"
                         size="medium"
-                        onClick={() => {
-                          console.log('Visualizar usuário:', usuario);
-                        }}
+                        onClick={() => handleVisualizarUsuario(usuario)}
                       >
                         Visualizar
                       </Button>
