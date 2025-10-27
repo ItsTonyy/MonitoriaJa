@@ -115,7 +115,7 @@ export const updateMonitor = createAsyncThunk<
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        name: newMonitor.nome,
+        nome: newMonitor.nome,
         email: newMonitor.email,
         telefone: newMonitor.telefone,
         description: newMonitor.descricao,

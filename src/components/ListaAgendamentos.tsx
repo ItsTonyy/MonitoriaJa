@@ -11,7 +11,6 @@ import {
   Paper,
   Box,
   Fade,
-  CircularProgress,
 } from "@mui/material";
 
 import ModalAcessar from "./ModalAcessar";
@@ -19,8 +18,10 @@ import ModalRemarcar from "./ModalRemarcar";
 import ModalCancelamento from "./ModalCancelamento";
 import { Agendamento } from "../models/agendamento.model";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { setCurrentAgendamento, setAgendamentosList } from "../redux/features/agendamento/agendamentoSlice";
+import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
 import { listarAgendamentosPorUsuarioId } from "../redux/features/agendamento/fetch";
+
+
 
 function getGridCols() {
   if (typeof window === "undefined") return 2;
@@ -42,12 +43,12 @@ function getGridRows() {
   return Math.max(1, Math.floor(alturaDisponivel / alturaTotal));
 }
 
+// Altere a função getCardsPerPage
 function getCardsPerPage() {
   const cols = getGridCols();
   const rows = getGridRows();
   return cols * rows;
 }
-
 function ListaAgendamentos() {
   const [pagina, setPagina] = useState(1);
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
@@ -56,33 +57,26 @@ function ListaAgendamentos() {
   const [modalRemarcarOpen, setModalRemarcarOpen] = useState(false);
   const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
   
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  // CORREÇÃO: Busca os agendamentos do Redux
-  const agendamentos = useAppSelector((state) => state.agendamento.agendamentosList);
-  const usuarioLogado = useAppSelector((state) => state.login.user);
+  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState<string | null>(null);
+const usuarioLogado = useAppSelector((state) => state.login.user);
 
-  useEffect(() => {
-    const carregarAgendamentos = async () => {
-      if (!usuarioLogado) return;
-      
-      setLoading(true);
-      try {
-        const data = await listarAgendamentosPorUsuarioId(usuarioLogado.id.toString());
-        // CORREÇÃO: Atualiza o Redux em vez de apenas o estado local
-        dispatch(setAgendamentosList(data));
-        setError(null);
-      } catch (err) {
-        console.error("Erro ao carregar agendamentos:", err);
-        setError("Erro ao carregar agendamentos");
-      } finally {
-        setLoading(false);
-      }
-    };
+const fetchAgendamentos = () => {
+  listarAgendamentosPorUsuarioId(usuarioLogado!.id.toString())
+    .then((data) => {
+      setAgendamentos(data);
+      setLoading(false);
+    })
+    .catch(() => {
+      setError("Erro ao carregar agendamentos");
+      setLoading(false);
+    });
+};
 
-    carregarAgendamentos();
-  }, [dispatch, usuarioLogado]);
+useEffect(() => {
+  fetchAgendamentos();
+}, []);
 
   useEffect(() => {
     function handleResize() {
@@ -107,48 +101,8 @@ function ListaAgendamentos() {
         (pagina - 1) * cardsPorPagina,
         pagina * cardsPorPagina
       ),
-    [agendamentos, pagina, cardsPorPagina]
+    [agendamentos,pagina, cardsPorPagina]
   );
-
-  // Loading state
-  if (loading) {
-    return (
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          borderRadius: 2,
-          bgcolor: "background.default",
-          maxWidth: 1200,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "400px",
-        }}
-      >
-        <CircularProgress />
-      </Paper>
-    );
-  }
-
-  // Error state
-  if (error) {
-    return (
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          borderRadius: 2,
-          bgcolor: "background.default",
-          maxWidth: 1200,
-        }}
-      >
-        <Typography align="center" color="error" sx={{ my: 4 }}>
-          {error}
-        </Typography>
-      </Paper>
-    );
-  }
 
   return (
     <Paper
@@ -254,6 +208,16 @@ function ListaAgendamentos() {
                       justifyContent: "center",
                     }}
                   >
+                    {/* <Typography
+                      variant="h6"
+                      color="primary.main"
+                      sx={{
+                        fontSize: "1.1rem",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >*/}
                     <Typography
                       variant="h6"
                       color="primary.main"
@@ -311,11 +275,12 @@ function ListaAgendamentos() {
                     }}
                   >
                     <Stack
-                      spacing={1}
+                      spacing={1} // Adiciona espaçamento vertical entre botões
                       sx={{
                         width: "100%",
                         minWidth: "110px",
                         "& .MuiButton-root": {
+                          // Estilo comum para todos os botões
                           padding: "8px 16px",
                           fontSize: "0.875rem",
                         },
@@ -405,20 +370,21 @@ function ListaAgendamentos() {
           &#8594;
         </Button>
       </Stack>
-
       {/* Modais */}
-      <ModalCancelamento
-        open={modalCancelamentoOpen}
-        onClose={() => setModalCancelamentoOpen(false)}
-      />
-      <ModalRemarcar
-        open={modalRemarcarOpen}
-        onClose={() => setModalRemarcarOpen(false)}
-      />
-      <ModalAcessar
-        open={modalAcessarOpen}
-        onClose={() => setModalAcessarOpen(false)}
-      />
+     <ModalCancelamento
+    open={modalCancelamentoOpen}
+    onClose={() => setModalCancelamentoOpen(false)}
+     onCancelSuccess={fetchAgendamentos}
+  />
+  <ModalRemarcar
+    open={modalRemarcarOpen}
+    onClose={() => setModalRemarcarOpen(false)}
+    onRemarcarSuccess={fetchAgendamentos}
+  />
+  <ModalAcessar
+    open={modalAcessarOpen}
+    onClose={() => setModalAcessarOpen(false)}
+  />
     </Paper>
   );
 }

@@ -3,7 +3,7 @@ import { httpGet, httpPost, httpPut } from "../../../utils";
 
 export interface User {
   id: number;
-  name: string;
+  nome: string;
   email: string;
   role: "admin" | "monitor" | "user";
 }
