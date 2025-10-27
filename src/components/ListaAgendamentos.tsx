@@ -62,17 +62,21 @@ function ListaAgendamentos() {
   const [, setError] = useState<string | null>(null);
 const usuarioLogado = useAppSelector((state) => state.login.user);
 
-  useEffect(() => {
-   listarAgendamentosPorUsuarioId(usuarioLogado!.id.toString())
-      .then((data) => {
-        setAgendamentos(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Erro ao carregar agendamentos");
-        setLoading(false);
-      });
-  }, []);
+const fetchAgendamentos = () => {
+  listarAgendamentosPorUsuarioId(usuarioLogado!.id.toString())
+    .then((data) => {
+      setAgendamentos(data);
+      setLoading(false);
+    })
+    .catch(() => {
+      setError("Erro ao carregar agendamentos");
+      setLoading(false);
+    });
+};
+
+useEffect(() => {
+  fetchAgendamentos();
+}, []);
 
   useEffect(() => {
     function handleResize() {
@@ -370,10 +374,12 @@ const usuarioLogado = useAppSelector((state) => state.login.user);
      <ModalCancelamento
     open={modalCancelamentoOpen}
     onClose={() => setModalCancelamentoOpen(false)}
+     onCancelSuccess={fetchAgendamentos}
   />
   <ModalRemarcar
     open={modalRemarcarOpen}
     onClose={() => setModalRemarcarOpen(false)}
+    onRemarcarSuccess={fetchAgendamentos}
   />
   <ModalAcessar
     open={modalAcessarOpen}
