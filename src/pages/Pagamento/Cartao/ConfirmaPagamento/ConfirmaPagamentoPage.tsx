@@ -1,51 +1,95 @@
-import React, { useEffect } from "react";
-import { Box, Typography, Alert } from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../../redux/store";
-import { resetStatus, confirmaPagamento } from "../../../../redux/features/listaCartao/slice";
-import ConfirmationButton from "../../../botaoTemporario/botaoTemporario";
-import styles from "./ConfirmaPagamentoPage.module.css";
-import Title from "../../../AlterarSenha/Titulo/Titulo";
-import CartaoItem from "../CartaoItem/CartaoItem";
+import React, { useState, useEffect } from 'react';
+import { Box, Alert } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import ConfirmationButton from '../../../botaoTemporario/botaoTemporario';
+import styles from './ConfirmaPagamentoPage.module.css';
+import Title from '../../../AlterarSenha/Titulo/Titulo';
+import CartaoItem from '../CartaoItem/CartaoItem';
+import { criarAgendamento } from '../../../../redux/features/agendamento/fetch';
+import { addAgendamento } from '../../../../redux/features/agendamento/agendamentoSlice';
+import type { RootState } from '../../../../redux/root-reducer';
 
-const ConfirmaPagamento: React.FC = () => {
+const ConfirmaPagamentoPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch<AppDispatch>();
-
+  const dispatch = useDispatch();
+  
   const cartao = location.state?.cartao;
-  const { status, errorMessage } = useSelector((state: RootState) => state.cartoes);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Resetar status ao entrar
+  // Redux Agendamento
+  const currentAgendamento = useSelector(
+    (state: RootState) => state.agendamento.currentAgendamento
+  );
+
+  // Verifica se existe agendamento e cartão
   useEffect(() => {
-    dispatch(resetStatus());
-  }, [dispatch]);
-
-  // Confirmar pagamento
-  const handleConfirmar = () => {
-    if (!cartao?.id) {
-      alert("Nenhum cartão selecionado!");
-      return;
+    if (!currentAgendamento) {
+      alert("Nenhum agendamento encontrado!");
+      navigate("/MonitoriaJa/lista-agendamentos");
     }
-    dispatch(confirmaPagamento(cartao.id));
-  };
+    if (!cartao) {
+      alert("Nenhum cartão selecionado!");
+      navigate("/MonitoriaJa/lista-cartao");
+    }
+  }, [currentAgendamento, cartao, navigate]);
 
-  const handleCancel = () => navigate(-1);
-
-  // Redirecionar após sucesso
+  // Redireciona após sucesso
   useEffect(() => {
-    if (status === "success") {
-      const timeout = setTimeout(() => {
-        dispatch(resetStatus());
+    if (success) {
+      const timer = setTimeout(() => {
         navigate("/MonitoriaJa/lista-agendamentos");
       }, 2000);
-      return () => clearTimeout(timeout);
+      return () => clearTimeout(timer);
     }
-  }, [status, dispatch, navigate]);
+  }, [success, navigate]);
 
-  /* ---------- Tela de Sucesso ---------- */
-  if (status === "success") {
+  const handleConfirmarPagamento = async () => {
+    if (!currentAgendamento) {
+      alert("Nenhum agendamento encontrado!");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Simula processamento do pagamento
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Atualiza agendamento com dados de pagamento
+      const novoAgendamento = {
+        ...currentAgendamento,
+        statusPagamento: "PAGO" as const,
+        formaPagamento: "CARTAO" as const,
+        status: "CONFIRMADO" as const,
+      };
+
+      // Salva no backend e recebe o agendamento com ID
+      const agendamentoCriado = await criarAgendamento(novoAgendamento);
+
+      // CORREÇÃO: Atualiza o Redux com o novo agendamento
+      dispatch(addAgendamento(agendamentoCriado));
+
+      setSuccess(true);
+    } catch (error) {
+      console.error("Erro ao processar pagamento:", error);
+      setError("Erro ao processar pagamento. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    navigate("/MonitoriaJa/lista-cartao");
+  };
+
+  // Tela de sucesso
+  if (success) {
     return (
       <main
         style={{
@@ -70,6 +114,11 @@ const ConfirmaPagamento: React.FC = () => {
             letterSpacing: 1,
             textAlign: "center",
           }}
+          iconMapping={{
+            success: (
+              <CreditCardIcon sx={{ fontSize: 50, mr: 2, color: "#ffffff" }} />
+            ),
+          }}
         >
           Pagamento realizado com sucesso!
         </Alert>
@@ -77,8 +126,8 @@ const ConfirmaPagamento: React.FC = () => {
     );
   }
 
-  /* ---------- Tela de Erro ---------- */
-  if (status === "error") {
+  // Tela de erro
+  if (error) {
     return (
       <main
         style={{
@@ -99,9 +148,9 @@ const ConfirmaPagamento: React.FC = () => {
             textAlign: "center",
           }}
         >
-          {errorMessage || "Erro ao processar pagamento"}
+          {error}
           <Box sx={{ mt: 2 }}>
-            <ConfirmationButton onClick={() => dispatch(resetStatus())}>
+            <ConfirmationButton onClick={() => setError(null)}>
               Tentar novamente
             </ConfirmationButton>
           </Box>
@@ -110,26 +159,36 @@ const ConfirmaPagamento: React.FC = () => {
     );
   }
 
-  /* ---------- Tela principal ---------- */
+  // Valores do pedido
+  const orderId = currentAgendamento ? `#${currentAgendamento.id}` : '#0000';
+
   return (
     <main className={styles.centralizeContent}>
       <Box className={styles.card}>
-        <Title text="Cartão" />
+        <Title text="Confirmar Pagamento" />
+        <div className={styles.infoText}>Pedido {orderId}</div>
+
         <CartaoItem
-          numero={cartao?.numero ?? "************0000"}
-          nome={cartao?.nome ?? "Nome não disponível"}
-          bandeira={cartao?.bandeira ?? "Visa"}
+          numero={cartao?.numero ?? '************0000'}
+          nome={cartao?.nome ?? 'Nome não disponível'}
+          bandeira={cartao?.bandeira ?? 'Visa'}
           mostrarBotoes={false}
         />
+
         <Box className={styles.buttonGroup}>
-          <ConfirmationButton onClick={handleConfirmar}>
-            {status === "loading" ? "Processando..." : "Confirmar Pagamento"}
+          <ConfirmationButton
+            onClick={handleConfirmarPagamento}
+            disabled={loading}
+          >
+            {loading ? "Processando..." : "Confirmar Pagamento"}
           </ConfirmationButton>
-          <ConfirmationButton onClick={handleCancel}>Cancelar</ConfirmationButton>
+          <ConfirmationButton onClick={handleCancel} disabled={loading}>
+            Cancelar
+          </ConfirmationButton>
         </Box>
       </Box>
     </main>
   );
 };
 
-export default ConfirmaPagamento;
+export default ConfirmaPagamentoPage;
