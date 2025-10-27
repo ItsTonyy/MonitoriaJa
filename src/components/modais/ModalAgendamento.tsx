@@ -82,6 +82,23 @@ function ModalAgendamento(props: { onClose: () => void }) {
 
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
 
+  // Inicializa dias e horários a partir das disponibilidades existentes do monitor
+  useEffect(() => {
+    const lista = currentMonitor?.listaDisponibilidades || [];
+    if (lista.length > 0) {
+      const diasIniciais = lista.map((d) => d.day);
+      setDias(diasIniciais);
+
+      const horariosIniciais: Record<string, string[]> = {};
+      lista.forEach((d) => {
+        horariosIniciais[d.day] = d.times || [];
+      });
+      setHorariosPorDia(horariosIniciais);
+
+      setDisponibilidades(lista);
+    }
+  }, [currentMonitor]);
+
   const handleTimeSlotClick = (day: string | undefined, time: string) => {
     if (!day) return;
     const slotId = `${day}-${time}`;

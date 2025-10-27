@@ -1,20 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  TextField,
-  MenuItem,
-  Select,
-  Checkbox,
-  InputLabel,
-  OutlinedInput,
-  ListItemText,
-  SelectChangeEvent,
-  Box,
-} from "@mui/material";
+import { TextField } from "@mui/material";
 import ConfirmationButton from "../botaoTemporario/botaoTemporario";
 import DescriptionBox from "./Descricao/Descricao";
-import CampoFormulario from "./CampoFormulario/CampoFormulario";
 import UploadButton from "./UploadButton/UploadButton";
 import StatusModal from "../AlterarSenha/StatusModal/StatusModal";
 import PersonIcon from "@mui/icons-material/Person";
@@ -27,12 +16,10 @@ import {
   fetchMonitor,
   updateMonitor,
   validateField,
-  clearValidationErrors,
   clearError,
   atualizarDescricao,
   atualizarContato,
   atualizarMaterias,
-  atualizarDisponibilidades,
   fetchDisciplinas,
 } from "../../redux/features/perfilMonitor/slice";
 import Modal from "@mui/material/Modal";
@@ -42,18 +29,6 @@ export interface Disponibilidade {
   dia: string;
   horarios: string[];
 }
-
-const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
 
 const PerfilMonitorPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -93,7 +68,6 @@ const PerfilMonitorPage: React.FC = () => {
   const [modalOpen, setModalOpen] = React.useState(false);
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
-  const [modalAgendamentoOpen, setModalAgendamentoOpen] = useState(false);
 
   const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -118,29 +92,6 @@ const PerfilMonitorPage: React.FC = () => {
       setDescricaoInput(monitor.descricao || "");
       setMateriasSelecionadas(monitor.materias || []);
       setFotoUrl(monitor.fotoUrl || "");
-      setDisponibilidades(
-        (monitor.listaDisponibilidades || []).map((d) => ({
-          dia: d.day,
-          horarios: d.times || [],
-        }))
-      );
-
-      // Inicializar dias e horários baseado nas disponibilidades existentes
-      if (
-        monitor.listaDisponibilidades &&
-        monitor.listaDisponibilidades.length > 0
-      ) {
-        const diasFromDisponibilidades = monitor.listaDisponibilidades.map(
-          (d) => d.day
-        );
-        setDias(diasFromDisponibilidades);
-
-        const horariosFromDisponibilidades: Record<string, string[]> = {};
-        monitor.listaDisponibilidades.forEach((d) => {
-          horariosFromDisponibilidades[d.day] = d.times || [];
-        });
-        setHorariosPorDia(horariosFromDisponibilidades);
-      }
 
       // Preencher o nome no DOM diretamente
       if (nomeRef.current) {
@@ -245,10 +196,6 @@ const PerfilMonitorPage: React.FC = () => {
           descricao: descricaoInput,
           materias: materiasSelecionadas,
           fotoUrl: fotoUrl,
-          listaDisponibilidades: disponibilidades.map((d) => ({
-            day: d.dia,
-            times: d.horarios,
-          })),
         })
       ).unwrap();
 
@@ -257,11 +204,6 @@ const PerfilMonitorPage: React.FC = () => {
       );
       dispatch(atualizarDescricao(descricaoInput));
       dispatch(atualizarMaterias(materiasSelecionadas));
-      dispatch(
-        atualizarDisponibilidades(
-          disponibilidades.map((d) => ({ day: d.dia, times: d.horarios }))
-        )
-      );
 
       setOpen(true);
     } catch (err) {
@@ -426,7 +368,7 @@ const PerfilMonitorPage: React.FC = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <ModalAgendamento onClose={handleClose} dias={dias} />
+            <ModalAgendamento onClose={handleClose} />
           </Modal>
 
           <div className={styles.buttonGroup}>
