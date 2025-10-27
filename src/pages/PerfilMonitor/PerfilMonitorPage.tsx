@@ -32,10 +32,11 @@ import {
   atualizarDescricao,
   atualizarContato,
   atualizarMaterias,
-  atualizarDisponibilidades,,
-  fetchDisciplinas
+  atualizarDisponibilidades,
+  fetchDisciplinas,
 } from "../../redux/features/perfilMonitor/slice";
 import Modal from "@mui/material/Modal";
+import ModalAgendamento from "../../components/modais/ModalAgendamento";
 
 export interface Disponibilidade {
   dia: string;
@@ -97,7 +98,6 @@ const modalStyle = {
 const PerfilMonitorPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  
 
   // Redux state
   const authUser = useSelector((state: RootState) => state.login.user);
@@ -108,20 +108,27 @@ const PerfilMonitorPage: React.FC = () => {
     (state: RootState) => state.perfilMonitor.loading
   );
   const error = useSelector((state: RootState) => state.perfilMonitor.error);
-  const validationErrors = useSelector((state: RootState) => state.perfilMonitor.validationErrors);
-  const materiasDisponiveis = useSelector((state: RootState) => state.perfilMonitor.materiasDisponiveis);
-  
+  const validationErrors = useSelector(
+    (state: RootState) => state.perfilMonitor.validationErrors
+  );
+  const materiasDisponiveis = useSelector(
+    (state: RootState) => state.perfilMonitor.materiasDisponiveis
+  );
+
   // Local state
-  const [nomeInput, setNomeInput] = useState('');
-  const [telefoneInput, setTelefoneInput] = useState('');
-  const [emailInput, setEmailInput] = useState('');
-  const [descricaoInput, setDescricaoInput] = useState('');
-  const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>([]);
-  const [fotoUrl, setFotoUrl] = useState<string>('');
+  const [nomeInput, setNomeInput] = useState("");
+  const [telefoneInput, setTelefoneInput] = useState("");
+  const [emailInput, setEmailInput] = useState("");
+  const [descricaoInput, setDescricaoInput] = useState("");
+  const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>(
+    []
+  );
+  const [fotoUrl, setFotoUrl] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  
+
   const [dias, setDias] = useState<string[]>([]);
+  console.log(dias);
   const [horariosPorDia, setHorariosPorDia] = useState<
     Record<string, string[]>
   >({});
@@ -134,6 +141,7 @@ const PerfilMonitorPage: React.FC = () => {
   const [modalOpen, setModalOpen] = React.useState(false);
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
+  const [modalAgendamentoOpen, setModalAgendamentoOpen] = useState(false);
 
   const telefoneRegex = /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -153,12 +161,17 @@ const PerfilMonitorPage: React.FC = () => {
   // Atualizar estados locais quando monitor é carregado
   useEffect(() => {
     if (monitor) {
-      setTelefoneInput(monitor.telefone || '');
-      setEmailInput(monitor.email || '');
-      setDescricaoInput(monitor.descricao || '');
+      setTelefoneInput(monitor.telefone || "");
+      setEmailInput(monitor.email || "");
+      setDescricaoInput(monitor.descricao || "");
       setMateriasSelecionadas(monitor.materias || []);
       setFotoUrl(monitor.fotoUrl || "");
-      setDisponibilidades(monitor.listaDisponibilidades || []);
+      setDisponibilidades(
+        (monitor.listaDisponibilidades || []).map((d) => ({
+          dia: d.day,
+          horarios: d.times || [],
+        }))
+      );
 
       // Inicializar dias e horários baseado nas disponibilidades existentes
       if (
@@ -179,9 +192,9 @@ const PerfilMonitorPage: React.FC = () => {
 
       // Preencher o nome no DOM diretamente
       if (nomeRef.current) {
-        nomeRef.current.textContent = monitor.nome || '';
+        nomeRef.current.textContent = monitor.nome || "";
       }
-      setNomeInput(monitor.nome || '');
+      setNomeInput(monitor.nome || "");
     }
   }, [monitor]);
 
@@ -208,13 +221,16 @@ const PerfilMonitorPage: React.FC = () => {
   }, [dias, horariosPorDia]);
 
   // Converter array de objetos {id, nome} para array de strings (nomes)
-  const opcoesMaterias = materiasDisponiveis.map(disciplina => disciplina.nome);
+  const opcoesMaterias = materiasDisponiveis.map(
+    (disciplina) => disciplina.nome
+  );
 
   // Handlers
   const handleNomeBlur = () => {
-    const newNome = nomeRef.current?.textContent?.trim() || '';
+    const newNome = nomeRef.current?.textContent?.trim() || "";
     setNomeInput(newNome);
-    if (hasSubmitted) dispatch(validateField({ field: 'nome', value: newNome }));
+    if (hasSubmitted)
+      dispatch(validateField({ field: "nome", value: newNome }));
   };
 
   const handleTelefoneChange = (value: string) => {
@@ -288,31 +304,44 @@ const PerfilMonitorPage: React.FC = () => {
 
     setHasSubmitted(true);
 
-    dispatch(validateField({ field: 'nome', value: nomeInput }));
-    dispatch(validateField({ field: 'telefone', value: telefoneInput }));
-    dispatch(validateField({ field: 'email', value: emailInput }));
-    dispatch(validateField({ field: 'descricao', value: descricaoInput }));
+    dispatch(validateField({ field: "nome", value: nomeInput }));
+    dispatch(validateField({ field: "telefone", value: telefoneInput }));
+    dispatch(validateField({ field: "email", value: emailInput }));
+    dispatch(validateField({ field: "descricao", value: descricaoInput }));
 
     const camposValidos = validarCampos();
-    const hasValidationErrors = Object.values(validationErrors).some(err => err !== undefined) || !camposValidos;
-    
+    const hasValidationErrors =
+      Object.values(validationErrors).some((err) => err !== undefined) ||
+      !camposValidos;
+
     if (hasValidationErrors) return;
 
     try {
-      await dispatch(updateMonitor({
-        nome: nomeInput,
-        telefone: telefoneInput,
-        email: emailInput,
-        descricao: descricaoInput,
-        materias: materiasSelecionadas,
-        fotoUrl: fotoUrl,
-        listaDisponibilidades: disponibilidades
-      })).unwrap();
-      
-      dispatch(atualizarContato({ telefone: telefoneInput, email: emailInput }));
+      await dispatch(
+        updateMonitor({
+          nome: nomeInput,
+          telefone: telefoneInput,
+          email: emailInput,
+          descricao: descricaoInput,
+          materias: materiasSelecionadas,
+          fotoUrl: fotoUrl,
+          listaDisponibilidades: disponibilidades.map((d) => ({
+            day: d.dia,
+            times: d.horarios,
+          })),
+        })
+      ).unwrap();
+
+      dispatch(
+        atualizarContato({ telefone: telefoneInput, email: emailInput })
+      );
       dispatch(atualizarDescricao(descricaoInput));
       dispatch(atualizarMaterias(materiasSelecionadas));
-      dispatch(atualizarDisponibilidades(disponibilidades));
+      dispatch(
+        atualizarDisponibilidades(
+          disponibilidades.map((d) => ({ day: d.dia, times: d.horarios }))
+        )
+      );
 
       setOpen(true);
     } catch (err) {
@@ -352,17 +381,19 @@ const PerfilMonitorPage: React.FC = () => {
       <div className={styles.profileCard}>
         <div className={styles.profileHeader}>
           <div className={styles.editableGroup}>
-            <div 
+            <div
               ref={nomeRef}
-              className={styles.name} 
-              contentEditable 
-              suppressContentEditableWarning 
-              role="textbox" 
-              aria-label="Nome do monitor" 
+              className={styles.name}
+              contentEditable
+              suppressContentEditableWarning
+              role="textbox"
+              aria-label="Nome do monitor"
               tabIndex={0}
               onBlur={handleNomeBlur}
             />
-            {hasSubmitted && validationErrors.nome && <span className={styles.error}>{validationErrors.nome}</span>}
+            {hasSubmitted && validationErrors.nome && (
+              <span className={styles.error}>{validationErrors.nome}</span>
+            )}
           </div>
         </div>
 
@@ -424,10 +455,10 @@ const PerfilMonitorPage: React.FC = () => {
         </div>
 
         <div className={styles.fieldsContainer}>
-          <TextField 
-            label="Telefone" 
-            variant="outlined" 
-            fullWidth 
+          <TextField
+            label="Telefone"
+            variant="outlined"
+            fullWidth
             value={telefoneInput}
             onChange={(e) => handleTelefoneChange(e.target.value)}
             required
@@ -455,63 +486,11 @@ const PerfilMonitorPage: React.FC = () => {
             }
           />
 
-          <AtualizarMateria 
-            value={materiasSelecionadas} 
-            onChange={setMateriasSelecionadas} 
-            options={opcoesMaterias} 
+          <AtualizarMateria
+            value={materiasSelecionadas}
+            onChange={setMateriasSelecionadas}
+            options={opcoesMaterias}
           />
-
-          <div className="monitor-horarios">
-            <InputLabel id="demo-multiple-checkbox-label-dia">
-              Dias Disponíveis
-            </InputLabel>
-            <Select
-              labelId="demo-multiple-checkbox-label-dia"
-              id="demo-multiple-checkbox-label-dia"
-              multiple
-              value={dias}
-              onChange={handleChangeDias}
-              input={<OutlinedInput label="Dia" />}
-              renderValue={(selected) => selected.join(", ")}
-              MenuProps={MenuProps}
-              sx={{ overflow: "auto", minWidth: "100%", maxWidth: "100%" }}
-            >
-              {DIAS.map((name) => (
-                <MenuItem key={name} value={name}>
-                  <Checkbox checked={dias.includes(name)} />
-                  <ListItemText primary={name} />
-                </MenuItem>
-              ))}
-            </Select>
-
-            {dias.map((dia) => (
-              <div key={dia} style={{ marginTop: 8 }}>
-                <InputLabel id={`label-horarios-${dia}`}>
-                  Horários ({dia})
-                </InputLabel>
-                <Select
-                  labelId={`label-horarios-${dia}`}
-                  id={`select-horarios-${dia}`}
-                  multiple
-                  value={horariosPorDia[dia] ?? []}
-                  onChange={handleChangeHorariosPorDia(dia)}
-                  input={<OutlinedInput label="Horários" />}
-                  renderValue={(selected) => (selected as string[]).join(", ")}
-                  MenuProps={MenuProps}
-                  sx={{ overflow: "auto", minWidth: "100%", maxWidth: "100%" }}
-                >
-                  {HORARIOS.map((horario) => (
-                    <MenuItem key={`${dia}-${horario}`} value={horario}>
-                      <Checkbox
-                        checked={(horariosPorDia[dia] ?? []).includes(horario)}
-                      />
-                      <ListItemText primary={horario} />
-                    </MenuItem>
-                  ))}
-                </Select>
-              </div>
-            ))}
-          </div>
         </div>
 
         <div className={styles.buttonSection}>
@@ -527,9 +506,7 @@ const PerfilMonitorPage: React.FC = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Box sx={modalStyle}>
-              <h1>Gerenciar Disponibilidade</h1>
-            </Box>
+            <ModalAgendamento onClose={handleClose} />
           </Modal>
 
           <div className={styles.buttonGroup}>
@@ -552,11 +529,11 @@ const PerfilMonitorPage: React.FC = () => {
         </div>
       </div>
 
-      <StatusModal 
-        open={open} 
-        onClose={() => setOpen(false)} 
-        status="sucesso" 
-        mensagem="Alterações salvas com sucesso!" 
+      <StatusModal
+        open={open}
+        onClose={() => setOpen(false)}
+        status="sucesso"
+        mensagem="Alterações salvas com sucesso!"
       />
     </main>
   );
