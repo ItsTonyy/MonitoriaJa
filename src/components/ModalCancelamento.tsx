@@ -6,9 +6,10 @@ import { atualizarAgendamento } from "../redux/features/agendamento/fetch";
 interface ModalCancelamentoProps {
   open: boolean;
   onClose: () => void;
+  onCancelSuccess?: () => void; 
 }
 
-function ModalCancelamento({ open, onClose }: ModalCancelamentoProps) {
+function ModalCancelamento({ open, onClose, onCancelSuccess  }: ModalCancelamentoProps) {
   const [motivo, setMotivo] = useState("");
   const agendamento = useAppSelector(
     (state) => state.agendamento.currentAgendamento
@@ -24,6 +25,7 @@ function ModalCancelamento({ open, onClose }: ModalCancelamentoProps) {
       });
       setMotivo("");
       onClose();
+      onCancelSuccess && onCancelSuccess();
     } catch (error) {
       alert("Erro ao cancelar agendamento!");
     }
@@ -105,3 +107,7 @@ function ModalCancelamento({ open, onClose }: ModalCancelamentoProps) {
 }
 
 export default ModalCancelamento;
+function onCancelSuccess() {
+  throw new Error("Function not implemented.");
+}
+

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./detalhesMonitor.css";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,11 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { Agendamento } from "../../models/agendamento.model";
 import { buscarAvaliacoesPorMonitor } from "../../redux/features/avaliacao/actions";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { Box } from "@mui/material";
+import dayjs from "dayjs";
 
 /*interface TimeSlot {
   day: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
@@ -54,7 +59,8 @@ let conquistas: string[] = [
 function DetalhesMonitor() {
   const dispatch = useAppDispatch();
   const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
-  const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
   const navigate = useNavigate();
   const usuarioLogado = useAppSelector((state) => state.login.user);
   const { avaliacoes, loading } = useAppSelector((state) => state.avaliacao);
@@ -69,8 +75,12 @@ function DetalhesMonitor() {
   const somaNotas = avaliacoes.reduce((soma, av) => soma + (av.nota || 0), 0);
   const notaMedia =
     totalAvaliacoes > 0 ? (somaNotas / totalAvaliacoes).toFixed(1) : "0.0";
+  const licoesConstantes = useMemo(() => getRandomInt(10, 100), [monitor?.id]);
+  const conquistaConstante = useMemo(
+    () => conquistas[getRandomInt(0, conquistas.length)],
+    [monitor?.id]
+  );
 
-  // Horários do monitor - idealmente viriam da disponibilidade do monitor no Redux
   const horarios = monitor?.listaDisponibilidades || [
     { day: "seg", times: ["10:00", "14:00", "16:00", "22:00"] },
     { day: "ter", times: ["10:00", "14:00", "16:00"] },
@@ -89,34 +99,25 @@ function DetalhesMonitor() {
 
   if (!monitor) return null;
 
+  const diasSemana = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
+  const selectedDiaAbbr = selectedDate ? diasSemana[selectedDate.day()] : null;
+
   const handleTimeSlotClick = (day: string | undefined, time: string) => {
     if (!day) return;
-    const slotId = `${day}-${time}`;
-    setSelectedSlots((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(slotId)) {
-        newSet.delete(slotId);
-      } else {
-        newSet.add(slotId);
-      }
-      return newSet;
-    });
+    if (selectedDate && day !== selectedDiaAbbr) return; // impede seleção fora do dia escolhido
+    setSelectedSlot(`${day}-${time}`); // só um horário por vez
   };
 
   const handleAgendar = () => {
-    console.log("usuarioLogado:", usuarioLogado);
-    const agora = new Date();
-    const dataFormatada = agora.toLocaleDateString("pt-BR"); // formato: dd/mm/aaaa
-    const horaFormatada = agora.toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }); // formato: hh:mm
-    // Cria um novo agendamento com base no monitor selecionado
+    if (!selectedSlot || !selectedDate) return;
+    const [diaSelecionado, horarioSelecionado] = selectedSlot.split("-");
+    const dataFormatada = selectedDate.format("DD/MM/YYYY");
+
     const novoAgendamento: Agendamento = {
-      id: Date.now().toString(), // Gera um id único baseado no timestamp
+      id: Date.now().toString(),
       monitor: monitor,
       data: dataFormatada,
-      hora: horaFormatada,
+      hora: horarioSelecionado,
       status: "AGUARDANDO",
       valor: monitor.valor,
       statusPagamento: "PENDENTE",
@@ -165,11 +166,11 @@ function DetalhesMonitor() {
               </div>
               <div className="monitor-detalhes-atributos">
                 <AccessTimeIcon />
-                <p>{`${getRandomInt(10, 100)} lições`}</p>
+                <p>{`${licoesConstantes} lições`}</p>
               </div>
               <div className="monitor-detalhes-atributos">
                 <EmojiEventsIcon />
-                <p>{conquistas[getRandomInt(0, conquistas.length)]}</p>
+                <p>{conquistaConstante}</p>
               </div>
             </div>
           </div>
@@ -197,6 +198,22 @@ function DetalhesMonitor() {
         }
       >
         <h1 className="titulo">Horários</h1>
+        <div className="date-input">
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Box>
+              <DatePicker
+                label="Data de Agendamento"
+                disablePast={true}
+                format="DD/MM/YYYY"
+                value={selectedDate}
+                onChange={(newValue) => {
+                  setSelectedDate(newValue);
+                  setSelectedSlot(null); // limpa seleção ao mudar data
+                }}
+              />
+            </Box>
+          </LocalizationProvider>
+        </div>
         <div className="outer-tabela">
           <div className="schedule-container">
             {horarios &&
@@ -205,17 +222,22 @@ function DetalhesMonitor() {
                   <div className="day-header">{day}</div>
                   {times!.map((time) => {
                     const slotId = `${day}-${time}`;
-                    const isSelected = selectedSlots.has(slotId);
+                    const isSelected = selectedSlot === slotId;
+                    const isDisabled = selectedDate
+                      ? day !== selectedDiaAbbr
+                      : false;
                     return (
-                      <div
+                      <button
                         key={time}
                         className={`time-slot ${
                           isSelected ? "selecionado" : ""
                         }`}
                         onClick={() => handleTimeSlotClick(day, time)}
+                        disabled={isDisabled}
+                        type="button"
                       >
                         {time}
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
@@ -239,7 +261,7 @@ function DetalhesMonitor() {
           variant="contained"
           sx={{ padding: "5px 40px" }}
           onClick={handleAgendar}
-          disabled={selectedSlots.size === 0}
+          disabled={!selectedSlot || !selectedDate}
         >
           Agendar
         </Button>

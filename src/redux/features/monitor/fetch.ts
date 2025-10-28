@@ -1,43 +1,50 @@
-
 import { API } from "../../../config/api";
 import { Monitor } from "../../../models/monitor.model";
 
+const BASE_URL = `${API.URL}/usuarios`;
 
-const BASE_URL = `${API.URL}/monitores`;
-
+// Lista todos os monitores (usuários com role "monitor")
 export async function listarMonitores(): Promise<Monitor[]> {
-  const response = await fetch(BASE_URL);
+  const response = await fetch(`${BASE_URL}?role=monitor`);
   if (!response.ok) throw new Error("Erro ao buscar monitores");
   return response.json();
 }
 
-export async function buscarMonitorPorId(id: number): Promise<Monitor> {
+// Busca monitor por id (garante que o usuário é monitor)
+export async function buscarMonitorPorId(id: string | number): Promise<Monitor> {
   const response = await fetch(`${BASE_URL}/${id}`);
   if (!response.ok) throw new Error("Monitor não encontrado");
-  return response.json();
+  const usuario = await response.json();
+  if (usuario.role !== "monitor") throw new Error("Usuário não é monitor");
+  return usuario;
 }
 
+// Cria monitor (cria usuário com role "monitor")
 export async function criarMonitor(monitor: Monitor): Promise<Monitor> {
+  const monitorData = { ...monitor, role: "monitor" };
   const response = await fetch(BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(monitor),
+    body: JSON.stringify(monitorData),
   });
   if (!response.ok) throw new Error("Erro ao criar monitor");
   return response.json();
 }
 
-export async function atualizarMonitor(id: number, monitor: Partial<Monitor>): Promise<Monitor> {
+// Atualiza monitor (usuário com role "monitor")
+export async function atualizarMonitor(id: string | number, monitor: Partial<Monitor>): Promise<Monitor> {
+  const monitorData = { ...monitor, role: "monitor" };
   const response = await fetch(`${BASE_URL}/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(monitor),
+    body: JSON.stringify(monitorData),
   });
   if (!response.ok) throw new Error("Erro ao atualizar monitor");
   return response.json();
 }
 
-export async function removerMonitor(id: number): Promise<boolean> {
+// Remove monitor (remove usuário)
+export async function removerMonitor(id: string | number): Promise<boolean> {
   const response = await fetch(`${BASE_URL}/${id}`, {
     method: "DELETE",
   });

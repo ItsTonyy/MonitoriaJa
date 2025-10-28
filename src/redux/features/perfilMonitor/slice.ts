@@ -57,7 +57,7 @@ export const fetchMonitor = createAsyncThunk<Monitor, number>(
     const user = await response.json();
     return {
       id: user.id,
-      nome: user.name,
+      nome: user.nome,
       email: user.email,
       telefone: user.telefone || '',
       role: user.role || 'user',
@@ -112,7 +112,7 @@ export const updateMonitor = createAsyncThunk<
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        name: newMonitor.nome,
+        nome: newMonitor.nome,
         email: newMonitor.email,
         telefone: newMonitor.telefone,
         description: newMonitor.descricao,

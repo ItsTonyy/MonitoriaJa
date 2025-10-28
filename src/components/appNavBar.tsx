@@ -45,7 +45,7 @@ const settings = ["Perfil", "Histórico", "Logout"];
 
 interface IUser {
   id: number;
-  name: string;
+  nome: string;
   email: string;
   role: string;
   description: string;
@@ -241,7 +241,10 @@ export default function AppNavBar() {
               {isAuthenticated && (
                 <div>
                   <IconButton onClick={handleClickPerfil} sx={{ p: 0 }}>
-                    <Avatar alt="Anonymous User" src={anonUser} />
+                    <Avatar
+                      alt="Anonymous User"
+                      src="https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
+                    />
                   </IconButton>
                 </div>
               )}
@@ -254,7 +257,10 @@ export default function AppNavBar() {
               {isAuthenticated && (
                 <>
                   <IconButton onClick={handleClickPerfil} sx={{ p: 0 }}>
-                    <Avatar alt="Anonymous User" src={anonUser} />
+                    <Avatar
+                      alt="Anonymous User"
+                      src="https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
+                    />
                   </IconButton>
                 </>
               )}

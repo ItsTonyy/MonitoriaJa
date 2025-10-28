@@ -5,7 +5,7 @@ export interface Usuario {
 id?: string;
 nome: string;
 email?: string;
-senha?: string;
+password?: string;
 telefone?: string; 
 foto?: string;
 listaAgendamentos?: Agendamento[];
