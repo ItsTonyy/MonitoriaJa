@@ -1,17 +1,17 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
-import ModalSelect from './ModalSelect';
-import { useNavigate } from 'react-router-dom';
-import { Aluno } from '../models/usuario.model';
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import { styled } from '@mui/material/styles';
-import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
-import { Monitor } from '../models/monitor.model';
-import { httpPost, httpGet } from '../utils';
-import { criarMonitor } from '../redux/features/monitor/fetch';
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import React, { useState } from "react";
+import TextField from "@mui/material/TextField";
+import ModalSelect from "./ModalSelect";
+import { useNavigate } from "react-router-dom";
+import { Aluno } from "../models/usuario.model";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import { styled } from "@mui/material/styles";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
+import { Monitor } from "../models/monitor.model";
+import { httpPost, httpGet } from "../utils";
+import { criarMonitor } from "../redux/features/monitor/fetch";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -37,7 +37,7 @@ function CadastroForm() {
       }, 0);
       return max + 1;
     } catch (err) {
-      console.error('Erro ao obter next id para', endpoint, err);
+      console.error("Erro ao obter next id para", endpoint, err);
       return 1;
     }
   }
@@ -57,7 +57,7 @@ function CadastroForm() {
   const [erroConfirmacao, setErroConfirmacao] = useState("");
   const [abrirModalMonitor, setAbrirModalMonitor] = useState(false);
   const [abrirModalEspecialidade, setAbrirModalEspecialidade] = useState(false);
-  
+
   const navigate = useNavigate();
 
   const opcoesEspecialidades = [
@@ -253,7 +253,7 @@ function CadastroForm() {
           helperText={erroNome}
           fullWidth
           margin="normal"
-          autoComplete="name"
+          autoComplete="nome"
         />
         <TextField
           id="email"
@@ -346,22 +346,38 @@ function CadastroForm() {
             setAbrirModalMonitor(false);
             if (opcao.toLowerCase() === "não") {
               try {
-                const nextUserId = await getNextId('http://localhost:3001/usuarios');
+                const nextUserId = await getNextId(
+                  "http://localhost:3001/usuarios"
+                );
                 const novoAluno: Aluno = {
                   nome: nome,
-                  telefone: telefone.replace(/\D/g, ''),
+                  telefone: telefone.replace(/\D/g, ""),
                   email: email,
-                  senha: senha,
-                  foto: avatar === undefined ? 'https://cdn-icons-png.flaticon.com/512/3541/3541871.png' : avatar,
-                  tipoUsuario: 'ALUNO',
+                  password: senha,
+                  foto:
+                    avatar === undefined
+                      ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
+                      : avatar,
+                  tipoUsuario: "ALUNO",
                 };
 
                 // payload para o json-server com id
-                const usuarioPayload = { id: String(nextUserId), name: novoAluno.nome, email: novoAluno.email, telefone: novoAluno.telefone, password: novoAluno.senha, description: "", role: "user" };
-                await httpPost('http://localhost:3001/usuarios', usuarioPayload);
-                navigate('/MonitoriaJa/login');
+                const usuarioPayload = {
+                  id: String(nextUserId),
+                  nome: novoAluno.nome,
+                  email: novoAluno.email,
+                  telefone: novoAluno.telefone,
+                  password: novoAluno.password,
+                  description: "",
+                  role: "user",
+                };
+                await httpPost(
+                  "http://localhost:3001/usuarios",
+                  usuarioPayload
+                );
+                navigate("/MonitoriaJa/login");
               } catch (err) {
-                console.error('Erro ao criar usuário:', err);
+                console.error("Erro ao criar usuário:", err);
               }
             }
           }}
@@ -375,31 +391,32 @@ function CadastroForm() {
           onConfirm={async (especialidade) => {
             setAbrirModalEspecialidade(false);
             try {
-              const nextMonitorId = await getNextId('http://localhost:3001/monitores');
-              const nextUserId = await getNextId('http://localhost:3001/usuarios');
-
-              const monitorPayload: Monitor = {
-                id: String(nextMonitorId),
+              const nextUserId = await getNextId(
+                "http://localhost:3001/usuarios"
+              );
+              // criar usuário associado ao monitor (role: monitor)
+              const usuarioPayload = {
+                id: String(nextUserId),
                 nome: nome,
-                telefone: telefone.replace(/\D/g, ''),
                 email: email,
-                senha: senha,
-                foto: avatar === undefined ? 'https://cdn-icons-png.flaticon.com/512/3541/3541871.png' : avatar,
+                telefone: telefone.replace(/\D/g, ""),
+                password: senha,
+                description: "",
+                role: "monitor",
+                foto:
+                  avatar === undefined
+                    ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
+                    : avatar,
                 materia: especialidade,
-                formacao: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+                formacao:
+                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
                 valor: "R$ 50/h",
               };
+              await httpPost("http://localhost:3001/usuarios", usuarioPayload);
 
-              // criar monitor no json-server com id
-              await criarMonitor(monitorPayload);
-
-              // criar usuário associado ao monitor (role: monitor)
-              const usuarioPayload = { id: String(nextUserId), name: nome, email: email, telefone: telefone.replace(/\D/g, ''), password: senha, description: "", role: "monitor" };
-              await httpPost('http://localhost:3001/usuarios', usuarioPayload);
-
-              navigate('/MonitoriaJa/login');
+              navigate("/MonitoriaJa/login");
             } catch (err) {
-              console.error('Erro ao criar monitor/usuario:', err);
+              console.error("Erro ao criar monitor/usuario:", err);
             }
           }}
         />

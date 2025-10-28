@@ -216,7 +216,112 @@ body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
 .reusableButtonFull:hover {
   background-color: var(--cor-secundaria) !important;
 }
+.materiasAssociadas {
+  margin: 16px 0;
+  padding: 0 24px;
+}
 
+.nomeField {
+  margin-bottom: 16px;
+}
+
+.photoContainer {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  margin-bottom: 8px;
+}
+
+.profilePhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profilePhotoIcon {
+  font-size: 80px;
+  color: #9e9e9e;
+}
+
+.uploadButtonContainer {
+  margin-top: 8px;
+}
+
+.profilePhotoImg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+.nomeField .MuiInputBase-root {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nomeField .MuiInputLabel-root {
+  font-size: 1rem;
+}
+
+.fieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.materiasLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.materiasChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.materiaChip {
+  display: flex;
+  align-items: center;
+  background-color: #1976d2;
+  border: 1px solid #1976d2;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  color: #1976d2;
+  background-color: #bdd8f3;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 6px;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  color: #1976d2;
+  background-color: #ffffff;
+}
 /* Responsividade */
 @media (max-width: 640px) {
   .buttonGroup {
