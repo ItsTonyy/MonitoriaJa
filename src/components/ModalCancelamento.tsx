@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Modal, Box, Typography, TextField, Button } from "@mui/material";
-import {  useAppSelector } from "../redux/hooks"; // Adicionar useAppSelector
+import { useAppSelector } from "../redux/hooks"; // Adicionar useAppSelector
 import { atualizarAgendamento } from "../redux/features/agendamento/fetch";
-
 
 interface ModalCancelamentoProps {
   open: boolean;
@@ -12,12 +11,15 @@ interface ModalCancelamentoProps {
 
 function ModalCancelamento({ open, onClose, onCancelSuccess  }: ModalCancelamentoProps) {
   const [motivo, setMotivo] = useState("");
-  const agendamento = useAppSelector((state) => state.agendamento.currentAgendamento);
+  const agendamento = useAppSelector(
+    (state) => state.agendamento.currentAgendamento
+  );
 
-   const handleConfirm = async () => {
+  const handleConfirm = async () => {
     if (!agendamento?.id) return;
     try {
-      await atualizarAgendamento(agendamento.id, {...agendamento,
+      await atualizarAgendamento(agendamento.id, {
+        ...agendamento,
         status: "CANCELADO",
         motivoCancelamento: motivo,
       });
