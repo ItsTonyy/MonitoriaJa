@@ -48,28 +48,31 @@ const validateMonitorField = (field: keyof ValidationErrors, value: string): str
   }
 };
 
-// AsyncThunk: buscar monitor pelo id
+// AsyncThunk: buscar monitor pelo id - CORRIGIDO
 export const fetchMonitor = createAsyncThunk<Monitor, number>(
   "monitor/fetchMonitor",
   async (id) => {
     const response = await fetch(`http://localhost:3001/usuarios/${id}`);
     if (!response.ok) throw new Error("Monitor não encontrado");
     const user = await response.json();
+    
+    console.log('Dados brutos da API para monitor ID', id, ':', user);
+    
     return {
       id: user.id,
-      nome: user.nome,
-      email: user.email,
-      telefone: user.telefone || '',
+      nome: user.name || user.nome || '',
+      email: user.email || '',
+      telefone: user.telefone || user.phone || '',
       role: user.role || 'user',
-      descricao: user.description || '',
-      materias: user.materias || [],
-      fotoUrl: user.fotoUrl || '',
-      listaDisponibilidades: user.listaDisponibilidades || [],
+      descricao: user.description || user.descricao || '',
+      materias: user.materias || user.subjects || [],
+      fotoUrl: user.fotoUrl || user.foto || user.photo || '',
+      listaDisponibilidades: user.listaDisponibilidades || user.disponibilidades || [],
     };
   }
 );
 
-// AsyncThunk: atualizar monitor
+// AsyncThunk: atualizar monitor - CORRIGIDO
 export const updateMonitor = createAsyncThunk<
   Monitor,
   Partial<Omit<Monitor, 'id' | 'role'>>
@@ -119,6 +122,7 @@ export const updateMonitor = createAsyncThunk<
         materias: newMonitor.materias,
         fotoUrl: newMonitor.fotoUrl || '',
         listaDisponibilidades: newMonitor.listaDisponibilidades,
+        role: newMonitor.role || 'monitor'
       }),
     });
 
@@ -139,7 +143,7 @@ export const fetchDisciplinas = createAsyncThunk<{ id: string; nome: string }[]>
       const response = await fetch("http://localhost:3001/disciplinas");
       if (!response.ok) throw new Error("Erro ao buscar disciplinas");
       const data = await response.json();
-      return data; // array de objetos {id, nome}
+      return data;
     } catch (err: any) {
       return rejectWithValue(err.message || "Erro ao buscar disciplinas");
     }
