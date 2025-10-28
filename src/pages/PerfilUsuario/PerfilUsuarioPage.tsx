@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import { TextField } from '@mui/material';
 
@@ -23,6 +23,7 @@ import {
 const PerfilUsuarioPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  const { userId } = useParams<{ userId: string }>();
 
   const authUser = useSelector((state: RootState) => state.login.user);
   const { currentUser, loading, error, validationErrors } = useSelector((state: RootState) => state.usuario);
@@ -39,12 +40,14 @@ const PerfilUsuarioPage: React.FC = () => {
 
   // Buscar usuário
   useEffect(() => {
-    if (authUser?.id) {
-      dispatch(fetchUsuario(Number(authUser.id)));
+    const userToFetch = userId ? Number(userId) : (authUser?.id ? Number(authUser.id) : null);
+    
+    if (userToFetch) {
+      dispatch(fetchUsuario(userToFetch));
     } else {
       navigate('/MonitoriaJa/login');
     }
-  }, [dispatch, navigate, authUser]);
+  }, [dispatch, navigate, authUser, userId]);
 
   // Atualizar campos ao carregar usuário
   useEffect(() => {
@@ -85,9 +88,10 @@ const PerfilUsuarioPage: React.FC = () => {
     if (hasSubmitted) dispatch(validateField({ field: 'nome', value: newNome }));
   };
 
-  // Salvar usuário
+  // Salvar usuário - ADMIN PODE EDITAR QUALQUER USUÁRIO
   const handleSalvar = async () => {
     if (!currentUser) return;
+
     setHasSubmitted(true);
 
     const nomeFinal = nomeRef.current?.textContent?.trim() || nome;
@@ -201,8 +205,12 @@ const PerfilUsuarioPage: React.FC = () => {
 
         {/* Botões */}
         <div className={styles.buttonSection}>
-          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>Trocar senha</ConfirmationButton>
-          <ConfirmationButton onClick={handleSalvar} disabled={loading}>Confirmar Mudanças</ConfirmationButton>
+          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>
+            Trocar senha
+          </ConfirmationButton>
+          <ConfirmationButton onClick={handleSalvar} disabled={loading}>
+            Confirmar Mudanças
+          </ConfirmationButton>
           <ConfirmationButton onClick={() => navigate(-1)}>Voltar</ConfirmationButton>
         </div>
       </div>

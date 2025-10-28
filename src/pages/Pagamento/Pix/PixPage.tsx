@@ -3,6 +3,7 @@ import { Box, Typography, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
+import { addAgendamento } from '../../../redux/features/agendamento/agendamentoSlice';
 
 import ConfirmationButton from "../../botaoTemporario/botaoTemporario";
 import styles from "./PixPage.module.css";
@@ -59,28 +60,29 @@ const PixPage: React.FC = () => {
       return;
     }
 
-    // Garantir que o orderId do Redux esteja correto antes do pagamento
-    dispatch(setOrderId(`#${currentAgendamento.id}`));
-
     try {
+      // Copia o código PIX
+      if (pixCode) {
+        await navigator.clipboard.writeText(pixCode);
+      }
+
+      // Cria agendamento com status de pago
       const novoAgendamento = {
         ...currentAgendamento,
         statusPagamento: "PAGO" as const,
+        formaPagamento: "PIX" as const,
         status: "CONFIRMADO" as const,
       };
-      await criarAgendamento(novoAgendamento);
 
-      dispatch(copiarCodigoPix(pixCode || ""));
+      const agendamentoCriado = await criarAgendamento(novoAgendamento);
+      dispatch(addAgendamento(agendamentoCriado));
 
-      // Mostrar modal de sucesso por 2 segundos
-      setTimeout(() => {
-        dispatch(resetPix());
-        navigate("/MonitoriaJa/lista-agendamentos");
-      }, 2000);
+      // Navega para lista de agendamentos
+      navigate("/MonitoriaJa/lista-agendamentos");
 
     } catch (error) {
-      console.error("Erro ao salvar agendamento:", error);
-      alert("Erro ao salvar agendamento!");
+      console.error("Erro ao processar pagamento:", error);
+      alert("Erro ao processar pagamento. Tente novamente.");
     }
   };
 
@@ -88,44 +90,6 @@ const PixPage: React.FC = () => {
     dispatch(resetPix());
     navigate("/MonitoriaJa/agendamento-monitor");
   };
-
-  // Tela de sucesso
-  if (status === "success") {
-    return (
-      <main
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "80vh",
-        }}
-      >
-        <Alert
-          severity="success"
-          sx={{
-            width: "100%",
-            maxWidth: 400,
-            bgcolor: "primary.main",
-            color: "#fff",
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            alignItems: "center",
-            py: 3,
-            boxShadow: 4,
-            letterSpacing: 1,
-            textAlign: "center",
-          }}
-          iconMapping={{
-            success: (
-              <QrCode2Icon sx={{ fontSize: 50, mr: 2, color: "#ffffff" }} />
-            ),
-          }}
-        >
-          Pagamento realizado com sucesso!
-        </Alert>
-      </main>
-    );
-  }
 
   // Tela de erro
   if (status === "error") {
@@ -166,14 +130,6 @@ const PixPage: React.FC = () => {
       <Box className={styles.card}>
         <Title text="Pix" />
 
-        {/*<Typography className={styles.infoText}>
-          Pedido {orderId || "#0000"}
-        </Typography>
-
-        <Typography className={styles.infoText}>
-          Valor de compra: {orderValue || "R$ 0,00"}
-        </Typography>*/}
-
         <Box className={styles.qrCodeContainer}>
           {status === "loading" ? (
             <Typography variant="h6">Gerando código PIX...</Typography>
@@ -183,7 +139,10 @@ const PixPage: React.FC = () => {
         </Box>
 
         <Box className={styles.buttonGroup}>
-          <ConfirmationButton onClick={handleCopyPixCode}>
+          <ConfirmationButton 
+            onClick={handleCopyPixCode}
+            disabled={status === "loading"}
+          >
             {status === "loading" ? "Processando..." : "Copiar Código Pix"}
           </ConfirmationButton>
           <ConfirmationButton onClick={handleCancel}>Cancelar</ConfirmationButton>
