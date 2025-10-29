@@ -6,6 +6,7 @@ export interface User {
   nome: string;
   email: string;
   role: "admin" | "monitor" | "user";
+  isAtivo: boolean;
 }
 
 export interface AuthResponse {
@@ -22,7 +23,7 @@ export const loginUserServer = createAsyncThunk<AuthResponse, LoginCredentials>(
   "auth/loginUserServer",
   async (credentials) => {
     const usuarios = await httpGet(
-      `http://localhost:3001/usuarios?email=${credentials.email}`
+      `http://localhost:3001/usuarios?email=${credentials.email}&isAtivo=true`
     );
 
     if (!usuarios || usuarios.length === 0) {
