@@ -9,6 +9,7 @@ import perfilMonitorReducer from "./features/perfilMonitor/slice";
 import alterarSenhaReducer from "./features/alterarSenha/slice"
 import pixReducer from "./features/pix/slice";
 import avaliacaoReducer from "./features/avaliacao/slice";
+import adminReducer from "./features/admin/slice";
 
 const rootReducer = combineReducers({
   monitor: monitorReducer,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   alterarSenha: alterarSenhaReducer,
   pix: pixReducer,
   avaliacao: avaliacaoReducer,
+  admin: adminReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

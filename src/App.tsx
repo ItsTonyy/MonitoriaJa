@@ -23,6 +23,7 @@ import CadastraCartao from "./pages/Pagamento/Cartao/CadastraCartao/CadastraCart
 import ConfirmaPagamento from "./pages/Pagamento/Cartao/ConfirmaPagamento/ConfirmaPagamentoPage";
 import ListaCartaoPage from "./pages/Pagamento/Cartao/ListaCartao/ListaCartaoPage";
 import Middleware from "./components/routesMiddleware";
+import ListagemUsuarios from "./components/ListagemUsuarios/listagemUsuarios";
 
 const App = () => {
   return (
@@ -30,6 +31,8 @@ const App = () => {
       <AppNavBar />
       <MainLayout>
         <Routes>
+          <Route path="/MonitoriaJa/perfil-usuario/:userId" element={<PerfilUsuarioPage />} />
+          <Route path="/MonitoriaJa/perfil-monitor/:monitorId" element={<PerfilMonitorPage />} />
           <Route path="/MonitoriaJa" element={<LandingPage />} />
           <Route path="/MonitoriaJa/login" element={<LoginPage />} />
           <Route
@@ -171,6 +174,10 @@ const App = () => {
                 <ListaCartaoPage />
               </Middleware>
             }
+          />
+          <Route path="/MonitoriaJa/listar-usuarios" element={
+            <Middleware> <ListagemUsuarios/></Middleware>
+          }
           />
         </Routes>
       </MainLayout>

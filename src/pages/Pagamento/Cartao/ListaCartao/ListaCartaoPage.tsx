@@ -1,90 +1,84 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../../redux/store';
-import { fetchCartoes, removerCartao, resetStatus, selectAllCartoes } from '../../../../redux/features/listaCartao/slice';
-import Title from '../../../AlterarSenha/Titulo/Titulo';
-import CartaoItem from '../CartaoItem/CartaoItem';
-import StatusModal from '../../../AlterarSenha/StatusModal/StatusModal';
-import ConfirmationButton from '../../../botaoTemporario/botaoTemporario';
-import styles from './ListaCartaoPage.module.css';
+import React, { useEffect } from "react";
+import styles from "./ListaCartaoPage.module.css";
+import Title from "../../../AlterarSenha/Titulo/Titulo";
+import CartaoItem from "../CartaoItem/CartaoItem";
+import { useNavigate } from "react-router-dom";
+import ConfirmationButton from "../../../botaoTemporario/botaoTemporario";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../../../redux/store";
+import { RootState } from "../../../../redux/root-reducer";
+import {
+  fetchCartoes,
+  removerCartao,
+  selectAllCartoes,
+} from "../../../../redux/features/listaCartao/slice";
 
 const ListaCartaoPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const [usuarioId, setUsuarioId] = useState<number | null>(null);
 
+  // Seleciona os cartões do estado Redux
   const cartoes = useSelector((state: RootState) => selectAllCartoes(state));
-  const { status, errorMessage, operacao } = useSelector((state: RootState) => state.cartoes);
+  
+  // Verifica se existe agendamento
+  const currentAgendamento = useSelector(
+    (state: RootState) => state.agendamento.currentAgendamento
+  );
 
+  // Carrega os cartões ao montar o componente
   useEffect(() => {
-    const carregarUsuario = async () => {
-      const usuarioStorage = localStorage.getItem('user');
-      if (!usuarioStorage) return;
-      const usuarioLogado = JSON.parse(usuarioStorage);
-      const id = usuarioLogado?.id;
-      if (id) {
-        setUsuarioId(id);
-        await dispatch(fetchCartoes(id));
-      }
-    };
-    carregarUsuario();
+    dispatch(fetchCartoes());
   }, [dispatch]);
 
-  const cartoesDoUsuario = cartoes.filter(cartao => usuarioId ? cartao.usuarioId === usuarioId : false);
+  // Verifica se há agendamento
+  useEffect(() => {
+    if (!currentAgendamento) {
+      alert("Nenhum agendamento encontrado!");
+      navigate("/MonitoriaJa/agendamento-monitor");
+    }
+  }, [currentAgendamento, navigate]);
 
-  if (status === 'loading' && operacao === 'fetch') {
-    return (
-      <main className={styles.centralizeContent}>
-        <div className={styles.profileCard}>
-          <p>Carregando cartões...</p>
-        </div>
-      </main>
-    );
-  }
+  const handleEscolherCartao = (cartao: any) => {
+    // Navega para confirmação de pagamento com o cartão selecionado
+    navigate("/MonitoriaJa/confirma-pagamento", { state: { cartao } });
+  };
+
+  const handleCancel = () => {
+    navigate("/MonitoriaJa/agendamento-monitor");
+  };
 
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
         <Title text="Cartões Cadastrados" />
         <div className={styles.cardContainer}>
-          {cartoesDoUsuario.length === 0 ? (
-            <div className={styles.semCartoes}>
-              <p>Nenhum cartão cadastrado</p>
-              <p className={styles.textoPequeno}>Cadastre um cartão para realizar pagamentos</p>
-            </div>
+          {cartoes.length === 0 ? (
+            <p style={{ textAlign: "center", color: "#666" }}>
+              Nenhum cartão cadastrado. Cadastre um novo cartão para continuar.
+            </p>
           ) : (
-            cartoesDoUsuario.map(cartao => (
+            cartoes.map((cartao) => (
               <CartaoItem
                 key={cartao.id}
                 numero={cartao.numero}
                 nome={cartao.nome}
                 bandeira={cartao.bandeira}
                 mostrarBotoes={true}
-                onEscolher={() => navigate('/MonitoriaJa/confirma-pagamento', { state: { cartao } })}
+                onEscolher={() => handleEscolherCartao(cartao)}
                 onRemover={() => dispatch(removerCartao(cartao.id))}
               />
             ))
           )}
         </div>
-        <ConfirmationButton onClick={() => navigate('/MonitoriaJa/cadastra-cartao')}>
+        <ConfirmationButton
+          onClick={() => navigate("/MonitoriaJa/cadastra-cartao")}
+        >
           Cadastrar Novo Cartão
         </ConfirmationButton>
-        <ConfirmationButton onClick={() => navigate(-1)}>Cancelar</ConfirmationButton>
+        <ConfirmationButton onClick={handleCancel}>
+          Cancelar
+        </ConfirmationButton>
       </div>
-
-      <StatusModal
-        open={status === 'success' && operacao === 'remove'}
-        onClose={() => dispatch(resetStatus())}
-        status="sucesso"
-        mensagem="Cartão removido com sucesso!"
-      />
-      <StatusModal
-        open={status === 'error' && operacao !== null}
-        onClose={() => dispatch(resetStatus())}
-        status="falha"
-        mensagem={errorMessage || 'Erro ao processar operação. Tente novamente.'}
-      />
     </main>
   );
 };

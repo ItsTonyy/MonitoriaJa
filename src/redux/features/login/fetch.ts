@@ -6,6 +6,7 @@ export interface User {
   nome: string;
   email: string;
   role: "admin" | "monitor" | "user";
+  isAtivo: boolean;
 }
 
 export interface AuthResponse {
@@ -22,7 +23,7 @@ export const loginUserServer = createAsyncThunk<AuthResponse, LoginCredentials>(
   "auth/loginUserServer",
   async (credentials) => {
     const usuarios = await httpGet(
-      `http://localhost:3001/usuarios?email=${credentials.email}`
+      `http://localhost:3001/usuarios?email=${credentials.email}&isAtivo=true`
     );
 
     if (!usuarios || usuarios.length === 0) {
@@ -60,7 +61,7 @@ export const resetPasswordServer = createAsyncThunk<
   string
 >("auth/resetPasswordServer", async (email) => {
   const usuarios = await httpGet(
-    `http://localhost:3001/usuarios?email=${email}`
+    `http://localhost:3001/usuarios?email=${email}&isAtivo=true`
   );
 
   if (!usuarios || usuarios.length === 0) {
@@ -82,7 +83,7 @@ export const updatePasswordServer = createAsyncThunk<
   UpdatePasswordCredentials
 >("auth/updatePasswordServer", async (credentials) => {
   const usuarios = await httpGet(
-    `http://localhost:3001/usuarios?email=${credentials.email}`
+    `http://localhost:3001/usuarios?email=${credentials.email}&isAtivo=true`
   );
 
   if (!usuarios || usuarios.length === 0) {
