@@ -1,0 +1,34 @@
+{
+  "name": "monitoria-ja",
+  "version": "1.0.0",
+  "description": "um projeto composto por 5 integrantes como parte da matéria Programação de Software Para a Web, que tem o propósito de conectar monitores de todo o brasil à qualquer aluno de forma remota.",
+  "homepage": "https://github.com/ItsTonyy/MonitoriaJa#readme",
+  "bugs": {
+    "url": "https://github.com/ItsTonyy/MonitoriaJa/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ItsTonyy/MonitoriaJa.git"
+  },
+  "license": "ISC",
+  "author": "Tony, Guilherme Andrade, Otávio, Rafael Penela, Paulo",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/node": "^24.9.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
