@@ -262,6 +262,17 @@ useEffect(() => {
                     >
                       {agendamento.hora}
                     </Typography>
+                    {usuarioLogado?.role === "admin" && (
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: "0.9rem",
+                          color: "text.secondary",
+                        }}
+                      >
+                        {agendamento.status}
+                      </Typography>
+                    )}
                   </CardContent>
 
                   <CardActions
@@ -286,20 +297,22 @@ useEffect(() => {
                         },
                       }}
                     >
-                      <Button
-                        size="medium"
-                        variant="contained"
-                        onClick={() => {
-                          dispatch(setCurrentAgendamento(agendamento));
-                          setModalCancelamentoOpen(true);
-                        }}
-                        sx={{
-                          bgcolor: "#e53e3e !important",
-                          "&:hover": { bgcolor: "#a81d1d !important" },
-                        }}
-                      >
-                        Cancelar
-                      </Button>
+                      {(agendamento.status !== "CANCELADO") && (
+                        <Button
+                          size="medium"
+                          variant="contained"
+                          onClick={() => {
+                            dispatch(setCurrentAgendamento(agendamento));
+                            setModalCancelamentoOpen(true);
+                          }}
+                          sx={{
+                            bgcolor: "#e53e3e !important",
+                            "&:hover": { bgcolor: "#a81d1d !important" },
+                          }}
+                        >
+                          Cancelar
+                        </Button>
+                      )}
 
                       <Button
                         size="medium"
