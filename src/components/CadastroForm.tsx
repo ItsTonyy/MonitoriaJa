@@ -384,7 +384,7 @@ function CadastroForm() {
                   id: String(nextUserId),
                   nome: novoAluno.nome,
                   email: novoAluno.email,
-                  cpf: cpf,
+                  cpf: cpf.replace(/\D/g, ""),
                   telefone: novoAluno.telefone,
                   password: novoAluno.password,
                   foto:
@@ -426,7 +426,7 @@ function CadastroForm() {
                 id: String(nextUserId),
                 nome: nome,
                 email: email,
-                cpf: cpf,
+                cpf: cpf.replace(/\D/g, ""),
                 servico: "",
                 avaliacao: 0.0,
                 biografia: "",
