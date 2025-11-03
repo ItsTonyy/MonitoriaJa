@@ -230,7 +230,7 @@ function CadastroForm() {
             marginBottom: 3,
             border: "1px solid gray",
           }}
-          src={avatar || "/broken-image.jpg"}
+          src={avatar || ""}
         />
         <Button
           component="label"

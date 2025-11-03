@@ -1,0 +1,392 @@
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  CardActions,
+  Typography,
+  Button,
+  Stack,
+  Grid,
+  Paper,
+  Box,
+  Fade,
+} from "@mui/material";
+
+import ModalAcessar from "./ModalAcessar";
+import { Agendamento } from "../models/agendamento.model";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
+import { listarAgendamentos } from "../redux/features/agendamento/fetch";
+import { Usuario } from "../models/usuario.model";
+import { httpGet } from "../utils";
+
+function getGridCols() {
+  if (typeof window === "undefined") return 2;
+  const width = window.innerWidth;
+  if (width >= 1200) return 3;
+  if (width >= 783) return 2;
+  return 1;
+}
+
+function getGridRows() {
+  const alturaReservada = 350;
+  const alturaCard = 180;
+  const espacamentoVertical = 24;
+  const alturaTotal = alturaCard + espacamentoVertical;
+
+  const alturaDisponivel =
+    typeof window !== "undefined" ? window.innerHeight - alturaReservada : 600;
+
+  return Math.max(1, Math.floor(alturaDisponivel / alturaTotal));
+}
+
+// Altere a função getCardsPerPage
+function getCardsPerPage() {
+  const cols = getGridCols();
+  const rows = getGridRows();
+  return cols * rows;
+}
+function HistoricoAgendamentos() {
+  const [pagina, setPagina] = useState(1);
+  const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
+  const dispatch = useAppDispatch();
+  const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
+  
+  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState<string | null>(null);
+  const usuarioLogado = useAppSelector((state) => state.login.user);
+  const [alunos, setAlunos] = useState<Usuario[] | null>(null);
+
+  const fetchAgendamentos = async () => {
+    try {
+      const data = await listarAgendamentos();
+      let historicoAgendamentos = data.filter((ag) => ag.status === "CANCELADO" || ag.status === "CONCLUIDO");
+      if (usuarioLogado?.role === "user") {
+        historicoAgendamentos = historicoAgendamentos.filter((ag) => ag.alunoId === usuarioLogado.id);
+      } else if (usuarioLogado?.role === "monitor") {
+        historicoAgendamentos = historicoAgendamentos.filter((ag) => ag.monitor?.id === usuarioLogado.id.toString());
+
+        try {
+          const usuarios: Usuario[] = await httpGet("http://localhost:3001/usuarios?role=user");
+          const mapa = new Map<string, Usuario>();
+          usuarios.forEach((u) => mapa.set(String(u.id), u));
+
+          historicoAgendamentos = historicoAgendamentos.map((ag) => ({
+            ...ag,
+            aluno: mapa.get(String(ag.alunoId)) ?? null,
+          }));
+
+          setAlunos(usuarios);
+        } catch (err) {
+          console.error("Erro ao buscar alunos:", err);
+        }
+      }
+
+      setAgendamentos(historicoAgendamentos);
+      setLoading(false);
+    } catch (err) {
+      setError("Erro ao carregar agendamentos");
+      setLoading(false);
+    }
+  };
+
+useEffect(() => {
+  fetchAgendamentos();
+}, [usuarioLogado]);
+
+  useEffect(() => {
+    function handleResize() {
+      setCardsPorPagina(getCardsPerPage());
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(agendamentos.length / cardsPorPagina)
+  );
+
+  useEffect(() => {
+    if (pagina > totalPaginas) setPagina(1);
+  }, [totalPaginas, pagina]);
+
+  const agendamentosPagina = useMemo(
+    () =>
+      agendamentos.slice(
+        (pagina - 1) * cardsPorPagina,
+        pagina * cardsPorPagina
+      ),
+    [agendamentos,pagina, cardsPorPagina]
+  );
+
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 3,
+        borderRadius: 2,
+        bgcolor: "background.default",
+        maxWidth: 1200,
+      }}
+    >
+      <Typography
+        variant="h4"
+        align="center"
+        gutterBottom
+        sx={{
+          fontWeight: 500,
+          color: "primary.main",
+          mb: 2,
+        }}
+      >
+        Histórico de Agendamentos
+      </Typography>
+
+      <Grid
+        container
+        spacing={3}
+        justifyContent="center"
+        sx={{
+          width: "100%",
+          margin: "0 auto",
+        }}
+      >
+        {agendamentosPagina.length === 0 ? (
+          <Grid item xs={12} component={"div" as unknown as React.ElementType}>
+            <Typography align="center" color="text.secondary" sx={{ my: 4 }}>
+              Nenhum agendamento encontrado.
+            </Typography>
+          </Grid>
+        ) : (
+          agendamentosPagina.map((agendamento) => (
+            <Grid
+              item
+              xs={12}
+              key={agendamento.id}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+              component={"div" as unknown as React.ElementType}
+            >
+              <Fade in timeout={500}>
+                <Card
+                  elevation={2}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    height: "180px",
+                    width: "350px",
+                    minWidth: "340px",
+                    maxWidth: "350px",
+                    margin: "0 auto",
+                    "&:hover": {
+                      elevation: 4,
+                      transform: "translateY(-2px)",
+                      transition: "all 0.2s ease-in-out",
+                    },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      p: 1.5,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100px",
+                      minWidth: "100px",
+                    }}
+                  >
+                    <CardMedia
+                      component="img"
+                      image={
+                        usuarioLogado?.role === "monitor"
+                          ? (agendamento as any).aluno?.foto ?? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
+                          : agendamento.monitor!.foto
+                      }
+                      alt={`Foto de ${
+                        usuarioLogado?.role === "monitor"
+                          ? (agendamento as any).aluno?.nome ?? "Usuário"
+                          : agendamento.monitor!.nome
+                      }`}
+                      sx={{
+                        width: { xs: 70, sm: 80 },
+                        height: { xs: 70, sm: 80 },
+                        borderRadius: "50%",
+                        border: 2,
+                        borderColor: "primary.main",
+                      }}
+                    />
+                  </Box>
+
+                  <CardContent
+                    sx={{
+                      flex: 1,
+                      p: 1.5,
+                      overflow: "hidden",
+                      "&:last-child": { pb: 1.5 },
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {/* <Typography
+                      variant="h6"
+                      color="primary.main"
+                      sx={{
+                        fontSize: "1.1rem",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >*/}
+                    <Typography
+                      variant="h6"
+                      color="primary.main"
+                      sx={{
+                        fontSize: "0.9rem",
+                        lineHeight: 1.2,
+                        maxHeight: "2.4em",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        whiteSpace: "normal",
+                      }}
+                    >
+                      {usuarioLogado?.role === "monitor"
+                        ? (agendamento as any).aluno?.nome ?? "—"
+                        : agendamento.monitor!.nome}
+                    </Typography>
+                    {usuarioLogado?.role !== "monitor" && (
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: "0.9rem",
+                          color: "text.secondary",
+                        }}
+                      >
+                        {agendamento.monitor!.materia}
+                      </Typography>
+                    )}
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "0.9rem",
+                        color: "text.secondary",
+                      }}
+                    >
+                      {agendamento.data}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "0.9rem",
+                        color: "text.secondary",
+                      }}
+                    >
+                      {agendamento.hora}
+                    </Typography>
+                    <Typography
+                    variant="body2"
+                    sx={{
+                        fontSize: "0.9rem",
+                        color: "text.secondary",
+                    }}
+                    >
+                    {agendamento.status}
+                    </Typography>
+
+                  </CardContent>
+
+                  <CardActions
+                    sx={{
+                      p: 1.5,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 1,
+                      minWidth: "110px",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Stack
+                      spacing={1} // Adiciona espaçamento vertical entre botões
+                      sx={{
+                        width: "100%",
+                        minWidth: "110px",
+                        "& .MuiButton-root": {
+                          // Estilo comum para todos os botões
+                          padding: "8px 16px",
+                          fontSize: "0.875rem",
+                        },
+                      }}
+                    >
+                      <Button
+                        size="medium"
+                        variant="contained"
+                        onClick={() => {
+                          dispatch(
+                            setCurrentAgendamento({
+                              ...agendamento,
+                              link: "https://meet.google.com/zyw-jymr-ipg",
+                            })
+                          );
+                          setModalAcessarOpen(true);
+                        }}
+                        sx={{
+                          bgcolor: "#2d5be3 !important",
+                          "&:hover": { bgcolor: "#1b3e8a !important" },
+                        }}
+                      >
+                        Acessar
+                      </Button>
+                    </Stack>
+                  </CardActions>
+                </Card>
+              </Fade>
+            </Grid>
+          ))
+        )}
+      </Grid>
+
+      <Stack spacing={1} direction="row" justifyContent="center" sx={{ mt: 4 }}>
+        <Button
+          variant="contained"
+          onClick={() => setPagina((p) => Math.max(1, p - 1))}
+          disabled={pagina === 1}
+        >
+          &#8592;
+        </Button>
+        <Typography
+          variant="body1"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            px: 2,
+          }}
+        >
+          {pagina} de {totalPaginas}
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
+          disabled={pagina === totalPaginas}
+        >
+          &#8594;
+        </Button>
+      </Stack>
+      {/* Modais */}
+  <ModalAcessar
+    open={modalAcessarOpen}
+    onClose={() => setModalAcessarOpen(false)}
+  />
+    </Paper>
+  );
+}
+
+export default HistoricoAgendamentos;
