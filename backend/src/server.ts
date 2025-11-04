@@ -4,8 +4,8 @@ const router = require("./routes/login");
 const notificacaoRouter = require("./routes/notificacao"); 
 const perfilUsuarioRouter = require("./routes/perfilUsuario");
 const perfilMonitorRouter = require("./routes/perfilMonitor")
-const alterarSenha = require(".routes/alterarSenha")
-const cartao = require(".routes/cartao")
+const alterarSenha = require("./routes/alterarSenha")
+const cartao = require("./routes/cartao")
 const app = express();
 
 app.use(express.json())

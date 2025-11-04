@@ -3,7 +3,7 @@ import { users, cartoes } from "../db-mock";
 import { Cartao } from "../models/cartao.model";
 const router = require("express").Router();
 
-router.get("/usuarioId", (req: Request, res: Response) => {
+router.get("/cartao/usuarioId/", (req: Request, res: Response) => {
     const { usuarioId } = req.params;
     if (!usuarioId) {
         return res.status(400).json({ error: "usuarioId é obrigatório" });
@@ -12,7 +12,7 @@ router.get("/usuarioId", (req: Request, res: Response) => {
     return res.json(cartoesUsuario);
 });
 
-router.post("/usuarioId", (req: Request, res: Response) => {
+router.post("/cartao/usuarioId/", (req: Request, res: Response) => {
     const { usuarioId } = req.params;
     const { numero, titular, validade, cvv, bandeira } = req.body as Cartao;
     if (!usuarioId || !numero || !titular || !validade || !cvv || !bandeira) {
@@ -51,7 +51,7 @@ router.post("/usuarioId", (req: Request, res: Response) => {
     return res.status(201).json(novoCartao);
 });
 
-router.delete("/usuarioId/:id", (req: Request, res: Response) => {
+router.delete("/cartao/usuarioId/:id", (req: Request, res: Response) => {
     const { id, usuarioId } = req.params;
     if (!id || !usuarioId) {
         return res.status(400).json({ error: "id e usuarioId são obrigatórios" });
