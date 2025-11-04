@@ -20,7 +20,7 @@ router.get("/perfilMonitor/:id", (req: Request, res: Response) => {
     });
 });
 
-router.put("/perfilMonitor/:id", (req: Request, res: Response) => {
+router.patch("/perfilMonitor/:id", (req: Request, res: Response) => {
     const { id } = req.params;
     const monitorIndex = monitores.findIndex((m) => m.id === id);
     if (monitorIndex === -1) {
@@ -44,19 +44,19 @@ router.put("/perfilMonitor/:id", (req: Request, res: Response) => {
     }
     const monitorAtualizado = {
         ...monitorAtual,
-        nome: nome ?? monitorAtual.nome,
-        email: email ?? monitorAtual.email,
-        telefone: telefone ?? monitorAtual.telefone,
-        biografia: biografia ?? monitorAtual.biografia,
-        materia: materia ?? monitorAtual.materia,
-        foto: fotoUrl ?? monitorAtual.foto,
-        listaDisponibilidades: listaDisponibilidades ?? monitorAtual.listaDisponibilidades,
+        ...(nome && { nome }),
+        ...(email && { email }),
+        ...(telefone && { telefone }),
+        ...(biografia && { biografia }),
+        ...(materia && { materia }),
+        ...(fotoUrl && { foto: fotoUrl }),
+        ...(listaDisponibilidades && { listaDisponibilidades }),
     };
     monitores[monitorIndex] = monitorAtualizado;
-    res.status(200).json({
+    return res.status(200).json({
         message: "Monitor atualizado com sucesso",
         monitor: monitorAtualizado,
     });
-});
+});''
 
 module.exports = router;
