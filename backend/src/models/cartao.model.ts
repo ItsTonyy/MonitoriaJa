@@ -6,4 +6,5 @@ export interface Cartao{
     cvv?: string;
     bandeira?: string;
     ultimosDigitos?: string;
+    usuarioId?: string;
 }

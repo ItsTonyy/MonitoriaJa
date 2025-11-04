@@ -3,7 +3,7 @@ import { Disponibilidade } from "./disponibilidade.model";
 import { Usuario } from "./usuario.model";
 
 export interface Monitor extends Usuario {
-  materia?: string; 
+  materia?: string[]; 
   valor?: string;
   servico?: string;
   avaliacao?: number; // Média das avaliações em estrelas (1 a 5)

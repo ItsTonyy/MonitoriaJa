@@ -1,9 +1,19 @@
 import { Aluno, Admin } from "./models/usuario.model";
 import { Notificacao } from "./models/notificacao.model";
+import { Monitor } from "./models/monitor.model"
+import { Cartao } from "./models/cartao.model";
 
 export const users: (Aluno | Admin)[] = [
     {id:"1", nome: "Luciano", email:"user@teste.com",password:"123456",telefone:"99999999999",foto:"/usr/foto", tipoUsuario: 'ALUNO'},
-    {id:"2", nome: "Admin", email:"admin@teste.com",password:"admin123",telefone:"88888888888",foto:"/usr/admin", tipoUsuario: 'ADMIN'}
+    {id:"2", nome: "Admin", email:"admin@teste.com",password:"admin123",telefone:"88888888888",foto:"/usr/admin", tipoUsuario: 'ADMIN'},
+]
+
+export const monitores: Monitor[] = [
+    {id:"3", nome: "Monitor", email:"monitor@teste.com",password:"123456",telefone:"77777777777"}
+]
+
+export const cartoes:Cartao[] =[
+    {id: 1, numero: "1234567812345678", titular: "Luciano", validade: "10/10/2026", cvv: "123", bandeira: "Visa"}
 ]
 
 export const notificacoes: Notificacao[] = [
