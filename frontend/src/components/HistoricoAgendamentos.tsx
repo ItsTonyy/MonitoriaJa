@@ -14,14 +14,12 @@ import {
 } from "@mui/material";
 
 import ModalAcessar from "./ModalAcessar";
-import ModalRemarcar from "./ModalRemarcar";
-import ModalCancelamento from "./ModalCancelamento";
 import { Agendamento } from "../models/agendamento.model";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
-import { listarAgendamentosPorUsuarioId } from "../redux/features/agendamento/fetch";
-
-
+import { listarAgendamentos } from "../redux/features/agendamento/fetch";
+import { Usuario } from "../models/usuario.model";
+import { httpGet } from "../utils";
 
 function getGridCols() {
   if (typeof window === "undefined") return 2;
@@ -49,34 +47,54 @@ function getCardsPerPage() {
   const rows = getGridRows();
   return cols * rows;
 }
-function ListaAgendamentos() {
+function HistoricoAgendamentos() {
   const [pagina, setPagina] = useState(1);
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
   const dispatch = useAppDispatch();
-  const [modalCancelamentoOpen, setModalCancelamentoOpen] = useState(false);
-  const [modalRemarcarOpen, setModalRemarcarOpen] = useState(false);
   const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
   
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
-const usuarioLogado = useAppSelector((state) => state.login.user);
+  const usuarioLogado = useAppSelector((state) => state.login.user);
+  const [alunos, setAlunos] = useState<Usuario[] | null>(null);
 
-const fetchAgendamentos = () => {
-  listarAgendamentosPorUsuarioId(usuarioLogado!.id.toString())
-    .then((data) => {
-      setAgendamentos(data);
+  const fetchAgendamentos = async () => {
+    try {
+      const data = await listarAgendamentos();
+      let historicoAgendamentos = data.filter((ag) => ag.status === "CANCELADO" || ag.status === "CONCLUIDO");
+      if (usuarioLogado?.role === "user") {
+        historicoAgendamentos = historicoAgendamentos.filter((ag) => ag.alunoId === usuarioLogado.id);
+      } else if (usuarioLogado?.role === "monitor") {
+        historicoAgendamentos = historicoAgendamentos.filter((ag) => ag.monitor?.id === usuarioLogado.id.toString());
+
+        try {
+          const usuarios: Usuario[] = await httpGet("http://localhost:3001/usuarios?role=user");
+          const mapa = new Map<string, Usuario>();
+          usuarios.forEach((u) => mapa.set(String(u.id), u));
+
+          historicoAgendamentos = historicoAgendamentos.map((ag) => ({
+            ...ag,
+            aluno: mapa.get(String(ag.alunoId)) ?? null,
+          }));
+
+          setAlunos(usuarios);
+        } catch (err) {
+          console.error("Erro ao buscar alunos:", err);
+        }
+      }
+
+      setAgendamentos(historicoAgendamentos);
       setLoading(false);
-    })
-    .catch(() => {
+    } catch (err) {
       setError("Erro ao carregar agendamentos");
       setLoading(false);
-    });
-};
+    }
+  };
 
 useEffect(() => {
   fetchAgendamentos();
-}, []);
+}, [usuarioLogado]);
 
   useEffect(() => {
     function handleResize() {
@@ -124,7 +142,7 @@ useEffect(() => {
           mb: 2,
         }}
       >
-        Lista de Agendamentos
+        Histórico de Agendamentos
       </Typography>
 
       <Grid
@@ -185,8 +203,16 @@ useEffect(() => {
                   >
                     <CardMedia
                       component="img"
-                      image={agendamento.monitor!.foto}
-                      alt={`Foto de ${agendamento.monitor!.nome}`}
+                      image={
+                        usuarioLogado?.role === "monitor"
+                          ? (agendamento as any).aluno?.foto ?? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
+                          : agendamento.monitor!.foto
+                      }
+                      alt={`Foto de ${
+                        usuarioLogado?.role === "monitor"
+                          ? (agendamento as any).aluno?.nome ?? "Usuário"
+                          : agendamento.monitor!.nome
+                      }`}
                       sx={{
                         width: { xs: 70, sm: 80 },
                         height: { xs: 70, sm: 80 },
@@ -233,17 +259,21 @@ useEffect(() => {
                         whiteSpace: "normal",
                       }}
                     >
-                      {agendamento.monitor!.nome}
+                      {usuarioLogado?.role === "monitor"
+                        ? (agendamento as any).aluno?.nome ?? "—"
+                        : agendamento.monitor!.nome}
                     </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontSize: "0.9rem",
-                        color: "text.secondary",
-                      }}
-                    >
-                      {agendamento.monitor!.materia}
-                    </Typography>
+                    {usuarioLogado?.role !== "monitor" && (
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: "0.9rem",
+                          color: "text.secondary",
+                        }}
+                      >
+                        {agendamento.monitor!.materia}
+                      </Typography>
+                    )}
                     <Typography
                       variant="body2"
                       sx={{
@@ -262,17 +292,16 @@ useEffect(() => {
                     >
                       {agendamento.hora}
                     </Typography>
-                    {usuarioLogado?.role === "admin" && (
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontSize: "0.9rem",
-                          color: "text.secondary",
-                        }}
-                      >
-                        {agendamento.status}
-                      </Typography>
-                    )}
+                    <Typography
+                    variant="body2"
+                    sx={{
+                        fontSize: "0.9rem",
+                        color: "text.secondary",
+                    }}
+                    >
+                    {agendamento.status}
+                    </Typography>
+
                   </CardContent>
 
                   <CardActions
@@ -297,38 +326,6 @@ useEffect(() => {
                         },
                       }}
                     >
-                      {(agendamento.status !== "CANCELADO") && (
-                        <Button
-                          size="medium"
-                          variant="contained"
-                          onClick={() => {
-                            dispatch(setCurrentAgendamento(agendamento));
-                            setModalCancelamentoOpen(true);
-                          }}
-                          sx={{
-                            bgcolor: "#e53e3e !important",
-                            "&:hover": { bgcolor: "#a81d1d !important" },
-                          }}
-                        >
-                          Cancelar
-                        </Button>
-                      )}
-
-                      <Button
-                        size="medium"
-                        variant="contained"
-                        onClick={() => {
-                          dispatch(setCurrentAgendamento(agendamento));
-                          setModalRemarcarOpen(true);
-                        }}
-                        sx={{
-                          bgcolor: "#6b7280 !important",
-                          "&:hover": { bgcolor: "#374151 !important" },
-                        }}
-                      >
-                        Reagendar
-                      </Button>
-
                       <Button
                         size="medium"
                         variant="contained"
@@ -384,16 +381,6 @@ useEffect(() => {
         </Button>
       </Stack>
       {/* Modais */}
-     <ModalCancelamento
-    open={modalCancelamentoOpen}
-    onClose={() => setModalCancelamentoOpen(false)}
-     onCancelSuccess={fetchAgendamentos}
-  />
-  <ModalRemarcar
-    open={modalRemarcarOpen}
-    onClose={() => setModalRemarcarOpen(false)}
-    onRemarcarSuccess={fetchAgendamentos}
-  />
   <ModalAcessar
     open={modalAcessarOpen}
     onClose={() => setModalAcessarOpen(false)}
@@ -402,4 +389,4 @@ useEffect(() => {
   );
 }
 
-export default ListaAgendamentos;
+export default HistoricoAgendamentos;

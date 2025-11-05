@@ -9,6 +9,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { MenuItem } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
+import TextField from '@mui/material/TextField';
 
 const style = {
     position: 'absolute' as const,
@@ -37,6 +38,8 @@ interface ModalSelectGenericoProps {
     onClose: () => void;
     onConfirm: (selectedValue: string) => void;
     buttonText?: string;
+    monitor?: boolean;
+    handleValorMonitor?: (valor: number) => void;
 }
 
 function ModalSelect({
@@ -46,6 +49,8 @@ function ModalSelect({
     onClose,
     onConfirm,
     buttonText = 'Continuar',
+    monitor,
+    handleValorMonitor
 }: ModalSelectGenericoProps) {
     const [selected, setSelected] = useState('');
     const [submit, setSubmit] = useState(false);
@@ -85,6 +90,22 @@ function ModalSelect({
                     </Select>
                     {submit && !selected && (
                         <FormHelperText>Selecione uma opção</FormHelperText>
+                    )}
+
+                    {monitor && (
+                        <Box sx={{ mt: 2 }}>
+                            <TextField
+                                label="Valor por hora (R$)"
+                                type="number"
+                                fullWidth
+                                onChange={(e) => {
+                                    const valor = parseFloat(e.target.value);
+                                    if (handleValorMonitor) {
+                                        handleValorMonitor(valor);
+                                    }
+                                }}
+                            />
+                        </Box>
                     )}
                 </FormControl>
 

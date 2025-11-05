@@ -10,8 +10,12 @@ import Avatar from "@mui/material/Avatar";
 import { styled } from "@mui/material/styles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { Monitor } from "../models/monitor.model";
+import { Disciplina } from "../models/disciplina.model";
 import { httpPost, httpGet } from "../utils";
 import { criarMonitor } from "../redux/features/monitor/fetch";
+import { listarDisciplinas } from "../redux/features/disciplina/fetch";
+import { useEffect } from "react";
+import { listarAgendamentos } from "../redux/features/agendamento/fetch";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -57,21 +61,35 @@ function CadastroForm() {
   const [erroConfirmacao, setErroConfirmacao] = useState("");
   const [abrirModalMonitor, setAbrirModalMonitor] = useState(false);
   const [abrirModalEspecialidade, setAbrirModalEspecialidade] = useState(false);
+  const [valorMonitor, setValorMonitor] = useState(0);
 
   const navigate = useNavigate();
+  const [opcoesEspecialidades, setOpcoesEspecialidades] = useState<{
+    label: string;
+    value: string;
+  }[]>([]);
 
-  const opcoesEspecialidades = [
-    { label: "Matemática", value: "Matemática" },
-    { label: "Física", value: "Física" },
-    { label: "Química", value: "Química" },
-    { label: "Biologia", value: "Biologia" },
-    { label: "História", value: "História" },
-    { label: "Geografia", value: "Geografia" },
-    { label: "Português", value: "Português" },
-    { label: "Inglês", value: "Inglês" },
-    { label: "Programação", value: "Programação" },
-  ];
-
+  // carregar disciplinas e mapear para {label, value}
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        const disciplinas: Disciplina[] = await listarDisciplinas();
+        if (!mounted) return;
+        const mapped = (disciplinas || []).map((d) => ({
+          label: d.nome ?? "",
+          value: d.nome ?? "",
+        }));
+        setOpcoesEspecialidades(mapped);
+      } catch (err) {
+        console.error("Erro ao carregar disciplinas:", err);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
   const mudarAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
@@ -212,7 +230,7 @@ function CadastroForm() {
             marginBottom: 3,
             border: "1px solid gray",
           }}
-          src={avatar || "/broken-image.jpg"}
+          src={avatar || ""}
         />
         <Button
           component="label"
@@ -366,9 +384,15 @@ function CadastroForm() {
                   id: String(nextUserId),
                   nome: novoAluno.nome,
                   email: novoAluno.email,
+                  cpf: cpf.replace(/\D/g, ""),
                   telefone: novoAluno.telefone,
                   password: novoAluno.password,
-                  description: "",
+                  foto:
+                  avatar === undefined
+                    ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
+                    : avatar,
+                  listarAgendamentos: [],
+                  listarCartoes: [],
                   role: "user",
                   isAtivo: true,
                 };
@@ -389,6 +413,8 @@ function CadastroForm() {
           header="Selecione sua especialidade"
           opcoes={opcoesEspecialidades}
           onClose={() => setAbrirModalEspecialidade(false)}
+          monitor={true}
+          handleValorMonitor={(valor) => setValorMonitor(valor)}
           onConfirm={async (especialidade) => {
             setAbrirModalEspecialidade(false);
             try {
@@ -400,18 +426,23 @@ function CadastroForm() {
                 id: String(nextUserId),
                 nome: nome,
                 email: email,
+                cpf: cpf.replace(/\D/g, ""),
+                servico: "",
+                avaliacao: 0.0,
+                biografia: "",
+                listaAvaliacoes: [],
+                listaDisponibilidades: [],
+                listaDisciplinas: [],
                 telefone: telefone.replace(/\D/g, ""),
                 password: senha,
-                description: "",
                 role: "monitor",
                 foto:
                   avatar === undefined
                     ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
                     : avatar,
                 materia: especialidade,
-                formacao:
-                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
-                valor: "R$ 50/h",
+                formacao: "",
+                valor: `R$ ${valorMonitor}/h`,
                 isAtivo: true
               };
               await httpPost("http://localhost:3001/usuarios", usuarioPayload);
