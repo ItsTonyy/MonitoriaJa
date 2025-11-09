@@ -1,12 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-
-export interface Usuario {
-  id: number;
-  nome: string;
-  email: string;
-  telefone?: string;
-  role?: string;
-}
+import { Usuario } from "../../../models/usuario.model"
 
 interface UsuarioState {
   currentUser: Usuario | null;

@@ -1,18 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Disponibilidade } from '../../../models/disponibilidade.model';
-
-// Tipos
-export interface Monitor {
-  id: number;
-  nome: string;
-  email: string;
-  telefone?: string;
-  role?: string;
-  descricao: string;
-  materias: string[];
-  fotoUrl?: string;
-  listaDisponibilidades: Disponibilidade[];
-}
+import { Monitor } from "../../../models/monitor.model";
 
 interface ValidationErrors {
   nome?: string;
@@ -95,8 +83,8 @@ export const updateMonitor = createAsyncThunk<
       const emailError = validateMonitorField('email', updatedMonitor.email);
       if (emailError) errors.email = emailError;
     }
-    if (updatedMonitor.descricao !== undefined) {
-      const descricaoError = validateMonitorField('descricao', updatedMonitor.descricao);
+    if (updatedMonitor.biografia !== undefined) {
+      const descricaoError = validateMonitorField('descricao', updatedMonitor.biografia);
       if (descricaoError) errors.descricao = descricaoError;
     }
 
@@ -118,11 +106,10 @@ export const updateMonitor = createAsyncThunk<
         nome: newMonitor.nome,
         email: newMonitor.email,
         telefone: newMonitor.telefone,
-        description: newMonitor.descricao,
-        materias: newMonitor.materias,
-        fotoUrl: newMonitor.fotoUrl || '',
+        description: newMonitor.biografia,
+        materias: newMonitor.materia,
+        foto: newMonitor.foto || '',
         listaDisponibilidades: newMonitor.listaDisponibilidades,
-        role: newMonitor.role || 'monitor'
       }),
     });
 
@@ -183,7 +170,7 @@ const monitorSlice = createSlice({
       state.error = null;
     },
     atualizarDescricao: (state, action: PayloadAction<string>) => {
-      if (state.currentMonitor) state.currentMonitor.descricao = action.payload;
+      if (state.currentMonitor) state.currentMonitor.biografia = action.payload;
     },
     atualizarContato: (state, action: PayloadAction<{ telefone: string; email: string }>) => {
       if (state.currentMonitor) {
@@ -192,7 +179,7 @@ const monitorSlice = createSlice({
       }
     },
     atualizarMaterias: (state, action: PayloadAction<string[]>) => {
-      if (state.currentMonitor) state.currentMonitor.materias = action.payload;
+      if (state.currentMonitor) state.currentMonitor.materia = action.payload;
     },
     atualizarDisponibilidades: (state, action: PayloadAction<Disponibilidade[]>) => {
       if (state.currentMonitor) state.currentMonitor.listaDisponibilidades = action.payload;

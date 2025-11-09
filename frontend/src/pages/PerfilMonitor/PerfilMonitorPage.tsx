@@ -96,9 +96,9 @@ const PerfilMonitorPage: React.FC = () => {
     if (monitor) {
       setTelefoneInput(monitor.telefone || "");
       setEmailInput(monitor.email || "");
-      setDescricaoInput(monitor.descricao || "");
-      setMateriasSelecionadas(monitor.materias || []);
-      setFotoUrl(monitor.fotoUrl || "");
+      setDescricaoInput(monitor.biografia || "");
+      setMateriasSelecionadas(monitor.materia || []);
+      setFotoUrl(monitor.foto || "");
 
       // Preencher o nome no DOM diretamente
       if (nomeRef.current) {
@@ -200,9 +200,9 @@ const PerfilMonitorPage: React.FC = () => {
           nome: nomeInput,
           telefone: telefoneInput,
           email: emailInput,
-          descricao: descricaoInput,
-          materias: materiasSelecionadas,
-          fotoUrl: fotoUrl,
+          biografia: descricaoInput,
+          materia: materiasSelecionadas,
+          foto: fotoUrl,
         })
       ).unwrap();
 
@@ -293,7 +293,7 @@ const PerfilMonitorPage: React.FC = () => {
               <img
                 src={fotoUrl}
                 alt="Foto do monitor"
-                className={styles.profilePhoto}
+                className={styles.profilePhotoIcon}
               />
             ) : (
               <PersonIcon className={styles.profilePhotoIcon} />
@@ -306,7 +306,9 @@ const PerfilMonitorPage: React.FC = () => {
 
         <div className={styles.ratingAndFormation}>
           <div className={styles.rating}>
-            <img src={Estrela} alt="Estrela" className={styles.starIcon} />
+            <span className={styles.ratingText}>
+              {monitor.avaliacao ?? 0} ★
+            </span>
           </div>
           <h4>Formação e Cursos</h4>
         </div>
@@ -326,6 +328,7 @@ const PerfilMonitorPage: React.FC = () => {
         <div className={styles.fieldsContainer}>
           <TextField
             label="Telefone"
+            placeholder="21900000000"
             variant="outlined"
             fullWidth
             value={telefoneInput}
@@ -344,6 +347,7 @@ const PerfilMonitorPage: React.FC = () => {
 
           <TextField
             label="Email"
+            placeholder="seuemail@gmail.com"
             variant="outlined"
             fullWidth
             value={emailInput}

@@ -183,6 +183,7 @@ const PerfilUsuarioPage: React.FC = () => {
           <TextField
             label="Telefone"
             variant="outlined"
+            placeholder="21900000000"
             fullWidth
             value={telefone}
             onChange={(e) => handleTelefoneChange(e.target.value)}
@@ -194,6 +195,7 @@ const PerfilUsuarioPage: React.FC = () => {
           <TextField
             label="Email"
             variant="outlined"
+            placeholder="seuemail@gmail.com"
             fullWidth
             value={email}
             onChange={(e) => handleEmailChange(e.target.value)}
