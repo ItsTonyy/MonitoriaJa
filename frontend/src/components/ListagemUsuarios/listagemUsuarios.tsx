@@ -24,6 +24,7 @@ import StarIcon from "@mui/icons-material/Star";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { fetchUsuariosAdmin } from "../../redux/features/admin/fetch";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface UserData {
   id: string;
@@ -138,6 +139,19 @@ function ListagemUsuarios() {
     } else {
       navigate(`/MonitoriaJa/perfil-usuario/${usuario.id}`);
     }
+  };
+
+  const handleRemoverUsuario = async (usuario: UserData) => {
+    console.log('Função chamada para:', usuario.name);
+    
+      try {
+        console.log("Deletando usuário:", usuario.id);
+        await axios.delete(`http://localhost:3002/usuario/${usuario.id}`);
+        dispatch(fetchUsuariosAdmin());
+      } catch (error) {
+        console.error('Erro ao remover usuário:', error);
+        alert('Erro ao remover usuário');
+      }
   };
 
   if (loading) {
@@ -473,9 +487,7 @@ function ListagemUsuarios() {
                         variant="outlined"
                         color="error"
                         size="small"
-                        onClick={() => {
-                          console.log('Remover usuário:', usuario);
-                        }}
+                        onClick={() => handleRemoverUsuario(usuario)}
                       >
                         Remover
                       </Button>
