@@ -4,18 +4,15 @@ import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import ModalSelect from "./ModalSelect";
 import { useNavigate } from "react-router-dom";
-import { Aluno } from "../models/usuario.model";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import { styled } from "@mui/material/styles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import { Monitor } from "../models/monitor.model";
 import { Disciplina } from "../models/disciplina.model";
 import { httpPost, httpGet } from "../utils";
-import { criarMonitor } from "../redux/features/monitor/fetch";
 import { listarDisciplinas } from "../redux/features/disciplina/fetch";
 import { useEffect } from "react";
-import { listarAgendamentos } from "../redux/features/agendamento/fetch";
+import { Usuario } from "../models/usuario.model";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -367,7 +364,7 @@ function CadastroForm() {
                 const nextUserId = await getNextId(
                   "http://localhost:3001/usuarios"
                 );
-                const novoAluno: Aluno = {
+                const novoAluno: Usuario = {
                   nome: nome,
                   telefone: telefone.replace(/\D/g, ""),
                   email: email,
