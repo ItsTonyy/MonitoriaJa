@@ -7,7 +7,7 @@ import usuarioRoutes from "./routes/usuarioRoutes";
 import disponibilidadeRoutes from "./routes/disponibilidadeRoutes";
 import avaliacaoRoutes from "./routes/avaliacaoRoutes";
 import notificacaoRoutes from "./routes/notificacaoRoutes";
-
+import loginRoutes from "./routes/login";
 
 
 // Se usar dotenv para variáveis de ambiente:
@@ -33,7 +33,7 @@ app.use("/usuario", usuarioRoutes);
 app.use("/disponibilidade", disponibilidadeRoutes);
 app.use("/avaliacao", avaliacaoRoutes);
 app.use("/notificacao", notificacaoRoutes);
-
+app.use(loginRoutes)
 // Conexão com o banco de dados e inicialização do servidor
 
 const password= encodeURIComponent('psw10monitorija423#');
@@ -45,6 +45,6 @@ mongoose
   )
   .then(() => {
     console.log("Conectou ao banco!");
-    app.listen(3001, () => console.log("Servidor rodando na porta 3001"));
+    app.listen(3001, () => console.log("Servidor rodando na porta 3001"),);
   })
   .catch((err) => console.log(err));
