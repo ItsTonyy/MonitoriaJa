@@ -4,7 +4,6 @@ import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { clearSelectedMonitor } from "../../redux/features/monitor/monitorSlice";
-import { setCurrentAgendamento } from "../../redux/features/agendamento/agendamentoSlice";
 import ComentariosAvaliacao from "../comentariosAvaliacao/ComentariosAvaliacao";
 import StarIcon from "@mui/icons-material/Star";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -12,7 +11,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { Agendamento } from "../../models/agendamento.model";
-import { buscarAvaliacoesPorMonitor } from "../../redux/features/avaliacao/actions";
+import { avaliacaoService } from "../../services/avaliacaoService";
 
 /*interface TimeSlot {
   day: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
@@ -57,13 +56,24 @@ function DetalhesMonitor() {
  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const navigate = useNavigate();
   const usuarioLogado = useAppSelector((state) => state.login.user);
-  const { avaliacoes, loading } = useAppSelector((state) => state.avaliacao);
+  const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if (monitor?.id) {
-      dispatch(buscarAvaliacoesPorMonitor(Number(monitor.id)));
-    }
-  }, [monitor?.id, dispatch]);
+    const load = async () => {
+      if (!monitor?.id) return;
+      setLoading(true);
+      try {
+        const res = await avaliacaoService.getByMonitorId(String(monitor.id));
+        setAvaliacoes(res || []);
+      } catch (e) {
+        console.error("Erro ao carregar avaliações:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [monitor?.id]);
 
   const totalAvaliacoes = avaliacoes.length;
   const somaNotas = avaliacoes.reduce((soma, av) => soma + (av.nota || 0), 0);
@@ -122,8 +132,7 @@ function DetalhesMonitor() {
     alunoId: usuarioLogado?.id,
   };
 
-  dispatch(setCurrentAgendamento(novoAgendamento));
-  navigate("/MonitoriaJa/agendamento-monitor");
+  navigate("/MonitoriaJa/agendamento-monitor", { state: { agendamento: novoAgendamento } });
 };
 
   return (
