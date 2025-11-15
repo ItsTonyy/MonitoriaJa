@@ -24,16 +24,6 @@ const RecuperarSenhaForm = () => {
     };
   }, [dispatch]);
 
-  useEffect(() => {
-    if (resetPasswordSuccess) {
-      localStorage.setItem('resetEmail', email);
-      setTimeout(() => {
-        dispatch(clearResetPasswordState());
-        navigate("/MonitoriaJa/redefinir-senha");
-      }, 2000);
-    }
-  }, [resetPasswordSuccess, dispatch, navigate, email]);
-
   const validateEmail = () => {
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setEmailError(true);
@@ -62,7 +52,7 @@ const RecuperarSenhaForm = () => {
 
         {resetPasswordSuccess && (
           <Alert severity="success" sx={{ mb: 2 }}>
-            Email de recuperação enviado com sucesso! Redirecionando...
+            Email de recuperação enviado com sucesso!
           </Alert>
         )}
 
