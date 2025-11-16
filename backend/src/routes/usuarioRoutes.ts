@@ -6,7 +6,7 @@ import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
 const router = express.Router();
 
 // CREATE - Adiciona um novo usuário
-router.post("/", autenticar, async (req, res) => {
+router.post("/", async (req, res) => {
   const usuario = req.body;
   try {
     const salt = await bcrypt.genSalt(10);
