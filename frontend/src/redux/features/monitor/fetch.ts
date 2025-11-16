@@ -2,7 +2,7 @@ import { API } from "../../../config/api";
 import { Usuario } from "../../../models/usuario.model";
 
 
-const BASE_URL = `${API.URL}/usuarios`;
+const BASE_URL = `${API.URL}/usuario`;
 
 // Lista todos os monitores (usuários com role "monitor")
 export async function listarMonitores(): Promise<Usuario[]> {
@@ -23,7 +23,7 @@ export async function buscarMonitorPorId(id: string | number): Promise<Usuario> 
 
 // Cria monitor (cria usuário com role "monitor")
 export async function criarMonitor(monitor: Usuario): Promise<Usuario> {
-  const monitorData = { ...monitor, role: "monitor", isAtivo: true };
+  const monitorData = { ...monitor, isAtivo: true };
   const response = await fetch(BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

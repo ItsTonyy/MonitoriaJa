@@ -7,7 +7,7 @@ import usuarioRoutes from "./routes/usuarioRoutes";
 import disponibilidadeRoutes from "./routes/disponibilidadeRoutes";
 import avaliacaoRoutes from "./routes/avaliacaoRoutes";
 import notificacaoRoutes from "./routes/notificacaoRoutes";
-
+import cors from "cors";
 
 
 // Se usar dotenv para variáveis de ambiente:
@@ -23,6 +23,8 @@ app.use(
 );
 
 app.use(express.json());
+
+app.use(cors());
 
 // rotas aqui...
 
