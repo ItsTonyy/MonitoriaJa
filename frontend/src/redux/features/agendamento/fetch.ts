@@ -1,7 +1,7 @@
 import { API } from "../../../config/api";
 import { Agendamento } from "../../../models/agendamento.model";
 
-const BASE_URL = `${API.URL}/agendamentos`;
+const BASE_URL = `${API.URL}/agendamento`;
 
 export async function listarAgendamentos(): Promise<Agendamento[]> {
   const response = await fetch(BASE_URL);
