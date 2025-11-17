@@ -13,13 +13,13 @@ const transport = nodemailer.createTransport({
     }
 });
 
-async function sendEmail(email: string){
+async function sendEmail(email: string, token:string){
   try{
     const info = await transport.sendMail({
       from: `"Time MonitoriaJa" ${process.env.SMTP_EMAIL}`,
       to: `${email}`,
       subject:"Email de verificacao",
-      text:`Boa tarde, clique no link para redefinir sua senha <a> http://localhost:3000/MonitoriaJa/redefinir-senha <a>` ,
+      text:`Boa tarde, clique no link para redefinir sua senha <a> http://localhost:3000/MonitoriaJa/redefinir-senha?token=${token} <a>` ,
     })
     console.log("Email enviado ", info.messageId);
   }catch(err){
@@ -28,7 +28,4 @@ async function sendEmail(email: string){
 }
 
 
-module.exports = {
-  sendEmail,
-
-}
+export default sendEmail;

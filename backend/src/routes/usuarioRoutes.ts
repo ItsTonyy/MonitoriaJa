@@ -1,13 +1,17 @@
 import express from "express";
 import Usuario from "../models/usuario.model";
-
+import bcrypt from "bcrypt";
+import autenticar from "../middleware/auth";
+import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
 const router = express.Router();
 
 // CREATE - Adiciona um novo usuário
 router.post("/", async (req, res) => {
   const usuario = req.body;
-
   try {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(usuario.password, salt);
+    usuario.password = hash;
     await Usuario.create({ ...usuario, isAtivo: true });
     res.status(201).json({ message: "Usuário criado com sucesso!" });
   } catch (error) {
@@ -37,7 +41,7 @@ router.get("/", async (req, res) => {
 });
 
 // GET usuário ativo por id (com nomes das disciplinas ministradas)
-router.get("/:id", async (req, res) => {
+router.get("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
   const id = req.params.id;
   try {
     const usuario = await Usuario.findOne({ _id: id, isAtivo: true }).populate({
@@ -60,7 +64,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE - Atualiza usuário ativo por id
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
   const id = req.params.id;
   const usuario = req.body;
   try {
@@ -81,7 +85,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // DELETE - Exclusão lógica: marca isAtivo como false
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",async (req, res) => {
   const id = req.params.id;
 
   const usuario = await Usuario.findOne({ _id: id, isAtivo: true });
