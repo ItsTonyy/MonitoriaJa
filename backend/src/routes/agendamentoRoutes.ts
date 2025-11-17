@@ -1,7 +1,7 @@
 import express from "express";
 import Agendamento from "../models/agendamento.model";
 import { criarNotificacaoAgendamento, criarNotificacaoCancelamento, criarNotificacaoReagendamento } from "../service/notificacaoService";
-
+import autenticar from "../middleware/auth";
 const router = express.Router();
 
 // CREATE - Adiciona um novo agendamento
@@ -45,7 +45,7 @@ router.get("/", async (req, res) => {
 });
 
 // GET - Lista todos os agendamentos de um usuário (como monitor ou aluno)
-router.get("/usuario/:usuarioId", async (req, res) => {
+router.get("/usuario/:usuarioId", autenticar, async (req, res) => {
   const usuarioId = req.params.usuarioId;
 
   try {

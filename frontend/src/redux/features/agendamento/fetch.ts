@@ -33,7 +33,12 @@ export async function buscarAgendamentoPorId(id: string): Promise<Agendamento> {
 
 // Lista agendamentos por usuário (filtra no front) com status diferente de cancelado ou concluído
 export async function listarAgendamentosPorUsuarioId(id: string): Promise<Agendamento[]> {
-  const response = await fetch(`${BASE_URL}/usuario/${id}`);
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${BASE_URL}/usuario/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   if (!response.ok) throw new Error("Erro ao buscar agendamentos");
   const data = await response.json();
   return data.map(mapAgendamentoMongo).filter(
