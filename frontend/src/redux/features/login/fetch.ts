@@ -10,7 +10,6 @@ export interface User {
 }
 
 export interface AuthResponse {
-  user: User;
   token: string;
 }
 
@@ -22,29 +21,33 @@ export interface LoginCredentials {
 export const loginUserServer = createAsyncThunk<AuthResponse, LoginCredentials>(
   "auth/loginUserServer",
   async (credentials) => {
-    const usuarios = await httpGet(
-      `http://localhost:3001/usuarios?email=${credentials.email}&isAtivo=true`
-    );
+    const res = await httpPost("http://localhost:3001/login", {
+      email: credentials.email,
+      password: credentials.password,
+    });
 
-    if (!usuarios || usuarios.length === 0) {
-      throw new Error("Email não encontrado.");
+    if (!res || !res.message) {
+      throw new Error("Erro ao fazer login.");
     }
 
-    const usuario = usuarios[0];
+    const token = res.message;
 
-    if (usuario.password !== credentials.password) {
-      throw new Error("Senha incorreta.");
-    }
-
-    const { password, ...userWithoutPassword } = usuario;
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    
+    const user: User = {
+      id: payload.id,
+      nome: "",
+      email: credentials.email,
+      role: payload.role.toLowerCase(),
+      isAtivo: true,
+    };
 
     const authResponse: AuthResponse = {
-      user: userWithoutPassword as User,
-      token: `fake-jwt-token-${usuario.role}-${usuario.id}-${Date.now()}`,
+      token
     };
 
     localStorage.setItem("token", authResponse.token);
-
+    console.log("Token armazenado no localStorage:", credentials.email, credentials.password);
     return authResponse;
   }
 );
@@ -60,42 +63,39 @@ export const resetPasswordServer = createAsyncThunk<
   { message: string },
   string
 >("auth/resetPasswordServer", async (email) => {
-  const usuarios = await httpGet(
-    `http://localhost:3001/usuarios?email=${email}&isAtivo=true`
+  const res = await httpPost(
+    `http://localhost:3001/recuperar-senha`, {
+      email: email
+    }
   );
 
-  if (!usuarios || usuarios.length === 0) {
+  if (!res || res.length === 0) {
     throw new Error("Email não encontrado.");
   }
-
+  console.log(email);
   return {
     message: "Redirecionando para a página de redefinir senha!",
   };
 });
 
 export interface UpdatePasswordCredentials {
-  email: string;
-  newPassword: string;
+  newPassword1: string;
+  newPassword2: string;
 }
 
 export const updatePasswordServer = createAsyncThunk<
   { message: string },
   UpdatePasswordCredentials
 >("auth/updatePasswordServer", async (credentials) => {
-  const usuarios = await httpGet(
-    `http://localhost:3001/usuarios?email=${credentials.email}&isAtivo=true`
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("token");
+  console.log("senhas",credentials.newPassword1, credentials.newPassword2);
+  const pass = await httpPut(
+    `http://localhost:3001/redefinir-senha?token=${token}`, {
+      newPassword1: credentials.newPassword1,
+      newPassword2: credentials.newPassword2,
+    }
   );
-
-  if (!usuarios || usuarios.length === 0) {
-    throw new Error("Email não encontrado.");
-  }
-
-  const usuario = usuarios[0];
-
-  await httpPut(`http://localhost:3001/usuarios/${usuario.id}`, {
-    ...usuario,
-    password: credentials.newPassword,
-  });
 
   return {
     message: "Senha alterada com sucesso!",

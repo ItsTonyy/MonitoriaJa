@@ -2,16 +2,42 @@ import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../root-reducer";
 import { fetchNotificacoes, markAsReadServer } from "./fetch";
 
+export interface Usuario {
+  _id?: string;
+  nome?: string;
+  email?: string;
+  telefone?: string;
+}
+
+export interface Agendamento {
+  id?: string;
+  monitor?: Usuario;
+  aluno?: Usuario;
+  servico?: "Aula" | "Exercícios";
+  data?: string;
+  hora?: string;
+  duracao?: number;
+  link?: string;
+  status?: "AGUARDANDO" | "CONFIRMADO" | "CANCELADO" | "REMARCADO" | "CONCLUIDO";
+  valor?: string;
+  formaPagamento?: "CARTAO" | "PIX";
+  statusPagamento?: "PENDENTE" | "PAGO" | "REEMBOLSADO";
+  topicos?: string;
+  motivoCancelamento?: string;
+}
+
 export interface Notificacao {
   id: string;
-  userId: number;
-  tipo: 'cancelamento' | 'reagendamento' | 'agendamento' | 'avaliacao' | 'agendamentoConfirmado';
-  titulo: string;
-  previa: string;
-  descricao: string;
-  tempo: string;
-  lida: boolean;
-  role: 'admin' | 'monitor' | 'user';
+  titulo?: string;
+  mensagem?: string;
+  tipo?: "AGENDAMENTO" | "CANCELAMENTO" | "REAGENDAMENTO" | "AVALIACAO";
+  status?: "LIDA" | "NAO_LIDA" | "ARQUIVADA";
+  dataEnvio?: Date;
+  dataLeitura?: Date;
+  destinatario?: string;
+  agendamento?: Agendamento | null;
+  prioridade?: "ALTA" | "MEDIA" | "BAIXA";
+  lida?: boolean;
 }
 
 export type InitialState = {

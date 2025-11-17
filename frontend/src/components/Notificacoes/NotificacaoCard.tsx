@@ -25,15 +25,14 @@ import StarIcon from "@mui/icons-material/Star";
   color: "primary";
 }*/
 
-const getIconeNotificacao = (tipo: string) => {
-  switch (tipo) {
-    case "reagendamento":
-    case "agendamento":
-    case "agendamentoConfirmado":
+const getIconeNotificacao = (tipo?: string) => {
+  switch (tipo?.toUpperCase()) {
+    case "REAGENDAMENTO":
+    case "AGENDAMENTO":
       return <CalendarMonthIcon color="primary" />;
-    case "avaliacao":
+    case "AVALIACAO":
       return <StarIcon color="warning" />;
-    case "cancelamento":
+    case "CANCELAMENTO":
       return <CancelIcon color="error" />;
     default:
       return <NotificationsIcon color="primary" />;
@@ -49,26 +48,22 @@ export default function NotificacaoCard() {
   const isAuthenticated = useSelector((state: RootState) => state.login.isAuthenticated);
   const notificacoes = useSelector(selectAllNotificacoes);
   const open = Boolean(anchorEl);
-  const notificacaoNaoLidas = notificacoes.filter((n) => !n.lida).length;
+  const notificacaoNaoLidas = notificacoes.filter((n) => n.status !== 'LIDA').length;
 
   React.useEffect(() => {
-    console.log('NotificacaoCard - user:', user);
-    console.log('user.id:', user?.id, 'user.role:', user?.role);
-    console.log('NotificacaoCard - notificacoes:', notificacoes);
-    if (user && user.id && user.role) {
-      console.log('Dispatching fetchNotificacoes with:', { userId: user.id, userRole: user.role });
-      dispatch(fetchNotificacoes({ userId: user.id, userRole: user.role }));
+    if (isAuthenticated) {
+      console.log('Buscando notificações...');
+      dispatch(fetchNotificacoes({ userId: 0, userRole: 'user' }));
     }
-  }, [user, dispatch]);
+  }, [isAuthenticated, dispatch]);
 
-  // Ordenar notificações: não lidas primeiro, depois por data mais recente
   const notificacoesOrdenadas = React.useMemo(() => {
     return [...notificacoes].sort((a, b) => {
-      // Primeiro critério: não lidas primeiro
-      if (a.lida !== b.lida) {
-        return a.lida ? 1 : -1; // não lidas (false) vão para o topo
+      const aLida = a.status === 'LIDA';
+      const bLida = b.status === 'LIDA';
+      if (aLida !== bLida) {
+        return aLida ? 1 : -1;
       }
-      // Segundo critério: você pode adicionar ordenação por data se necessário
       return 0;
     });
   }, [notificacoes]);
@@ -83,21 +78,22 @@ export default function NotificacaoCard() {
 
   const handleNotificationClick = (notificacao: any) => {
     console.log("Clicou na notificação:", notificacao);
+    console.log("Agendamento da notificação:", notificacao.agendamento);
 
-    // Marcar notificação como lida se não estiver lida
-    if (!notificacao.lida) {
+    if (notificacao.status !== 'LIDA') {
       dispatch(markAsReadServer(notificacao.id));
     }
 
-    // Passar apenas dados serializáveis
     const notificacaoData = {
       id: notificacao.id,
       tipo: notificacao.tipo,
       titulo: notificacao.titulo,
-      descricao: notificacao.descricao,
-      tempo: notificacao.tempo,
-      lida: true,
+      mensagem: notificacao.mensagem,
+      dataEnvio: notificacao.dataEnvio,
+      status: 'LIDA',
+      agendamento: notificacao.agendamento,
     };
+    console.log("Enviando para detalhes:", notificacaoData);
     navigate(`/MonitoriaJa/detalhes-notificacao/${notificacao.id}`, {
       state: { notificacao: notificacaoData },
     });
@@ -177,7 +173,7 @@ export default function NotificacaoCard() {
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  backgroundColor: notificacao.lida
+                  backgroundColor: notificacao.status === 'LIDA'
                     ? "transparent"
                     : "action.hover",
                   "&:hover": {
@@ -204,14 +200,14 @@ export default function NotificacaoCard() {
                 <Box sx={{ flex: 1 }}>
                   <Box
                     sx={{
-                      fontWeight: notificacao.lida ? "normal" : "bold",
+                      fontWeight: notificacao.status === 'LIDA' ? "normal" : "bold",
                       mb: 0.5,
                     }}
                   >
                     {notificacao.titulo}
                   </Box>
                   <Box sx={{ color: "text.secondary", fontSize: "0.875rem" }}>
-                    {notificacao.previa}
+                    {notificacao.mensagem?.substring(0, 50)}{notificacao.mensagem && notificacao.mensagem.length > 50 ? '...' : ''}
                   </Box>
                   <Box
                     sx={{
@@ -220,11 +216,11 @@ export default function NotificacaoCard() {
                       mt: 0.5,
                     }}
                   >
-                    {notificacao.tempo}
+                    {notificacao.dataEnvio ? new Date(notificacao.dataEnvio).toLocaleDateString('pt-BR') : ''}
                   </Box>
                 </Box>
 
-                {!notificacao.lida && (
+                {notificacao.status !== 'LIDA' && (
                   <Box
                     sx={{
                       width: 8,

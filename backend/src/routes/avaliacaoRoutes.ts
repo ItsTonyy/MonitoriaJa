@@ -1,5 +1,6 @@
 import express from "express";
 import Avaliacao from "../models/avaliacao.model";
+import { criarNotificacaoAvaliacao } from "../service/notificacaoService";
 
 const router = express.Router();
 
@@ -8,7 +9,20 @@ router.post("/", async (req, res) => {
   const avaliacao = req.body;
 
   try {
-    await Avaliacao.create(avaliacao);
+    const novaAvaliacao: any = await Avaliacao.create(avaliacao);
+    
+    const avaliacaoPopulada: any = await Avaliacao.findById(novaAvaliacao._id)
+      .populate('monitor', 'nome')
+      .populate('aluno', 'nome');
+    
+    /*await criarNotificacaoAvaliacao(
+      avaliacao.monitor,
+      avaliacao.nota,
+      avaliacao.comentario,
+      avaliacaoPopulada.monitor?.nome || 'Monitor',
+      avaliacaoPopulada.aluno?.nome || 'Aluno'
+    );
+    */
     res.status(201).json({ message: "Avaliação criada com sucesso!" });
   } catch (error) {
     res.status(500).json({ erro: error });
