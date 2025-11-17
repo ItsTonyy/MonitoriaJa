@@ -48,11 +48,9 @@ const ListaCartaoPage: React.FC = () => {
   };
 
   const handleRemoverCartao = async (id: string) => {
-    if (window.confirm("Tem certeza que deseja remover este cartão?")) {
       setRemovendoId(id);
       try {
         await dispatch(removerCartao(id)).unwrap();
-        alert("Cartão removido com sucesso!");
       } catch (error) {
         console.error("Erro ao remover cartão:", error);
         alert(
@@ -63,7 +61,6 @@ const ListaCartaoPage: React.FC = () => {
       } finally {
         setRemovendoId(null);
       }
-    }
   };
 
   const handleCancel = () => {

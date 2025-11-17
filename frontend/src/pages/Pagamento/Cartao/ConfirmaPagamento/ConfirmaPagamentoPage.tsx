@@ -170,7 +170,7 @@ const ConfirmaPagamentoPage: React.FC = () => {
 
         <CartaoItem
           numero={cartao?.numero ?? '************0000'}
-          nome={cartao?.nome ?? 'Nome não disponível'}
+          nome={cartao?.titular ?? 'Nome não disponível'}
           bandeira={cartao?.bandeira ?? 'Visa'}
           mostrarBotoes={false}
         />

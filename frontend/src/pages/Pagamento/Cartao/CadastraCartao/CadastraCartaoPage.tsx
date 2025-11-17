@@ -84,8 +84,6 @@ const CadastraCartaoPage: React.FC = () => {
 
       // Adiciona o cartão via API real
       await dispatch(adicionarCartao(novoCartao)).unwrap();
-
-      alert("Cartão cadastrado com sucesso!");
       
       // Volta para a página de listagem
       navigate("/MonitoriaJa/lista-cartao");
