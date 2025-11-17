@@ -21,7 +21,15 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
 import { listarAgendamentosPorUsuarioId } from "../redux/features/agendamento/fetch";
 
-
+function decodeJwtPayload(token: string) {
+  try {
+    const payloadBase64 = token.split(".")[1];
+    const payloadJson = atob(payloadBase64);
+    return JSON.parse(payloadJson);
+  } catch {
+    return null;
+  }
+}
 
 function getGridCols() {
   if (typeof window === "undefined") return 2;
@@ -29,6 +37,9 @@ function getGridCols() {
   if (width >= 1200) return 3;
   if (width >= 783) return 2;
   return 1;
+}
+function getUsuarioObj(usuario: string | undefined | null | { [key: string]: any }) {
+  return typeof usuario === "object" && usuario !== null ? usuario : undefined;
 }
 
 function getGridRows() {
@@ -60,10 +71,20 @@ function ListaAgendamentos() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
-const usuarioLogado = useAppSelector((state) => state.login.user);
+
+
+const token = localStorage.getItem("token");
+let usuarioId: string | undefined = undefined;
+let usuarioRole: string | undefined = undefined;
+if (token) {
+  const payload = decodeJwtPayload(token);
+  usuarioId = payload?.id;
+  usuarioRole= payload?.role.toLowerCase();
+}
 
 const fetchAgendamentos = () => {
-  listarAgendamentosPorUsuarioId(usuarioLogado!.id.toString())
+   if (!usuarioId) return; 
+  listarAgendamentosPorUsuarioId(usuarioId)
     .then((data) => {
       setAgendamentos(data);
       setLoading(false);
@@ -76,7 +97,7 @@ const fetchAgendamentos = () => {
 
 useEffect(() => {
   fetchAgendamentos();
-}, []);
+}, [usuarioId]);
 
   useEffect(() => {
     function handleResize() {
@@ -144,6 +165,7 @@ useEffect(() => {
           </Grid>
         ) : (
           agendamentosPagina.map((agendamento) => (
+            
             <Grid
               item
               xs={12}
@@ -185,8 +207,8 @@ useEffect(() => {
                   >
                     <CardMedia
                       component="img"
-                      image={agendamento.monitor!.foto}
-                      alt={`Foto de ${agendamento.monitor!.nome}`}
+                      image={getUsuarioObj(agendamento.monitor)?.foto}
+                      alt={`Foto de ${getUsuarioObj(agendamento.monitor)?.nome}`}
                       sx={{
                         width: { xs: 70, sm: 80 },
                         height: { xs: 70, sm: 80 },
@@ -233,7 +255,7 @@ useEffect(() => {
                         whiteSpace: "normal",
                       }}
                     >
-                      {agendamento.monitor!.nome}
+                     {getUsuarioObj(agendamento.monitor)?.nome}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -242,7 +264,7 @@ useEffect(() => {
                         color: "text.secondary",
                       }}
                     >
-                      {agendamento.monitor!.materia}
+                       {getUsuarioObj(agendamento.monitor)?.materia}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -262,7 +284,7 @@ useEffect(() => {
                     >
                       {agendamento.hora}
                     </Typography>
-                    {usuarioLogado?.role === "admin" && (
+                    {usuarioRole === "admin" && (
                       <Typography
                         variant="body2"
                         sx={{

@@ -10,6 +10,9 @@ interface ModalRemarcarProps {
   onRemarcarSuccess?: () => void;
 }
 
+function getUsuarioObj(usuario: string | undefined | null | { [key: string]: any }) {
+  return typeof usuario === "object" && usuario !== null ? usuario : undefined;
+}
 function formatHora(hora: string) {
   // Aceita "14h", "14:00", "9h", "09h", etc.
   if (hora.includes(":")) return hora;
@@ -22,7 +25,6 @@ const ModalRemarcar: React.FC<ModalRemarcarProps> = ({ open, onClose, onRemarcar
   const agendamento = useAppSelector((state) => state.agendamento.currentAgendamento);
   const [novaData, setNovaData] = useState("");
   const [novoHorario, setNovoHorario] = useState("");
-
    useEffect(() => {
     if (open) {
       setNovaData("");
@@ -52,13 +54,12 @@ const ModalRemarcar: React.FC<ModalRemarcarProps> = ({ open, onClose, onRemarcar
 
   try {
     await atualizarAgendamento(agendamento.id, {
-      ...agendamento,
       status: "REMARCADO",
       data: novaData.split("-").reverse().join("/"), // Formata para dd/mm/yyyy se necessário
       hora: novoHorario,
     });
-    onClose();
     if (typeof onRemarcarSuccess === "function") onRemarcarSuccess();
+    onClose();
   } catch (error) {
     alert("Erro ao remarcar agendamento!");
   }
@@ -85,8 +86,8 @@ const ModalRemarcar: React.FC<ModalRemarcarProps> = ({ open, onClose, onRemarcar
       >
         <Stack spacing={2} alignItems="center">
           <Avatar
-            src={agendamento.monitor!.foto}
-            alt={agendamento.monitor!.nome}
+            src={getUsuarioObj(agendamento.monitor)?.foto}
+            alt={getUsuarioObj(agendamento.monitor)?.nome}
             sx={{
               width: 80,
               height: 80,
@@ -96,11 +97,11 @@ const ModalRemarcar: React.FC<ModalRemarcarProps> = ({ open, onClose, onRemarcar
           />
 
           <Typography variant="h6" color="primary.main" align="center">
-            {agendamento.monitor!.nome}
+            {getUsuarioObj(agendamento.monitor)?.nome}
           </Typography>
           <Box sx={{ width: "100%" }}>
             <Typography variant="body1" color="text.secundary" align="center">
-              Disciplina: {agendamento.monitor!.materia}
+              Disciplina: {getUsuarioObj(agendamento.monitor)?.materia}
             </Typography>
           </Box>
 

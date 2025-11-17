@@ -14,18 +14,16 @@ function ModalCancelamento({ open, onClose, onCancelSuccess  }: ModalCancelament
   const agendamento = useAppSelector(
     (state) => state.agendamento.currentAgendamento
   );
-
   const handleConfirm = async () => {
     if (!agendamento?.id) return;
     try {
       await atualizarAgendamento(agendamento.id, {
-        ...agendamento,
         status: "CANCELADO",
         motivoCancelamento: motivo,
       });
+      if (onCancelSuccess) onCancelSuccess();
       setMotivo("");
       onClose();
-      onCancelSuccess && onCancelSuccess();
     } catch (error) {
       alert("Erro ao cancelar agendamento!");
     }

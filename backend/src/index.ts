@@ -10,7 +10,6 @@ import avaliacaoRoutes from "./routes/avaliacaoRoutes";
 import notificacaoRoutes from "./routes/notificacaoRoutes";
 import loginRoutes from "./routes/login";
 
-
 // Se usar dotenv para variáveis de ambiente:
 import dotenv from "dotenv";
 dotenv.config();
@@ -25,9 +24,10 @@ app.use(
 
 app.use(express.json());
 
-// rotas aqui...
+app.use(cors());
 
-app.use(cors())
+// rotas aqui...
+app.use(cors());
 app.use("/disciplina", disciplinaRoutes);
 app.use("/agendamento", agendamentoRoutes);
 app.use("/cartao", cartaoRoutes);
@@ -47,6 +47,6 @@ mongoose
   )
   .then(() => {
     console.log("Conectou ao banco!");
-    app.listen(3001, () => console.log("Servidor rodando na porta 3001"),);
+    app.listen(3001, () => console.log("Servidor rodando na porta 3001",password),);
   })
   .catch((err) => console.log(err));
