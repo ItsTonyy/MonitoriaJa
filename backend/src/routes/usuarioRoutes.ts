@@ -36,6 +36,30 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET usuários ativos filtrando por tipoUsuario (ex: /usuario/tipo/MONITOR)
+router.get("/tipo/:tipoUsuario", async (req, res) => {
+  const tipoUsuario = req.params.tipoUsuario.toUpperCase();
+  try {
+    const usuarios = await Usuario.find({ isAtivo: true, tipoUsuario }).populate({
+      path: "listaDisciplinas",
+      select: "nome -_id",
+    });
+
+    const usuariosFormatados = usuarios.map((u) => ({
+      ...u.toObject(),
+      listaDisciplinas: u.listaDisciplinas
+        ? u.listaDisciplinas.map((d: any) => d.nome)
+        : [],
+    }));
+
+    res.status(200).json(usuariosFormatados);
+  } catch (error) {
+    res.status(500).json({ erro: error });
+  }
+});
+
+
+
 // GET usuário ativo por id (com nomes das disciplinas ministradas)
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
