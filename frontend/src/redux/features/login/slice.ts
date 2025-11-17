@@ -64,9 +64,9 @@ const authSlice = createSlice({
       .addCase(loginUserServer.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
         state.loading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
+        //state.user = action.payload.user;
         state.token = action.payload.token;
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        //localStorage.setItem('user', JSON.stringify(action.payload.user));
         localStorage.setItem('token', action.payload.token);
       })
       .addCase(loginUserServer.rejected, (state, action) => {

@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Monitor } from "../../../models/monitor.model";
 import { Avaliacao } from "../../../models/avaliacao.model";
 import { Disponibilidade } from "../../../models/disponibilidade.model";
+import { Usuario } from "../../../models/usuario.model";
 
 interface MonitorState {
-  selectedMonitor: Monitor | null;
-  monitorList: Monitor[];
+  selectedMonitor: Usuario | null;
+  monitorList: Usuario[];
   loading: boolean;
   error: string | null;
 }
@@ -21,13 +21,13 @@ const monitorSlice = createSlice({
   name: "monitor",
   initialState,
   reducers: {
-    setSelectedMonitor: (state, action: PayloadAction<Monitor>) => {
+    setSelectedMonitor: (state, action: PayloadAction<Usuario>) => {
       state.selectedMonitor = action.payload;
     },
     clearSelectedMonitor: (state) => {
       state.selectedMonitor = null;
     },
-    setMonitorList: (state, action: PayloadAction<Monitor[]>) => {
+    setMonitorList: (state, action: PayloadAction<Usuario[]>) => {
       state.monitorList = action.payload;
     },
     updateMonitorAvaliacao: (
@@ -36,7 +36,7 @@ const monitorSlice = createSlice({
     ) => {
       const { monitorId, avaliacao } = action.payload;
       const monitor = state.monitorList.find((m) => m.id === monitorId);
-      if (monitor) {
+      /*if (monitor) {
         monitor.listaAvaliacoes = [
           ...(monitor.listaAvaliacoes || []),
           avaliacao,
@@ -49,7 +49,7 @@ const monitorSlice = createSlice({
         );
         monitor.avaliacao =
           totalAvaliacoes > 0 ? somaAvaliacoes / totalAvaliacoes : 0;
-      }
+      }*/
     },
     updateMonitorDisponibilidade: (
       state,
@@ -60,12 +60,12 @@ const monitorSlice = createSlice({
     ) => {
       const { monitorId, disponibilidade } = action.payload;
       const monitor = state.monitorList.find((m) => m.id === monitorId);
-      if (monitor) {
+      /*if (monitor) {
         monitor.listaDisponibilidades = [
           ...(monitor.listaDisponibilidades || []),
           disponibilidade,
         ];
-      }
+      }*/
     },
   },
 });

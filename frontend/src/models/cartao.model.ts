@@ -1,5 +1,8 @@
+import { Usuario } from "./usuario.model";
+
 export interface Cartao{
-    id?: number;
+    id?: string;
+    usuario?: Usuario | string; 
     numero?: string;
     titular?: string;
     validade?: string;

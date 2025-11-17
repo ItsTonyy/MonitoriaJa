@@ -1,17 +1,18 @@
 import { API } from "../../../config/api";
-import { Monitor } from "../../../models/monitor.model";
+import { Usuario } from "../../../models/usuario.model";
+
 
 const BASE_URL = `${API.URL}/usuarios`;
 
 // Lista todos os monitores (usuários com role "monitor")
-export async function listarMonitores(): Promise<Monitor[]> {
+export async function listarMonitores(): Promise<Usuario[]> {
   const response = await fetch(`${BASE_URL}?role=monitor&isAtivo=true`);
   if (!response.ok) throw new Error("Erro ao buscar monitores");
   return response.json();
 }
 
 // Busca monitor por id (garante que o usuário é monitor)
-export async function buscarMonitorPorId(id: string | number): Promise<Monitor> {
+export async function buscarMonitorPorId(id: string | number): Promise<Usuario> {
   const response = await fetch(`${BASE_URL}/${id}`);
   if (!response.ok ) throw new Error("Monitor não encontrado");
   const usuario = await response.json();
@@ -21,7 +22,7 @@ export async function buscarMonitorPorId(id: string | number): Promise<Monitor> 
 }
 
 // Cria monitor (cria usuário com role "monitor")
-export async function criarMonitor(monitor: Monitor): Promise<Monitor> {
+export async function criarMonitor(monitor: Usuario): Promise<Usuario> {
   const monitorData = { ...monitor, role: "monitor", isAtivo: true };
   const response = await fetch(BASE_URL, {
     method: "POST",
@@ -33,7 +34,7 @@ export async function criarMonitor(monitor: Monitor): Promise<Monitor> {
 }
 
 // Atualiza monitor (usuário com role "monitor")
-export async function atualizarMonitor(id: string | number, monitor: Partial<Monitor>): Promise<Monitor> {
+export async function atualizarMonitor(id: string | number, monitor: Partial<Usuario>): Promise<Usuario> {
   const monitorData = { ...monitor, role: "monitor" };
   const response = await fetch(`${BASE_URL}/${id}`, {
     method: "PATCH",
