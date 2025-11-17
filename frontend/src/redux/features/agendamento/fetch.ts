@@ -3,6 +3,20 @@ import { Agendamento } from "../../../models/agendamento.model";
 
 const BASE_URL = `${API.URL}/agendamento`;
 
+
+function mapAgendamentoMongo(agendamento: any) {
+  return {
+    ...agendamento,
+    id: agendamento._id,
+    monitor: agendamento.monitor
+      ? { ...agendamento.monitor, id: agendamento.monitor._id }
+      : undefined,
+    aluno: agendamento.aluno
+      ? { ...agendamento.aluno, id: agendamento.aluno._id }
+      : undefined,
+  };
+}
+
 // Lista todos os agendamentos (com monitor e aluno populados)
 export async function listarAgendamentos(): Promise<Agendamento[]> {
   const response = await fetch(BASE_URL);
@@ -17,19 +31,15 @@ export async function buscarAgendamentoPorId(id: string): Promise<Agendamento> {
   return response.json();
 }
 
-// Lista agendamentos por usuário (filtra no front)
+// Lista agendamentos por usuário (filtra no front) com status diferente de cancelado ou concluído
 export async function listarAgendamentosPorUsuarioId(id: string): Promise<Agendamento[]> {
-  const response = await fetch(BASE_URL);
+  const response = await fetch(`${BASE_URL}/usuario/${id}`);
   if (!response.ok) throw new Error("Erro ao buscar agendamentos");
-  const agendamentos: Agendamento[] = await response.json();
-  // Filtra por monitor ou aluno (usuário logado)
-  return agendamentos.filter(
-    (ag) =>
-      ag.status !== "CANCELADO" &&
-      ag.status !== "CONCLUIDO" &&
-      (ag.aluno && typeof ag.aluno === "object" && "id" in ag.aluno && ag.aluno.id === id) ||
-      (ag.monitor && typeof ag.monitor === "object" && "id" in ag.monitor && ag.monitor.id === id)
-  );
+  const data = await response.json();
+  return data.map(mapAgendamentoMongo).filter(
+      (ag: Agendamento) =>
+        ag.status !== "CANCELADO" && ag.status !== "CONCLUIDO"
+    );
 }
 
 // Cria agendamento

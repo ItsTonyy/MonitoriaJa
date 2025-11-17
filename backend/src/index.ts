@@ -24,6 +24,8 @@ app.use(
 
 app.use(express.json());
 
+app.use(cors());
+
 // rotas aqui...
 app.use(cors());
 app.use("/disciplina", disciplinaRoutes);

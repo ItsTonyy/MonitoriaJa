@@ -44,6 +44,25 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET - Lista todos os agendamentos de um usuário (como monitor ou aluno)
+router.get("/usuario/:usuarioId", async (req, res) => {
+  const usuarioId = req.params.usuarioId;
+
+  try {
+    const agendamentos = await Agendamento.find({
+      $or: [
+        { monitor: usuarioId },
+        { aluno: usuarioId }
+      ]
+    })
+      .populate("monitor")
+      .populate("aluno");
+    res.status(200).json(agendamentos);
+  } catch (error) {
+    res.status(500).json({ erro: error });
+  }
+});
+
 // READ ONE - Busca agendamento por id (com monitor e aluno preenchidos)
 router.get("/:id", async (req, res) => {
   const id = req.params.id;

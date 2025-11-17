@@ -1,7 +1,7 @@
 import { API } from "../../../config/api";
 import { Disciplina } from "../../../models/disciplina.model";
 
-const BASE_URL = `${API.URL}/disciplinas`;
+const BASE_URL = `${API.URL}/disciplina`;
 
 export async function listarDisciplinas(): Promise<Disciplina[]> {
   const response = await fetch(BASE_URL);
