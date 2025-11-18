@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import "./detalhesMonitor.css";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { clearSelectedMonitor } from "../../redux/features/monitor/monitorSlice";
+import { useNavigate, useLocation } from "react-router-dom";
 import ComentariosAvaliacao from "../comentariosAvaliacao/ComentariosAvaliacao";
 import StarIcon from "@mui/icons-material/Star";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -12,6 +10,8 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { Agendamento } from "../../models/agendamento.model";
 import { avaliacaoService } from "../../services/avaliacaoService";
+import { disponibilidadeService } from "../../services/disponibilidadeService";
+import { usuarioService } from "../../services/usuarioService";
 
 /*interface TimeSlot {
   day: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
@@ -51,51 +51,59 @@ let conquistas: string[] = [
 // Interface não é mais necessária pois usamos Redux
 
 function DetalhesMonitor() {
-  const dispatch = useAppDispatch();
-  const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
- const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const location = useLocation();
   const navigate = useNavigate();
-  const usuarioLogado = useAppSelector((state) => state.login.user);
+  const monitorId = (location.state as any)?.monitorId as string | undefined;
+  const [monitor, setMonitor] = useState<any | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
+  const [horarios, setHorarios] = useState<{ day: string; times: string[] }[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const usuarioLogado = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user") || "{}");
+    } catch {
+      return {};
+    }
+  })();
 
   useEffect(() => {
     const load = async () => {
-      if (!monitor?.id) return;
+      if (!monitorId) return;
       setLoading(true);
       try {
-        const res = await avaliacaoService.getByMonitorId(String(monitor.id));
-        setAvaliacoes(res || []);
+        const m = await usuarioService.getById(monitorId);
+        setMonitor(m);
+        const [avs, disp] = await Promise.all([
+          avaliacaoService.getByMonitorId(String(m.id)),
+          disponibilidadeService.getByMonitorId(String(m.id)),
+        ]);
+        setAvaliacoes(avs || []);
+        setHorarios(
+          (disp || []).map((d: any) => ({ day: d.day, times: d.times || [] }))
+        );
       } catch (e) {
-        console.error("Erro ao carregar avaliações:", e);
+        console.error("Erro ao carregar dados do monitor:", e);
       } finally {
         setLoading(false);
       }
     };
     load();
-  }, [monitor?.id]);
+  }, [monitorId]);
 
   const totalAvaliacoes = avaliacoes.length;
   const somaNotas = avaliacoes.reduce((soma, av) => soma + (av.nota || 0), 0);
   const notaMedia =
     totalAvaliacoes > 0 ? (somaNotas / totalAvaliacoes).toFixed(1) : "0.0";
 
-  // Horários do monitor - idealmente viriam da disponibilidade do monitor no Redux
-  const horarios = monitor?.listaDisponibilidades || [
-    { day: "seg", times: ["10:00", "14:00", "16:00", "22:00"] },
-    { day: "ter", times: ["10:00", "14:00", "16:00"] },
-    { day: "qua", times: ["10:00", "14:00", "16:00", "20:00"] },
-    { day: "qui", times: ["10:00", "14:00", "16:00", "20:00"] },
-    { day: "sex", times: ["7:00", "10:00", "20:00"] },
-    { day: "sab", times: ["10:00"] },
-    { day: "dom", times: ["16:00", "20:00"] },
-  ];
+  // Horários carregados da disponibilidade via serviço
+  // Fallback: se serviço não retornar nada, mantém vazio
 
   useEffect(() => {
-    if (!monitor) {
+    if (!monitorId) {
       navigate("/MonitoriaJa/lista-monitores");
     }
-  }, [monitor, navigate]);
+  }, [monitorId, navigate]);
 
   if (!monitor) return null;
 
@@ -105,8 +113,8 @@ function DetalhesMonitor() {
 };
 
   const handleAgendar = () => {
-  if (!selectedSlot) return;
-  const [diaSelecionado, horarioSelecionado] = selectedSlot.split("-");
+    if (!selectedSlot) return;
+    const [diaSelecionado, horarioSelecionado] = selectedSlot.split("-");
 
   // Calcula a data prevista (próximo dia da semana a partir de hoje)
   const diasSemana = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
@@ -237,7 +245,6 @@ function DetalhesMonitor() {
           variant="outlined"
           sx={{ padding: "5px 40px" }}
           onClick={() => {
-            dispatch(clearSelectedMonitor());
             navigate("/MonitoriaJa/lista-monitores");
           }}
         >
