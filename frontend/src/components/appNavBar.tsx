@@ -25,6 +25,8 @@ import Typography from "@mui/material/Typography";
 import logo from "/logoMonitoriaJá.png";
 import anonUser from "/anon-user.avif";
 
+import { decodeToken, getToken } from '../pages/Pagamento/Cartao/CadastraCartao/authUtils.js';
+
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -44,12 +46,12 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 const settings = ["Perfil", "Histórico", "Logout"];
 
 interface IUser {
-  id: number;
-  nome: string;
-  email: string;
-  role: string;
-  description: string;
-  telefone: string;
+  id?: number;
+  nome?: string;
+  email?: string;
+  tipoUsuario?: "ALUNO" | "ADMIN" | "MONITOR"; // Remover o ?
+  description?: string;
+  telefone?: string;
 }
 
 export default function AppNavBar() {
@@ -85,16 +87,41 @@ export default function AppNavBar() {
     navigate("/MonitoriaJa/login");
   }
 
-  function handleClickPerfil() {
-    const user: IUser = JSON.parse(localStorage.getItem("user") || "{}");
-    const isMonitor: boolean = user.role === "monitor" ? true : false;
+function handleClickPerfil() {
+  try {
+    const token = getToken();
+    
+    if (!token) {
+      navigate("/MonitoriaJa/perfil-usuario");
+      return;
+    }
 
-    if (isMonitor) {
+    const decodedToken = decodeToken(token);
+    
+    if (!decodedToken) {
+      navigate("/MonitoriaJa/perfil-usuario");
+      return;
+    }
+
+    // Obtém o tipo de usuário do token decodificado
+    // Ajuste o campo conforme o que sua API envia no token
+    const userType = decodedToken.tipoUsuario || decodedToken.role;
+
+    const isMonitorOrAdmin: boolean = 
+      userType === "MONITOR" || 
+      userType === "ADMIN";
+
+    if (isMonitorOrAdmin) {
       navigate("/MonitoriaJa/perfil-monitor");
     } else {
       navigate("/MonitoriaJa/perfil-usuario");
     }
+
+  } catch (error) {
+    console.error('Erro ao verificar perfil:', error);
+    navigate("/MonitoriaJa/perfil-usuario");
   }
+}
 
   function handleClickHistorico() {}
 

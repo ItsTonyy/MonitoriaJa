@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchUsuariosAdmin, UsuarioCompleto } from './fetch';
+import { fetchUsuariosAdmin, removerUsuario, UsuarioCompleto } from './fetch';
 
 interface AdminState {
   usuarios: UsuarioCompleto[];
@@ -16,7 +16,15 @@ const initialState: AdminState = {
 const adminSlice = createSlice({
   name: 'admin',
   initialState,
-  reducers: {},
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+    clearUsuarios: (state) => {
+      state.usuarios = [];
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsuariosAdmin.pending, (state) => {
@@ -29,9 +37,10 @@ const adminSlice = createSlice({
       })
       .addCase(fetchUsuariosAdmin.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Erro ao buscar usuários';
+        state.error = action.payload || action.error.message || 'Erro ao buscar usuários';
       });
   },
 });
 
+export const { clearError, clearUsuarios } = adminSlice.actions;
 export default adminSlice.reducer;

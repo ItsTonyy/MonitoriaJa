@@ -3,6 +3,7 @@ import Usuario from "../models/usuario.model";
 import bcrypt from "bcrypt";
 import autenticar from "../middleware/auth";
 import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
+import autenticarAdmin from "../middleware/adminAuth";
 const router = express.Router();
 
 // CREATE - Adiciona um novo usuário
@@ -20,7 +21,7 @@ router.post("/", async (req, res) => {
 });
 
 // GET todos os usuários ativos (com nomes das disciplinas ministradas)
-router.get("/", async (req, res) => {
+router.get("/", autenticarAdmin, async (req, res) => {
   try {
     const usuarios = await Usuario.find({ isAtivo: true }).populate({
       path: "listaDisciplinas",

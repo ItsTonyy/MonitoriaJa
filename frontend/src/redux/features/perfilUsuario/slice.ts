@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Usuario } from "../../../models/usuario.model"
+import { Usuario } from "../../../models/usuario.model";
+import { getToken, getUserIdFromToken, isTokenExpired } from "../../../pages/Pagamento/Cartao/CadastraCartao/authUtils";
 
 interface UsuarioState {
   currentUser: Usuario | null;
@@ -21,6 +22,7 @@ const initialState: UsuarioState = {
 
 // Funções de validação
 const validarNome = (nome: string) => (!nome.trim() ? 'Nome não pode ser vazio' : undefined);
+
 const validarTelefone = (tel: string) => {
   const limpo = tel.replace(/\D/g, '');
   if (!limpo) return 'Telefone é obrigatório';
@@ -28,45 +30,180 @@ const validarTelefone = (tel: string) => {
   if (limpo[2] !== '9') return 'O terceiro dígito deve ser 9';
   return undefined;
 };
+
 const validarEmail = (email: string) => {
   if (!email.trim()) return 'Email é obrigatório';
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email) ? undefined : 'Email deve ter formato: <e-mail>@<domínio>';
 };
 
-// Fetch
-export const fetchUsuario = createAsyncThunk<Usuario, number>(
+// Thunk: Buscar usuário autenticado ou específico por ID
+export const fetchUsuario = createAsyncThunk<
+  Usuario,
+  string | undefined,
+  { rejectValue: string }
+>(
   "usuario/fetchUsuario",
-  async (id) => {
-    const response = await fetch(`http://localhost:3001/usuarios/${id}`);
-    if (!response.ok) throw new Error("Usuário não encontrado");
-    const user = await response.json();
-    return { id: user.id, nome: user.nome, email: user.email, telefone: user.telefone || '', role: user.role || 'user' };
+  async (userId, { rejectWithValue }) => {
+    try {
+      // Verifica token
+      const token = getToken();
+      console.log('🔑 Token encontrado:', token ? 'Sim' : 'Não');
+      
+      if (!token || isTokenExpired()) {
+        console.log('❌ Token inválido ou expirado');
+        return rejectWithValue("Token inválido ou expirado. Faça login novamente.");
+      }
+
+      // Se userId não for fornecido, pega do token
+      const targetUserId = userId || getUserIdFromToken();
+      console.log('👤 Target User ID:', targetUserId);
+      
+      if (!targetUserId) {
+        console.log('❌ ID do usuário não encontrado');
+        return rejectWithValue("ID do usuário não encontrado");
+      }
+
+      const url = `http://localhost:3001/usuario/${targetUserId}`;
+      console.log('🌐 Fazendo requisição para:', url);
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('📡 Status da resposta:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('❌ Erro na resposta:', errorText);
+        
+        if (response.status === 404) {
+          return rejectWithValue("Usuário não encontrado");
+        }
+        if (response.status === 401) {
+          return rejectWithValue("Não autorizado. Faça login novamente.");
+        }
+        throw new Error("Erro ao buscar usuário");
+      }
+
+      const data = await response.json();
+      console.log('✅ Dados recebidos:', data);
+      
+      return {
+        id: data.id || data._id,
+        nome: data.nome,
+        email: data.email,
+        telefone: data.telefone || '',
+        foto: data.foto || '',
+        tipoUsuario: data.tipoUsuario || 'ALUNO'
+      };
+    } catch (error: any) {
+      console.error('💥 Erro no catch:', error);
+      return rejectWithValue(error.message || "Erro ao carregar usuário");
+    }
   }
 );
 
-// Update
-export const updateUsuario = createAsyncThunk<Usuario, { nome: string; telefone: string; email: string }, { rejectValue: { validationErrors: { nome?: string; telefone?: string; email?: string } } }>(
+// Thunk: Atualizar usuário
+export const updateUsuario = createAsyncThunk<
+  Usuario,
+  { nome: string; telefone: string; email: string; fotoUrl?: string },
+  { rejectValue: { validationErrors?: { nome?: string; telefone?: string; email?: string }; message?: string } }
+>(
   "usuario/updateUsuario",
   async (userData, { getState, rejectWithValue }) => {
-    const validationErrors = {
-      nome: validarNome(userData.nome),
-      telefone: validarTelefone(userData.telefone),
-      email: validarEmail(userData.email)
-    };
-    if (Object.values(validationErrors).some(e => e)) return rejectWithValue({ validationErrors });
-    const state = getState() as any;
-    const currentUser: Usuario = state.usuario.currentUser!;
-    const newUser = { ...currentUser, ...userData };
-    const response = await fetch(`http://localhost:3001/usuarios/${currentUser.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome: newUser.nome, email: newUser.email, telefone: newUser.telefone }),
-    });
-    if (!response.ok) throw new Error('Erro ao atualizar usuário');
-    await response.json();
-    localStorage.setItem("user", JSON.stringify(newUser));
-    return newUser;
+    console.log('🔄 Iniciando updateUsuario com dados:', userData);
+    
+    try {
+      // Validações
+      const validationErrors = {
+        nome: validarNome(userData.nome),
+        telefone: validarTelefone(userData.telefone),
+        email: validarEmail(userData.email)
+      };
+
+      console.log('✅ Validações:', validationErrors);
+
+      if (Object.values(validationErrors).some(e => e)) {
+        console.log('❌ Erros de validação encontrados');
+        return rejectWithValue({ validationErrors });
+      }
+
+      // Verifica token
+      const token = getToken();
+      if (!token || isTokenExpired()) {
+        return rejectWithValue({ message: "Token inválido ou expirado. Faça login novamente." });
+      }
+
+      // Pega usuário atual do estado
+      const state = getState() as any;
+      console.log('🗂️ Estado completo:', state);
+      console.log('👤 State.usuario:', state.usuario);
+      
+      const currentUser: Usuario | null = state.usuario?.currentUser;
+
+      if (!currentUser || !currentUser.id) {
+        console.error('❌ CurrentUser não encontrado:', currentUser);
+        console.error('❌ Estado disponível:', Object.keys(state));
+        return rejectWithValue({ message: "Usuário não encontrado no estado. Recarregue a página." });
+      }
+
+      console.log('👤 Atualizando usuário:', currentUser.id);
+
+      // Faz a requisição PATCH
+      const response = await fetch(`http://localhost:3001/usuario/${currentUser.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          nome: userData.nome,
+          email: userData.email,
+          telefone: userData.telefone,
+          ...(userData.fotoUrl && { foto: userData.fotoUrl })
+        }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          return rejectWithValue({ message: "Não autorizado. Faça login novamente." });
+        }
+        if (response.status === 400) {
+          const errorData = await response.json();
+          return rejectWithValue({ message: errorData.message || "Dados inválidos" });
+        }
+        throw new Error('Erro ao atualizar usuário');
+      }
+
+      const result = await response.json();
+
+      // Atualiza o usuário no estado
+      const updatedUser: Usuario = {
+        ...currentUser,
+        nome: userData.nome,
+        email: userData.email,
+        telefone: userData.telefone,
+        ...(userData.fotoUrl && { foto: userData.fotoUrl })
+      };
+
+      // Atualiza localStorage se for o usuário logado
+      const loggedUserId = getUserIdFromToken();
+      if (loggedUserId === currentUser.id) {
+        const userInStorage = localStorage.getItem("user");
+        if (userInStorage) {
+          const parsedUser = JSON.parse(userInStorage);
+          localStorage.setItem("user", JSON.stringify({ ...parsedUser, ...updatedUser }));
+        }
+      }
+
+      return updatedUser;
+    } catch (error: any) {
+      return rejectWithValue({ message: error.message || "Erro ao atualizar usuário" });
+    }
   }
 );
 
@@ -74,35 +211,72 @@ const usuarioSlice = createSlice({
   name: "usuario",
   initialState,
   reducers: {
-    clearValidationErrors: state => { state.validationErrors = {}; },
+    clearValidationErrors: state => {
+      state.validationErrors = {};
+    },
     validateField: (state, action: PayloadAction<{ field: keyof typeof state.validationErrors; value: string }>) => {
       const { field, value } = action.payload;
       switch (field) {
-        case 'nome': state.validationErrors.nome = validarNome(value); break;
-        case 'telefone': state.validationErrors.telefone = validarTelefone(value); break;
-        case 'email': state.validationErrors.email = validarEmail(value); break;
+        case 'nome':
+          state.validationErrors.nome = validarNome(value);
+          break;
+        case 'telefone':
+          state.validationErrors.telefone = validarTelefone(value);
+          break;
+        case 'email':
+          state.validationErrors.email = validarEmail(value);
+          break;
       }
     },
-    clearError: state => { state.error = null; }
+    clearError: state => {
+      state.error = null;
+    },
+    clearCurrentUser: state => {
+      state.currentUser = null;
+      state.error = null;
+      state.validationErrors = {};
+    }
   },
   extraReducers: builder => {
     builder
-      .addCase(fetchUsuario.pending, state => { state.loading = true; state.error = null; state.validationErrors = {}; })
-      .addCase(fetchUsuario.fulfilled, (state, action) => { state.loading = false; state.currentUser = action.payload; state.validationErrors = {}; })
-      .addCase(fetchUsuario.rejected, (state, action) => { state.loading = false; state.error = action.error.message || "Erro ao carregar usuário"; state.validationErrors = {}; })
-      .addCase(updateUsuario.pending, state => { state.loading = true; state.error = null; state.validationErrors = {}; })
-      .addCase(updateUsuario.fulfilled, (state, action) => { state.loading = false; state.currentUser = action.payload; state.validationErrors = {}; })
+      // fetchUsuario
+      .addCase(fetchUsuario.pending, state => {
+        state.loading = true;
+        state.error = null;
+        state.validationErrors = {};
+      })
+      .addCase(fetchUsuario.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+        state.validationErrors = {};
+      })
+      .addCase(fetchUsuario.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Erro ao carregar usuário";
+        state.validationErrors = {};
+      })
+      // updateUsuario
+      .addCase(updateUsuario.pending, state => {
+        state.loading = true;
+        state.error = null;
+        state.validationErrors = {};
+      })
+      .addCase(updateUsuario.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+        state.validationErrors = {};
+      })
       .addCase(updateUsuario.rejected, (state, action) => {
         state.loading = false;
-        if (action.payload && 'validationErrors' in action.payload) {
+        if (action.payload && 'validationErrors' in action.payload && action.payload.validationErrors) {
           state.validationErrors = action.payload.validationErrors;
         } else {
-          state.error = action.error.message || "Erro ao atualizar usuário";
+          state.error = action.payload?.message || "Erro ao atualizar usuário";
           state.validationErrors = {};
         }
       });
   },
 });
 
-export const { clearValidationErrors, validateField, clearError } = usuarioSlice.actions;
+export const { clearValidationErrors, validateField, clearError, clearCurrentUser } = usuarioSlice.actions;
 export default usuarioSlice.reducer;
