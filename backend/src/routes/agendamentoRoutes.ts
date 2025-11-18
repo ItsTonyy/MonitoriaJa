@@ -1,6 +1,7 @@
 import express from "express";
 import Agendamento from "../models/agendamento.model";
-
+import { criarNotificacaoAgendamento, criarNotificacaoCancelamento, criarNotificacaoReagendamento } from "../service/notificacaoService";
+import autenticar from "../middleware/auth";
 const router = express.Router();
 
 // CREATE - Adiciona um novo agendamento
@@ -8,7 +9,23 @@ router.post("/", async (req, res) => {
   const agendamento = req.body;
 
   try {
-    await Agendamento.create(agendamento);
+    const novoAgendamento: any = await Agendamento.create(agendamento);
+    
+    const agendamentoPopulado: any = await Agendamento.findById(novoAgendamento._id)
+      .populate('monitor', 'nome')
+      .populate('aluno', 'nome');
+    
+    await criarNotificacaoAgendamento(
+      novoAgendamento._id.toString(),
+      agendamento.monitor,
+      agendamento.aluno,
+      agendamento.data,
+      agendamento.hora,
+      agendamentoPopulado.aluno?.nome || 'Aluno',
+      agendamentoPopulado.monitor?.nome || 'Monitor',
+      agendamento.topicos
+    );
+    
     res.status(201).json({ message: "Agendamento criado com sucesso!" });
   } catch (error) {
     res.status(500).json({ erro: error });
@@ -19,6 +36,25 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const agendamentos = await Agendamento.find()
+      .populate("monitor")
+      .populate("aluno");
+    res.status(200).json(agendamentos);
+  } catch (error) {
+    res.status(500).json({ erro: error });
+  }
+});
+
+// GET - Lista todos os agendamentos de um usuário (como monitor ou aluno)
+router.get("/usuario/:usuarioId", autenticar, async (req, res) => {
+  const usuarioId = req.params.usuarioId;
+
+  try {
+    const agendamentos = await Agendamento.find({
+      $or: [
+        { monitor: usuarioId },
+        { aluno: usuarioId }
+      ]
+    })
       .populate("monitor")
       .populate("aluno");
     res.status(200).json(agendamentos);
@@ -53,11 +89,40 @@ router.patch("/:id", async (req, res) => {
   const update = req.body;
 
   try {
-    const updatedAgendamento = await Agendamento.updateOne({ _id: id }, update);
-
-    if (updatedAgendamento.matchedCount === 0) {
+    const agendamentoAnterior: any = await Agendamento.findById(id)
+      .populate('monitor', 'nome')
+      .populate('aluno', 'nome');
+    
+    if (!agendamentoAnterior) {
       res.status(404).json({ message: "Agendamento não encontrado!" });
       return;
+    }
+
+    const updatedAgendamento = await Agendamento.updateOne({ _id: id }, update);
+
+    if (update.status === "CANCELADO" && agendamentoAnterior.status !== "CANCELADO") {
+      await criarNotificacaoCancelamento(
+        id,
+        agendamentoAnterior.monitor?._id?.toString() || '',
+        agendamentoAnterior.data || '',
+        agendamentoAnterior.monitor?.nome || 'Monitor',
+        agendamentoAnterior.aluno?.nome || 'Aluno',
+        agendamentoAnterior.topicos,
+        update.motivoCancelamento
+      );
+    }
+
+    if (update.status === "REMARCADO" || (update.data && update.data !== agendamentoAnterior.data) || (update.hora && update.hora !== agendamentoAnterior.hora)) {
+      await criarNotificacaoReagendamento(
+        id,
+        agendamentoAnterior.monitor?._id?.toString() || '',
+        agendamentoAnterior.aluno?._id?.toString() || '',
+        update.data || agendamentoAnterior.data || '',
+        update.hora || agendamentoAnterior.hora || '',
+        agendamentoAnterior.monitor?.nome || 'Monitor',
+        agendamentoAnterior.aluno?.nome || 'Aluno',
+        update.topicos || agendamentoAnterior.topicos
+      );
     }
 
     res.status(200).json(update);

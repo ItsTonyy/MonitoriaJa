@@ -57,7 +57,9 @@ function DetalhesMonitor() {
   const [monitor, setMonitor] = useState<any | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
-  const [horarios, setHorarios] = useState<{ day: string; times: string[] }[]>([]);
+  const [horarios, setHorarios] = useState<{ day: string; times: string[] }[]>(
+    []
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const usuarioLogado = (() => {
     try {
@@ -107,41 +109,43 @@ function DetalhesMonitor() {
 
   if (!monitor) return null;
 
- const handleTimeSlotClick = (day: string | undefined, time: string) => {
-  if (!day) return;
-  setSelectedSlot(`${day}-${time}`); // só um horário por vez
-};
+  const handleTimeSlotClick = (day: string | undefined, time: string) => {
+    if (!day) return;
+    setSelectedSlot(`${day}-${time}`); // só um horário por vez
+  };
 
   const handleAgendar = () => {
     if (!selectedSlot) return;
     const [diaSelecionado, horarioSelecionado] = selectedSlot.split("-");
 
-  // Calcula a data prevista (próximo dia da semana a partir de hoje)
-  const diasSemana = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
-  const hoje = new Date();
-  const hojeIndex = hoje.getDay(); // 0=domingo, 1=segunda, ...
-  const targetIndex = diasSemana.indexOf(diaSelecionado);
+    // Calcula a data prevista (próximo dia da semana a partir de hoje)
+    const diasSemana = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
+    const hoje = new Date();
+    const hojeIndex = hoje.getDay(); // 0=domingo, 1=segunda, ...
+    const targetIndex = diasSemana.indexOf(diaSelecionado);
 
-  let diff = targetIndex - hojeIndex;
-  if (diff < 0) diff += 7; // pega o próximo dia, nunca o anterior
+    let diff = targetIndex - hojeIndex;
+    if (diff < 0) diff += 7; // pega o próximo dia, nunca o anterior
 
-  const dataPrevista = new Date(hoje);
-  dataPrevista.setDate(hoje.getDate() + diff);
-  const dataFormatada = dataPrevista.toLocaleDateString("pt-BR"); // dd/mm/aaaa
+    const dataPrevista = new Date(hoje);
+    dataPrevista.setDate(hoje.getDate() + diff);
+    const dataFormatada = dataPrevista.toLocaleDateString("pt-BR"); // dd/mm/aaaa
 
-  const novoAgendamento: Agendamento = {
-    id: Date.now().toString(),
-    monitor: monitor,
-    data: dataFormatada,
-    hora: horarioSelecionado,
-    status: "AGUARDANDO",
-    valor: monitor.valor,
-    statusPagamento: "PENDENTE",
-    alunoId: usuarioLogado?.id,
+    const novoAgendamento: Agendamento = {
+      id: Date.now().toString(),
+      monitor: monitor,
+      data: dataFormatada,
+      hora: horarioSelecionado,
+      status: "AGUARDANDO",
+      valor: monitor.valor,
+      statusPagamento: "PENDENTE",
+      alunoId: usuarioLogado?.id,
+    };
+
+    navigate("/MonitoriaJa/agendamento-monitor", {
+      state: { agendamento: novoAgendamento },
+    });
   };
-
-  navigate("/MonitoriaJa/agendamento-monitor", { state: { agendamento: novoAgendamento } });
-};
 
   return (
     <div className="main">
