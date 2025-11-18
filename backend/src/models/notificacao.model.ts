@@ -7,6 +7,7 @@ const NotificacaoSchema = new mongoose.Schema({
   status: { type: String, enum: ["LIDA", "NAO_LIDA", "ARQUIVADA"] },
   dataEnvio: Date,
   dataLeitura: Date,
+  previa: String,
   destinatario: { type: mongoose.Schema.Types.ObjectId, ref: "Usuario" },
   agendamento: { type: mongoose.Schema.Types.ObjectId, ref: "Agendamento" },
   prioridade: { type: String, enum: ["ALTA", "MEDIA", "BAIXA"] }

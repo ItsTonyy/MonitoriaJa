@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -25,8 +25,8 @@ const ResetPasswordForm: React.FC = () => {
     (state: RootState) => state.login
   );
   
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword1, setNewPassword1] = useState('');
+  const [newPassword2, setNewPassword2] = useState('');
   const [newPasswordError, setNewPasswordError] = useState(false);
   const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
@@ -59,7 +59,7 @@ const ResetPasswordForm: React.FC = () => {
   const validateInputs = () => {
     let isValid = true;
 
-    if (!newPassword || newPassword.length < 6) {
+    if (!newPassword1 || newPassword1.length < 6) {
       setNewPasswordError(true);
       setNewPasswordErrorMessage('A senha deve ter pelo menos 6 caracteres.');
       isValid = false;
@@ -68,7 +68,7 @@ const ResetPasswordForm: React.FC = () => {
       setNewPasswordErrorMessage('');
     }
 
-    if (!confirmPassword || confirmPassword !== newPassword) {
+    if (!newPassword2 || newPassword2 !== newPassword1) {
       setConfirmPasswordError(true);
       setConfirmPasswordErrorMessage('As senhas não coincidem.');
       isValid = false;
@@ -87,8 +87,8 @@ const ResetPasswordForm: React.FC = () => {
     }
 
     await dispatch(updatePasswordServer({
-      email,
-      newPassword,
+      newPassword1,
+      newPassword2,
     }));
   };
 
@@ -144,18 +144,18 @@ const ResetPasswordForm: React.FC = () => {
               <TextField
                 error={newPasswordError}
                 helperText={newPasswordErrorMessage}
-                id="newPassword"
+                id="newPassword1"
                 type="password"
                 label="Nova Senha"
-                name="newPassword"
+                name="newPassword1"
                 placeholder="••••••"
                 autoComplete="new-password"
                 autoFocus
                 required
                 fullWidth
                 variant="outlined"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                value={newPassword1}
+                onChange={(e) => setNewPassword1(e.target.value)}
                 disabled={updatePasswordLoading || updatePasswordSuccess}
               />
             </FormControl>
@@ -164,17 +164,17 @@ const ResetPasswordForm: React.FC = () => {
               <TextField
                 error={confirmPasswordError}
                 helperText={confirmPasswordErrorMessage}
-                name="confirmPassword"
+                name="newPassword2"
                 label="Confirmar Senha"
                 placeholder="••••••"
                 type="password"
-                id="confirmPassword"
+                id="newPassword2"
                 autoComplete="new-password"
                 required
                 fullWidth
                 variant="outlined"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                value={newPassword2}
+                onChange={(e) => setNewPassword2(e.target.value)}
                 disabled={updatePasswordLoading || updatePasswordSuccess}
               />
             </FormControl>

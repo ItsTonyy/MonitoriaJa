@@ -4,18 +4,16 @@ import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import ModalSelect from "./ModalSelect";
 import { useNavigate } from "react-router-dom";
-import { Aluno } from "../models/usuario.model";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import { styled } from "@mui/material/styles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import { Monitor } from "../models/monitor.model";
 import { Disciplina } from "../models/disciplina.model";
-import { httpPost, httpGet } from "../utils";
 import { criarMonitor } from "../redux/features/monitor/fetch";
+import { criarAluno } from "../redux/features/aluno/fetch";
 import { listarDisciplinas } from "../redux/features/disciplina/fetch";
 import { useEffect } from "react";
-import { listarAgendamentos } from "../redux/features/agendamento/fetch";
+import { Usuario } from "../models/usuario.model";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -30,6 +28,7 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 function CadastroForm() {
+  /*
   async function getNextId(endpoint: string): Promise<number> {
     try {
       const items: any = await httpGet(endpoint);
@@ -45,6 +44,7 @@ function CadastroForm() {
       return 1;
     }
   }
+  */
 
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [nome, setNome] = useState("");
@@ -64,32 +64,21 @@ function CadastroForm() {
   const [valorMonitor, setValorMonitor] = useState(0);
 
   const navigate = useNavigate();
-  const [opcoesEspecialidades, setOpcoesEspecialidades] = useState<{
-    label: string;
-    value: string;
-  }[]>([]);
+  const [opcoesEspecialidades, setOpcoesEspecialidades] = useState<Disciplina[] | string[]>([]);
 
   // carregar disciplinas e mapear para {label, value}
   useEffect(() => {
-    let mounted = true;
     const load = async () => {
       try {
         const disciplinas: Disciplina[] = await listarDisciplinas();
-        if (!mounted) return;
-        const mapped = (disciplinas || []).map((d) => ({
-          label: d.nome ?? "",
-          value: d.nome ?? "",
-        }));
-        setOpcoesEspecialidades(mapped);
+        setOpcoesEspecialidades(disciplinas);
       } catch (err) {
         console.error("Erro ao carregar disciplinas:", err);
       }
     };
     load();
-    return () => {
-      mounted = false;
-    };
   }, []);
+
   const mudarAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
@@ -364,42 +353,25 @@ function CadastroForm() {
             setAbrirModalMonitor(false);
             if (opcao.toLowerCase() === "não") {
               try {
-                const nextUserId = await getNextId(
-                  "http://localhost:3001/usuarios"
-                );
-                const novoAluno: Aluno = {
+                // criar usuário associado ao aluno (role: aluno)
+                const novoAluno: Usuario = {
                   nome: nome,
-                  telefone: telefone.replace(/\D/g, ""),
                   email: email,
+                  cpf: cpf.replace(/\D/g, ""),
                   password: senha,
-                  foto:
+                  telefone: telefone.replace(/\D/g, ""),
+                  foto: "https://cdn-icons-png.flaticon.com/512/3541/3541871.png",
+                  /*
                     avatar === undefined
                       ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
                       : avatar,
-                  tipoUsuario: "ALUNO",
+                  */
+                  listaAgendamentos: [],
+                  listaCartoes: [],
                 };
 
-                // payload para o json-server com id
-                const usuarioPayload = {
-                  id: String(nextUserId),
-                  nome: novoAluno.nome,
-                  email: novoAluno.email,
-                  cpf: cpf.replace(/\D/g, ""),
-                  telefone: novoAluno.telefone,
-                  password: novoAluno.password,
-                  foto:
-                  avatar === undefined
-                    ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
-                    : avatar,
-                  listarAgendamentos: [],
-                  listarCartoes: [],
-                  role: "user",
-                  isAtivo: true,
-                };
-                await httpPost(
-                  "http://localhost:3001/usuarios",
-                  usuarioPayload
-                );
+                await criarAluno(novoAluno);
+
                 navigate("/MonitoriaJa/login");
               } catch (err) {
                 console.error("Erro ao criar usuário:", err);
@@ -411,41 +383,40 @@ function CadastroForm() {
         <ModalSelect
           open={abrirModalEspecialidade}
           header="Selecione sua especialidade"
-          opcoes={opcoesEspecialidades}
+          opcoes={opcoesEspecialidades.map((d) => ({
+            label: d.toString(),
+            value: d.toString(),
+          }))}  
           onClose={() => setAbrirModalEspecialidade(false)}
           monitor={true}
           handleValorMonitor={(valor) => setValorMonitor(valor)}
           onConfirm={async (especialidade) => {
             setAbrirModalEspecialidade(false);
             try {
-              const nextUserId = await getNextId(
-                "http://localhost:3001/usuarios"
-              );
               // criar usuário associado ao monitor (role: monitor)
-              const usuarioPayload = {
-                id: String(nextUserId),
+              const novoMonitor: Usuario = {
                 nome: nome,
                 email: email,
                 cpf: cpf.replace(/\D/g, ""),
-                servico: "",
-                avaliacao: 0.0,
-                biografia: "",
-                listaAvaliacoes: [],
-                listaDisponibilidades: [],
-                listaDisciplinas: [],
-                telefone: telefone.replace(/\D/g, ""),
                 password: senha,
-                role: "monitor",
-                foto:
+                telefone: telefone.replace(/\D/g, ""),
+                foto: "https://cdn-icons-png.flaticon.com/512/3541/3541871.png",
+                /*
                   avatar === undefined
                     ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
                     : avatar,
+                */
+                tipoUsuario: "MONITOR",
                 materia: especialidade,
-                formacao: "",
                 valor: `R$ ${valorMonitor}/h`,
-                isAtivo: true
+                servico: "",
+                avaliacao: 0.0,
+                formacao: "",
+                biografia: "",
+                listaDisciplinas: [],
+                listaAgendamentos: [],
               };
-              await httpPost("http://localhost:3001/usuarios", usuarioPayload);
+              await criarMonitor(novoMonitor);
 
               navigate("/MonitoriaJa/login");
             } catch (err) {

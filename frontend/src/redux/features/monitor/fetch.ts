@@ -1,28 +1,28 @@
 import { API } from "../../../config/api";
-import { Monitor } from "../../../models/monitor.model";
+import { Usuario } from "../../../models/usuario.model";
 
-const BASE_URL = `${API.URL}/usuarios`;
+const BASE_URL = `${API.URL}/usuario`;
 
-// Lista todos os monitores (usuários com role "monitor")
-export async function listarMonitores(): Promise<Monitor[]> {
-  const response = await fetch(`${BASE_URL}?role=monitor&isAtivo=true`);
+// Lista todos os monitores (usuários com tipoUsuario "MONITOR" e isAtivo true)
+export async function listarMonitores(): Promise<Usuario[]> {
+  const response = await fetch(`${BASE_URL}/tipo/MONITOR`);
   if (!response.ok) throw new Error("Erro ao buscar monitores");
   return response.json();
 }
 
-// Busca monitor por id (garante que o usuário é monitor)
-export async function buscarMonitorPorId(id: string | number): Promise<Monitor> {
+// Busca monitor por id (garante que o usuário é monitor e ativo)
+export async function buscarMonitorPorId(id: string | number): Promise<Usuario> {
   const response = await fetch(`${BASE_URL}/${id}`);
-  if (!response.ok ) throw new Error("Monitor não encontrado");
+  if (!response.ok) throw new Error("Monitor não encontrado");
   const usuario = await response.json();
   if (!usuario.isAtivo) throw new Error("Monitor não encontrado");
-  if (usuario.role !== "monitor") throw new Error("Usuário não é monitor");
+  if (usuario.tipoUsuario !== "MONITOR") throw new Error("Usuário não é monitor");
   return usuario;
 }
 
-// Cria monitor (cria usuário com role "monitor")
-export async function criarMonitor(monitor: Monitor): Promise<Monitor> {
-  const monitorData = { ...monitor, role: "monitor", isAtivo: true };
+// Cria monitor (cria usuário com tipoUsuario "MONITOR")
+export async function criarMonitor(monitor: Usuario): Promise<Usuario> {
+  const monitorData = { ...monitor, tipoUsuario: "MONITOR", isAtivo: true };
   const response = await fetch(BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -32,9 +32,9 @@ export async function criarMonitor(monitor: Monitor): Promise<Monitor> {
   return response.json();
 }
 
-// Atualiza monitor (usuário com role "monitor")
-export async function atualizarMonitor(id: string | number, monitor: Partial<Monitor>): Promise<Monitor> {
-  const monitorData = { ...monitor, role: "monitor" };
+// Atualiza monitor (usuário com tipoUsuario "MONITOR")
+export async function atualizarMonitor(id: string | number, monitor: Partial<Usuario>): Promise<Usuario> {
+  const monitorData = { ...monitor, tipoUsuario: "MONITOR" };
   const response = await fetch(`${BASE_URL}/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -44,3 +44,10 @@ export async function atualizarMonitor(id: string | number, monitor: Partial<Mon
   return response.json();
 }
 
+// Exclui monitor (exclusão lógica)
+export async function excluirMonitor(id: string | number): Promise<void> {
+  const response = await fetch(`${BASE_URL}/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) throw new Error("Erro ao excluir monitor");
+}

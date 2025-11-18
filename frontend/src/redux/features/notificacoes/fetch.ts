@@ -9,38 +9,40 @@ interface FetchNotificacoesParams {
 
 export const fetchNotificacoes = createAsyncThunk<Notificacao[], FetchNotificacoesParams>(
   'notificacoes/fetchNotificacoes',
-  async ({userId, userRole}) => {
+  async () => {
+     const token = localStorage.getItem('token');
+     
+     if (!token) {
+       throw new Error('Token não encontrado');
+     }
 
-     const notificacoes = await httpGet(`http://localhost:3001/notificacoes?userId=${userId}&role=${userRole}`);
-
-      return notificacoes;
+     const notificacoes = await httpGet(`http://localhost:3001/notificacao/destinatario/`, {
+       headers: {
+         'Authorization': `Bearer ${token}`
+       }
+     });
+     
+     console.log("Notificações buscadas:", notificacoes);
+     return notificacoes;
   }
 );
 
 export const markAsReadServer = createAsyncThunk<Notificacao, string>(
   'notificacoes/markAsReadServer',
   async (notificacaoId) => {
-    const notificacao = await httpGet(`http://localhost:3001/notificacoes/${notificacaoId}`);
+    const response = await fetch(`http://localhost:3001/notificacao/${notificacaoId}/marcar-lida`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
     
-    if (!notificacao) {
-      throw new Error('Notificação não encontrada');
+    if (!response.ok) {
+      throw new Error('Erro ao marcar notificação como lida');
     }
     
-    const updatedNotificacao = await httpPut(
-      `http://localhost:3001/notificacoes/${notificacaoId}`,
-      { ...notificacao, lida: true }
-    );
+    const updatedNotificacao = await response.json();
     
-    return {
-      id: updatedNotificacao.id,
-      userId: updatedNotificacao.userId,
-      tipo: updatedNotificacao.tipo as 'cancelamento' | 'reagendamento' | 'agendamento' | 'avaliacao' | 'agendamentoConfirmado',
-      titulo: updatedNotificacao.titulo,
-      previa: updatedNotificacao.previa,
-      descricao: updatedNotificacao.descricao,
-      tempo: updatedNotificacao.tempo,
-      lida: updatedNotificacao.lida,
-      role: updatedNotificacao.role as 'admin' | 'monitor' | 'user',
-    };
+    return updatedNotificacao;
   }
 );

@@ -21,10 +21,10 @@ import StarIcon from "@mui/icons-material/Star";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../redux/hooks";
 import { setSelectedMonitor } from "../redux/features/monitor/monitorSlice";
-import { Monitor } from "../models/monitor.model";
 import { listarMonitores } from "../redux/features/monitor/fetch";
 import { Disciplina } from "../models/disciplina.model";
 import { listarDisciplinas } from "../redux/features/disciplina/fetch";
+import { Usuario } from "../models/usuario.model";
 
 function matchStartOfWords(text: string, search: string) {
   if (!search) return true;
@@ -64,7 +64,7 @@ function getCardsPerPage() {
 function ListaMonitores() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [monitores, setmonitores] = useState<Monitor[]>([]);
+  const [monitores, setmonitores] = useState<Usuario[]>([]);
   const [, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
   const [buscaNome, setBuscaNome] = useState("");
@@ -105,7 +105,7 @@ function ListaMonitores() {
   const monitoresFiltrados = useMemo(() => {
     return monitores.filter(
       (m) =>
-        matchStartOfWords(m.nome, buscaNome) &&
+        matchStartOfWords(m.nome!, buscaNome) &&
         matchStartOfWords(m.materia!, buscaMateria)
     );
   }, [monitores, buscaNome, buscaMateria]);

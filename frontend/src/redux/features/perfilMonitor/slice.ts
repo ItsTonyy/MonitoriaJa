@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Disponibilidade } from '../../../models/disponibilidade.model';
-import { Monitor } from "../../../models/monitor.model";
+import { Usuario } from '../../../models/usuario.model';
 
 interface ValidationErrors {
   nome?: string;
@@ -37,7 +37,7 @@ const validateMonitorField = (field: keyof ValidationErrors, value: string): str
 };
 
 // AsyncThunk: buscar monitor pelo id - CORRIGIDO
-export const fetchMonitor = createAsyncThunk<Monitor, number>(
+export const fetchMonitor = createAsyncThunk<Usuario, number>(
   "monitor/fetchMonitor",
   async (id) => {
     const response = await fetch(`http://localhost:3001/usuarios/${id}`);
@@ -62,13 +62,13 @@ export const fetchMonitor = createAsyncThunk<Monitor, number>(
 
 // AsyncThunk: atualizar monitor - CORRIGIDO
 export const updateMonitor = createAsyncThunk<
-  Monitor,
-  Partial<Omit<Monitor, 'id' | 'role'>>
+  Usuario,
+  Partial<Omit<Usuario, 'id' | 'role'>>
 >(
   "monitor/updateMonitor",
   async (updatedMonitor, { getState, rejectWithValue }) => {
     const state = getState() as any;
-    const currentMonitor: Monitor = state.perfilMonitor.currentMonitor!;
+    const currentMonitor: Usuario = state.perfilMonitor.currentMonitor!;
 
     const errors: ValidationErrors = {};
     if (updatedMonitor.nome !== undefined) {
@@ -109,7 +109,7 @@ export const updateMonitor = createAsyncThunk<
         description: newMonitor.biografia,
         materias: newMonitor.materia,
         foto: newMonitor.foto || '',
-        listaDisponibilidades: newMonitor.listaDisponibilidades,
+       // listaDisponibilidades: newMonitor.listaDisponibilidades,
       }),
     });
 
@@ -138,7 +138,7 @@ export const fetchDisciplinas = createAsyncThunk<{ id: string; nome: string }[]>
 );
 
 interface MonitorState {
-  currentMonitor: Monitor | null;
+  currentMonitor: Usuario | null;
   materiasDisponiveis: { id: string; nome: string }[];
   loading: boolean;
   error: string | null;
@@ -179,16 +179,16 @@ const monitorSlice = createSlice({
       }
     },
     atualizarMaterias: (state, action: PayloadAction<string[]>) => {
-      if (state.currentMonitor) state.currentMonitor.materia = action.payload;
+    //  if (state.currentMonitor) state.currentMonitor.materia = action.payload;
     },
     atualizarDisponibilidades: (state, action: PayloadAction<Disponibilidade[]>) => {
-      if (state.currentMonitor) state.currentMonitor.listaDisponibilidades = action.payload;
+   //   if (state.currentMonitor) state.currentMonitor.listaDisponibilidades = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchMonitor.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(fetchMonitor.fulfilled, (state, action: PayloadAction<Monitor>) => {
+      .addCase(fetchMonitor.fulfilled, (state, action: PayloadAction<Usuario>) => {
         state.loading = false;
         state.currentMonitor = action.payload;
         state.validationErrors = {};
@@ -198,7 +198,7 @@ const monitorSlice = createSlice({
         state.error = action.error.message || "Monitor não encontrado";
       })
       .addCase(updateMonitor.pending, (state) => { state.loading = true; })
-      .addCase(updateMonitor.fulfilled, (state, action: PayloadAction<Monitor>) => {
+      .addCase(updateMonitor.fulfilled, (state, action: PayloadAction<Usuario>) => {
         state.loading = false;
         state.currentMonitor = action.payload;
         state.validationErrors = {};

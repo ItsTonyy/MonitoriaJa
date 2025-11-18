@@ -51,12 +51,30 @@ let conquistas: string[] = [
 
 // Interface não é mais necessária pois usamos Redux
 
+function decodeJwtPayload(token: string) {
+  try {
+    const payloadBase64 = token.split(".")[1];
+    const payloadJson = atob(payloadBase64);
+    return JSON.parse(payloadJson);
+  } catch {
+    return null;
+  }
+}
+
+
+
 function DetalhesMonitor() {
   const dispatch = useAppDispatch();
   const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const navigate = useNavigate();
-  const usuarioLogado = useAppSelector((state) => state.login.user);
+
+const token = localStorage.getItem("token");
+let usuarioId: string | undefined = undefined;
+if (token) {
+  const payload = decodeJwtPayload(token);
+  usuarioId = payload?.id;
+}
   const { avaliacoes, loading } = useAppSelector((state) => state.avaliacao);
 
   useEffect(() => {
@@ -71,7 +89,7 @@ function DetalhesMonitor() {
     totalAvaliacoes > 0 ? (somaNotas / totalAvaliacoes).toFixed(1) : "0.0";
 
   // Horários do monitor - idealmente viriam da disponibilidade do monitor no Redux
-  const horarios = monitor?.listaDisponibilidades || [
+  const horarios =  [
     { day: "seg", times: ["10:00", "14:00", "16:00", "22:00"] },
     { day: "ter", times: ["10:00", "14:00", "16:00"] },
     { day: "qua", times: ["10:00", "14:00", "16:00", "20:00"] },
@@ -119,7 +137,7 @@ function DetalhesMonitor() {
     status: "AGUARDANDO",
     valor: monitor.valor,
     statusPagamento: "PENDENTE",
-    alunoId: usuarioLogado?.id,
+    aluno: usuarioId,
   };
 
   dispatch(setCurrentAgendamento(novoAgendamento));
