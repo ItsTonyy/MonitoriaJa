@@ -9,6 +9,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { Agendamento } from "../../models/agendamento.model";
+import type { Usuario } from "../../models/usuario.model";
 import { avaliacaoService } from "../../services/avaliacaoService";
 import { disponibilidadeService } from "../../services/disponibilidadeService";
 import { usuarioService } from "../../services/usuarioService";
@@ -54,6 +55,7 @@ function DetalhesMonitor() {
   const location = useLocation();
   const navigate = useNavigate();
   const monitorId = (location.state as any)?.monitorId as string | undefined;
+  const monitorFromNav = (location.state as any)?.monitor as Usuario | undefined;
   const [monitor, setMonitor] = useState<any | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
@@ -61,24 +63,23 @@ function DetalhesMonitor() {
     []
   );
   const [loading, setLoading] = useState<boolean>(false);
-  const usuarioLogado = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("user") || "{}");
-    } catch {
-      return {};
-    }
-  })();
+  // usuário autenticado é inferido pelo token no header (api.ts)
 
   useEffect(() => {
     const load = async () => {
-      if (!monitorId) return;
       setLoading(true);
       try {
-        const m = await usuarioService.getById(monitorId);
+        let m: any = monitorFromNav;
+        if (!m && monitorId) {
+          const lista = await usuarioService.getMonitoresAtivos();
+          m = lista.find((u: any) => (u.id ?? u._id) === monitorId);
+        }
+        if (!m) return;
         setMonitor(m);
+        const monitorKey = (m as any).id ?? (m as any)._id;
         const [avs, disp] = await Promise.all([
-          avaliacaoService.getByMonitorId(String(m.id)),
-          disponibilidadeService.getByMonitorId(String(m.id)),
+          avaliacaoService.getByMonitorId(String(monitorKey)),
+          disponibilidadeService.getByMonitorId(String(monitorKey)),
         ]);
         setAvaliacoes(avs || []);
         setHorarios(
@@ -91,7 +92,7 @@ function DetalhesMonitor() {
       }
     };
     load();
-  }, [monitorId]);
+  }, [monitorId, monitorFromNav]);
 
   const totalAvaliacoes = avaliacoes.length;
   const somaNotas = avaliacoes.reduce((soma, av) => soma + (av.nota || 0), 0);
@@ -139,7 +140,6 @@ function DetalhesMonitor() {
       status: "AGUARDANDO",
       valor: monitor.valor,
       statusPagamento: "PENDENTE",
-      alunoId: usuarioLogado?.id,
     };
 
     navigate("/MonitoriaJa/agendamento-monitor", {

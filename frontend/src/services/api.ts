@@ -11,11 +11,20 @@ async function request<T>(
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
+  const token = (() => {
+    try {
+      return localStorage.getItem("token") || undefined;
+    } catch {
+      return undefined;
+    }
+  })();
+
   const config: RequestInit = {
     method,
     headers: {
       "Content-Type": "application/json",
       ...(headers || {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     signal: controller.signal,
   };
@@ -39,7 +48,7 @@ async function request<T>(
     if (err?.name === "AbortError") {
       throw new Error("Tempo de requisição excedido");
     }
-    throw new Error("Falha ao comunicar com o servidor");
+    throw new Error(err?.message || "Falha ao comunicar com o servidor");
   }
 }
 

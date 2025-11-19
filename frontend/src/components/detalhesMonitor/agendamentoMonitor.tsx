@@ -34,14 +34,23 @@ function AgendamentoMonitor() {
   };
 
   const handleAgendar = async () => {
-    if (!currentAgendamento?.id || !formaPagamento) return;
+    if (!formaPagamento) return;
 
     try {
-      await agendamentoService.update(currentAgendamento.id, {
+      await agendamentoService.create({
+        monitor: currentAgendamento.monitor,
+        data: currentAgendamento.data,
+        hora: currentAgendamento.hora,
+        valor: currentAgendamento.valor,
         statusPagamento: "PENDENTE",
         formaPagamento,
         status: "AGUARDANDO",
-        servico: servicoSelecionado.length === 2 ? "Aula" : servicoSelecionado.includes("aula") ? "Aula" : "Exercícios",
+        servico:
+          servicoSelecionado.length === 2
+            ? "Aula"
+            : servicoSelecionado.includes("aula")
+            ? "Aula"
+            : "Exercícios",
         topicos,
       });
 
