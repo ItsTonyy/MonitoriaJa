@@ -42,7 +42,7 @@ router.get("/", autenticarAdmin, async (req, res) => {
 });
 
 // GET usuários ativos filtrando por tipoUsuario (ex: /usuario/tipo/MONITOR)
-router.get("/tipo/:tipoUsuario", autenticarAdmin, async (req, res) => {
+router.get("/tipo/:tipoUsuario", autenticar || autenticarAdmin, async (req, res) => {
   const tipoUsuario = req.params.tipoUsuario.toUpperCase();
   try {
     const usuarios = await Usuario.find({ isAtivo: true, tipoUsuario }).populate({

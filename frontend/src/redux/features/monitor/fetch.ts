@@ -5,7 +5,12 @@ const BASE_URL = `${API.URL}/usuario`;
 
 // Lista todos os monitores (usuários com tipoUsuario "MONITOR" e isAtivo true)
 export async function listarMonitores(): Promise<Usuario[]> {
-  const response = await fetch(`${BASE_URL}/tipo/MONITOR`);
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${BASE_URL}/tipo/MONITOR`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
   if (!response.ok) throw new Error("Erro ao buscar monitores");
   return response.json();
 }

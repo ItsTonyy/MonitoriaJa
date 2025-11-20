@@ -34,15 +34,22 @@ const ResetPasswordForm: React.FC = () => {
   const [email, setEmail] = useState('');
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
     const resetEmail = localStorage.getItem('resetEmail');
-    if (!resetEmail) {
+    
+    if (!token) {
       navigate('/MonitoriaJa/recuperar-senha');
       return;
     }
-    setEmail(resetEmail);
+    
+    if (resetEmail) {
+      setEmail(resetEmail);
+    }
 
     return () => {
       dispatch(clearUpdatePasswordState());
+      localStorage.removeItem('resetEmail');
     };
   }, [dispatch, navigate]);
 

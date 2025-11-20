@@ -7,10 +7,16 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 import sendEmail from "../config/mail";
 import { send } from "process";
+import emailValidator from "../service/emailValidator";
+import e from "cors";
 
 router.post("/login", async (req: Request,res: Response, next: NextFunction)=>{
     const {email, password}: {email: string, password:string} = req.body
+    if(!emailValidator(email)){
+        throw new Error("Email inválido.");
+    }
     const userFound = await User.findOne({email: email});
+
     if(!userFound){
         return res.status(401).json({message:"Email ou senha incorretos."});;
     }
@@ -31,12 +37,19 @@ router.post("/recuperar-senha", async (req: Request,res: Response, next: NextFun
     if(!email){
         return res.status(400).json({message:"Email é obrigatório."});
     }
-    const userFound = await User.findOne({email: email});
-    const payload = {
-        id: userFound?._id,
+    if(!emailValidator(email)){
+        console.log("aaaa")
+        return res.status(400).json({message:"Email inválido."});
     }
-    const token = jwt.sign(payload, process.env.JWT_RESET_KEY, {expiresIn: '15m'});
-    sendEmail(email,token);
+    const userFound = await User.findOne({email: email});
+    if(userFound){
+        const payload = {
+            id: userFound?._id,
+        }
+        const token = jwt.sign(payload, process.env.JWT_RESET_KEY, {expiresIn: '15m'});
+        sendEmail(email,token);
+    }
+        
     return res.status(200).json({message:"Um email de recuperação de senha foi enviado para o seu email."});
 })
 
@@ -54,6 +67,9 @@ router.put("/redefinir-senha", async (req: Request,res: Response, next: NextFunc
         }
         if(!newPassword1 || !newPassword2){
             return res.status(400).json({message:"Ambas as senhas são obrigatórias."});
+        }
+        if(newPassword1.length < 6 || newPassword2.length < 6){
+            return res.status(400).json({message:"A senha deve ter pelo menos 6 caracteres."});
         }
         if(newPassword1 !== newPassword2){
             return res.status(400).json({message:"As senhas não coincidem."});
