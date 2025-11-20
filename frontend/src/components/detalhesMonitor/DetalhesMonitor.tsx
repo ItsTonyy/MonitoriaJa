@@ -147,6 +147,7 @@ function DetalhesMonitor() {
     });
   };
 
+
   return (
     <div className="main">
       <div className="monitor-details-detalhes">
@@ -263,7 +264,7 @@ function DetalhesMonitor() {
           Agendar
         </Button>
       </div>
-      <ComentariosAvaliacao />
+      <ComentariosAvaliacao monitorId={String((monitor as any).id ?? (monitor as any)._id)} />
     </div>
   );
 }

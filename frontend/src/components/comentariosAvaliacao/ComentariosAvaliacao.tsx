@@ -60,7 +60,8 @@ interface FormData {
 
 // Dados de avaliações removidos; serão carregados do Redux via busco por monitorId
 
-const ComentariosAvaliacao: React.FC = () => {
+interface Props { monitorId?: string }
+const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -68,17 +69,17 @@ const ComentariosAvaliacao: React.FC = () => {
     titulo: "",
     comentario: "",
   });
-  const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
-  const usuarioLogado = useAppSelector((state) => state.login.user);
+  const monitorSelecionado = useAppSelector((state) => state.monitor.selectedMonitor);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const load = async () => {
-      if (!monitor?.id) return;
+      const mid = monitorId ?? (monitorSelecionado as any)?.id ?? (monitorSelecionado as any)?._id;
+      if (!mid) return;
       setLoading(true);
       try {
-        const res = await avaliacaoService.getByMonitorId(String(monitor.id));
+        const res = await avaliacaoService.getByMonitorId(String(mid));
         setAvaliacoes(res || []);
       } catch (e) {
         console.error("Erro ao carregar avaliações:", e);
@@ -87,7 +88,7 @@ const ComentariosAvaliacao: React.FC = () => {
       }
     };
     load();
-  }, [monitor?.id]);
+  }, [monitorId, (monitorSelecionado as any)?.id, (monitorSelecionado as any)?._id]);
 
   const totalAvaliacoes = avaliacoes.length;
   const somaNotas = avaliacoes.reduce((soma, av) => soma + (av.nota || 0), 0);
@@ -114,13 +115,24 @@ const ComentariosAvaliacao: React.FC = () => {
       alert("Por favor, preencha todos os campos obrigatórios!");
       return;
     }
-    if (!usuarioLogado?.id || !monitor?.id) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Você precisa estar logado para avaliar.");
+      return;
+    }
+    let alunoId: string | undefined;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      alunoId = payload?.id as string | undefined;
+    } catch {}
+    const mid = monitorId ?? (monitorSelecionado as any)?.id ?? (monitorSelecionado as any)?._id;
+    if (!alunoId || !mid) {
       alert("Você precisa estar logado e selecionar um monitor para avaliar.");
       return;
     }
     await avaliacaoService.create({
-      aluno: String(usuarioLogado.id),
-      monitor: String(monitor.id),
+      aluno: String(alunoId),
+      monitor: String(mid),
       nota: formData.rating || 0,
       comentario: formData.comentario,
       agendamento: undefined,
@@ -129,7 +141,7 @@ const ComentariosAvaliacao: React.FC = () => {
     handleModalClose();
     alert("Avaliação enviada com sucesso!");
     try {
-      const res = await avaliacaoService.getByMonitorId(String(monitor.id));
+      const res = await avaliacaoService.getByMonitorId(String(mid));
       setAvaliacoes(res || []);
     } catch (e) {
       console.error("Erro ao recarregar avaliações:", e);
