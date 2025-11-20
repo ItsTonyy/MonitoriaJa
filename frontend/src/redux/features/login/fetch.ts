@@ -96,7 +96,7 @@ export const updatePasswordServer = createAsyncThunk<
       newPassword2: credentials.newPassword2,
     }
   );
-
+  localStorage.removeItem("resetEmail");
   return {
     message: "Senha alterada com sucesso!",
   };

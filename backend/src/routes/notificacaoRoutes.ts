@@ -50,7 +50,7 @@ router.get("/user", autenticar, async (req, res) => {
 });
 
 // UPDATE - Atualiza notificação por id
-router.patch("/update", autenticar, async (req, res) => {
+router.put("/update", autenticar, async (req, res) => {
   const id = req.headers.authorization?.split(" ")[1];
   const update = req.body;
 
@@ -69,15 +69,26 @@ router.patch("/update", autenticar, async (req, res) => {
 });
 
 // PATCH - Marca notificação como lida
-router.patch("/:id/marcar-lida",autenticar, async (req, res) => {
+router.patch("/:id/marcar-lida", autenticar, async (req, res) => {
   const id = req.params.id;
+  const token = req.headers.authorization?.split(" ")[1];
 
   try {
+    if(!token){
+      return res.status(401).json({message:"Token de autenticação ausente."});
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_KEY as string) as { id: string; role: string };
+    
     const notificacao = await Notificacao.findById(id);
 
     if (!notificacao) {
       res.status(404).json({ message: "Notificação não encontrada!" });
       return;
+    }
+
+    if(notificacao.destinatario.toString() !== decoded.id){
+      return res.status(403).json({message:"Você não tem permissão para marcar esta notificação como lida."});
     }
 
     const updatedNotificacao = await Notificacao.findByIdAndUpdate(
@@ -155,7 +166,6 @@ router.get("/destinatario/", autenticar, async (req, res) => {
   }
 
   const decoded = jwt.verify(destinatarioId, process.env.JWT_KEY as string) as { id: string; role: string }
-  console.log("Destinatário ID:", decoded.id);
   try {
     const notificacoes = await Notificacao.find({ destinatario: decoded.id })
       .populate("destinatario")
@@ -166,7 +176,6 @@ router.get("/destinatario/", autenticar, async (req, res) => {
           { path: "aluno", select: "nome email telefone" }
         ]
       });
-    console.log("Notificações encontradas:", notificacoes.length);
     
     const notificacoesFormatadas = notificacoes.map((n: any) => ({
       id: n._id.toString(),

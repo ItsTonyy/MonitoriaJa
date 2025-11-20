@@ -39,6 +39,7 @@ const RecuperarSenhaForm = () => {
     e.preventDefault();
     if (!validateEmail()) return;
     
+    localStorage.setItem('resetEmail', email);
     await dispatch(resetPasswordServer(email));
   };
 
