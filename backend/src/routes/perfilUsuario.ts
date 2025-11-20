@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { users } from "../db-mock";
+import autenticar from "../middleware/auth";
+import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
 const router = require("express").Router()
 
-router.get("/perfilUsuario/:id", (req: Request, res: Response) => {
+router.get("/perfilUsuario/:id", autenticar, ownerOrAdminAuth, (req: Request, res: Response) => {
     const { id } = req.params;
     const usuario = users.find((u) => u.id === id);
     if (!usuario) {
@@ -18,7 +20,7 @@ router.get("/perfilUsuario/:id", (req: Request, res: Response) => {
     });
 });
 
-router.patch("/perfilUsuario/:id", (req: Request, res: Response) => {
+router.patch("/perfilUsuario/:id", autenticar, ownerOrAdminAuth, (req: Request, res: Response) => {
     const { id } = req.params;
     const usuarioIndex = users.findIndex((u) => u.id === id);
     if (usuarioIndex === -1) {

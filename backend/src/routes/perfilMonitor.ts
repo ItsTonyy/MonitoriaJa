@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { users, monitores } from "../db-mock";
+import autenticar from "../middleware/auth";
+import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
+
 const router = require("express").Router()
 
-router.get("/perfilMonitor/:id", (req: Request, res: Response) => {
+router.get("/perfilMonitor/:id", autenticar, ownerOrAdminAuth, (req: Request, res: Response) => {
     const { id } = req.params;
     const monitor = monitores.find((m) => m.id === id);
     if (!monitor) {
@@ -20,7 +23,7 @@ router.get("/perfilMonitor/:id", (req: Request, res: Response) => {
     });
 });
 
-router.patch("/perfilMonitor/:id", (req: Request, res: Response) => {
+router.patch("/perfilMonitor/:id", autenticar, ownerOrAdminAuth, (req: Request, res: Response) => {
     const { id } = req.params;
     const monitorIndex = monitores.findIndex((m) => m.id === id);
     if (monitorIndex === -1) {

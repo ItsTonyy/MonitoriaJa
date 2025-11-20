@@ -1,11 +1,13 @@
 import express from "express";
 import Avaliacao from "../models/avaliacao.model";
 import { criarNotificacaoAvaliacao } from "../service/notificacaoService";
+import autenticar from "../middleware/auth";
+import adminAuth from "../middleware/adminAuth";
 
 const router = express.Router();
 
 // CREATE - Adiciona uma nova avaliação
-router.post("/", async (req, res) => {
+router.post("/", autenticar,  async (req, res) => {
   const avaliacao = req.body;
 
   try {
@@ -30,7 +32,7 @@ router.post("/", async (req, res) => {
 });
 
 // READ ALL - Lista todas as avaliações (com monitor, aluno e agendamento preenchidos)
-router.get("/", async (req, res) => {
+router.get("/", adminAuth, async (req, res) => {
   try {
     const avaliacoes = await Avaliacao.find()
       .populate("monitor")
@@ -43,7 +45,7 @@ router.get("/", async (req, res) => {
 });
 
 // READ ONE - Busca avaliação por id (com monitor, aluno e agendamento preenchidos)
-router.get("/:id", async (req, res) => {
+router.get("/:id", autenticar, async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -64,7 +66,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE - Atualiza avaliação por id
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", autenticar,  async (req, res) => {
   const id = req.params.id;
   const update = req.body;
 
@@ -83,7 +85,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // DELETE - Remove avaliação por id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", adminAuth, async (req, res) => {
   const id = req.params.id;
 
   const avaliacao = await Avaliacao.findOne({ _id: id });

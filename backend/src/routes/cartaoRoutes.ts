@@ -1,10 +1,13 @@
 import express from "express";
 import Cartao from "../models/cartao.model";
+import autenticar from "../middleware/auth";
+import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
+import admin from "../middleware/adminAuth";
 
 const router = express.Router();
 
 // CREATE - Adiciona um novo cartão
-router.post("/", async (req, res) => {
+router.post("/", autenticar, ownerOrAdminAuth, async (req, res) => {
   const cartao = req.body;
 
   try {
@@ -16,7 +19,7 @@ router.post("/", async (req, res) => {
 });
 
 // READ ALL - Lista todos os cartões (com usuário preenchido)
-router.get("/", async (req, res) => {
+router.get("/", admin,  async (req, res) => {
   try {
     const cartoes = await Cartao.find().populate("usuario");
     res.status(200).json(cartoes);
@@ -26,7 +29,7 @@ router.get("/", async (req, res) => {
 });
 
 // READ ONE - Busca cartão por id (com usuário preenchido)
-router.get("/:id", async (req, res) => {
+router.get("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -44,7 +47,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE - Atualiza cartão por id
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
   const id = req.params.id;
   const update = req.body;
 
@@ -63,7 +66,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // DELETE - Remove cartão por id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",autenticar, ownerOrAdminAuth, async (req, res) => {
   const id = req.params.id;
 
   const cartao = await Cartao.findOne({ _id: id });

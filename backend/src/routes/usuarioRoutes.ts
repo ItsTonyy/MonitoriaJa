@@ -42,7 +42,7 @@ router.get("/", autenticarAdmin, async (req, res) => {
 });
 
 // GET usuários ativos filtrando por tipoUsuario (ex: /usuario/tipo/MONITOR)
-router.get("/tipo/:tipoUsuario", async (req, res) => {
+router.get("/tipo/:tipoUsuario", autenticarAdmin, async (req, res) => {
   const tipoUsuario = req.params.tipoUsuario.toUpperCase();
   try {
     const usuarios = await Usuario.find({ isAtivo: true, tipoUsuario }).populate({
@@ -110,7 +110,7 @@ router.patch("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
 });
 
 // DELETE - Exclusão lógica: marca isAtivo como false
-router.delete("/:id",async (req, res) => {
+router.delete("/:id", autenticarAdmin, async (req, res) => {
   const id = req.params.id;
 
   const usuario = await Usuario.findOne({ _id: id, isAtivo: true });
@@ -129,7 +129,7 @@ router.delete("/:id",async (req, res) => {
 });
 
 // Adiciona uma disciplina à listaDisciplinas do usuário ativo
-router.post("/disciplina", async (req, res) => {
+router.post("/disciplina",autenticar, ownerOrAdminAuth, async (req, res) => {
   const { usuarioId, disciplinaId } = req.body;
   try {
     const usuario = await Usuario.findOneAndUpdate(
@@ -147,7 +147,7 @@ router.post("/disciplina", async (req, res) => {
 });
 
 // Remove uma disciplina da listaDisciplinas do usuário ativo
-router.delete("/disciplina", async (req, res) => {
+router.delete("/disciplina", autenticar, ownerOrAdminAuth, async (req, res) => {
   const { usuarioId, disciplinaId } = req.body;
   try {
     const usuario = await Usuario.findOneAndUpdate(

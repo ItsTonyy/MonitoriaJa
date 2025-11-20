@@ -47,6 +47,6 @@ mongoose
   )
   .then(() => {
     console.log("Conectou ao banco!");
-    app.listen(3001, () => console.log("Servidor rodando na porta 3001",password),);
+    app.listen(3001, () => console.log("Servidor rodando na porta 3001"),);
   })
   .catch((err) => console.log(err));

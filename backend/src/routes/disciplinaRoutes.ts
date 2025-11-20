@@ -1,10 +1,13 @@
 import express from "express";
 import Disciplina from "../models/disciplina.model";
+import autenticar from "../middleware/auth";
+import adminAuth from "../middleware/adminAuth";
+import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
 
 const router = express.Router();
 
 // CREATE - Adiciona uma nova disciplina
-router.post("/", async (req, res) => {
+router.post("/", adminAuth, async (req, res) => {
   const disciplina = req.body;
 
   try {
@@ -40,7 +43,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE - Atualiza disciplina por id
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", adminAuth, async (req, res) => {
   const id = req.params.id;
   const disciplina = req.body;
   try {
@@ -61,7 +64,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // DELETE - Remove disciplina por id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",adminAuth, async (req, res) => {
   const id = req.params.id;
 
   const disciplina = await Disciplina.findOne({ _id: id });
@@ -80,7 +83,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Adiciona um monitor à disciplina
-router.post("/monitor", async (req, res) => {
+router.post("/monitor", autenticar, async (req, res) => {
   const { disciplinaId, monitorId } = req.body;
   try {
     const disciplina = await Disciplina.findByIdAndUpdate(
@@ -98,7 +101,7 @@ router.post("/monitor", async (req, res) => {
 });
 
 // Remove um monitor da disciplina
-router.delete("/monitor", async (req, res) => {
+router.delete("/monitor", autenticar, async (req, res) => {
   const { disciplinaId, monitorId } = req.body;
   try {
     const disciplina = await Disciplina.findByIdAndUpdate(

@@ -1,10 +1,13 @@
 import express from "express";
 import Disponibilidade from "../models/disponibilidade.model";
+import autenticar from "../middleware/auth";
+import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
+import adminAuth from "../middleware/adminAuth";
 
 const router = express.Router();
 
 // CREATE - Adiciona uma nova disponibilidade
-router.post("/", async (req, res) => {
+router.post("/", autenticar, ownerOrAdminAuth, async (req, res) => {
   const disponibilidade = req.body;
 
   try {
@@ -16,7 +19,7 @@ router.post("/", async (req, res) => {
 });
 
 // READ ALL - Lista todas as disponibilidades (com usuário preenchido)
-router.get("/", async (req, res) => {
+router.get("/", adminAuth, async (req, res) => {
   try {
     const disponibilidades = await Disponibilidade.find().populate("usuarioId");
     res.status(200).json(disponibilidades);
@@ -26,7 +29,7 @@ router.get("/", async (req, res) => {
 });
 
 // READ ONE - Busca disponibilidade por id (com usuário preenchido)
-router.get("/:id", async (req, res) => {
+router.get("/:id", autenticar, async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -44,7 +47,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE - Atualiza disponibilidade por id
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
   const id = req.params.id;
   const update = req.body;
 
@@ -63,7 +66,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // DELETE - Remove disponibilidade por id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
   const id = req.params.id;
 
   const disponibilidade = await Disponibilidade.findOne({ _id: id });
