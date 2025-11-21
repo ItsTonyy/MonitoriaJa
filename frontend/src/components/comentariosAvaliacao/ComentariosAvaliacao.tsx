@@ -19,11 +19,8 @@ import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import "./ComentariosAvaliacao.css";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import {
-  buscarAvaliacoesPorMonitor,
-  criarAvaliacao,
-} from "../../redux/features/avaliacao/actions";
+import { useAppSelector } from "../../redux/hooks";
+import { avaliacaoService } from "../../services/avaliacaoService";
 
 const AvaliacaoCard = styled(Card)({
   width: "100%",
@@ -53,7 +50,7 @@ const ModalStyle = {
   p: 4,
 };
 
-// Avaliações são fornecidas pelo Redux (interface em redux/features/avaliacao/fetch.ts)
+// Agora as avaliações são fornecidas via serviço (Mongo+Express)
 
 interface FormData {
   rating: number | null;
@@ -63,7 +60,8 @@ interface FormData {
 
 // Dados de avaliações removidos; serão carregados do Redux via busco por monitorId
 
-const ComentariosAvaliacao: React.FC = () => {
+interface Props { monitorId?: string }
+const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -71,16 +69,26 @@ const ComentariosAvaliacao: React.FC = () => {
     titulo: "",
     comentario: "",
   });
-  const dispatch = useAppDispatch();
-  const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
-  const { avaliacoes, loading } = useAppSelector((state) => state.avaliacao);
-  const usuarioLogado = useAppSelector((state) => state.login.user);
+  const monitorSelecionado = useAppSelector((state) => state.monitor.selectedMonitor);
+  const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if (monitor?.id) {
-      dispatch(buscarAvaliacoesPorMonitor(Number(monitor.id)));
-    }
-  }, [monitor?.id, dispatch]);
+    const load = async () => {
+      const mid = monitorId ?? (monitorSelecionado as any)?.id ?? (monitorSelecionado as any)?._id;
+      if (!mid) return;
+      setLoading(true);
+      try {
+        const res = await avaliacaoService.getByMonitorId(String(mid));
+        setAvaliacoes(res || []);
+      } catch (e) {
+        console.error("Erro ao carregar avaliações:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [monitorId, (monitorSelecionado as any)?.id, (monitorSelecionado as any)?._id]);
 
   const totalAvaliacoes = avaliacoes.length;
   const somaNotas = avaliacoes.reduce((soma, av) => soma + (av.nota || 0), 0);
@@ -107,21 +115,37 @@ const ComentariosAvaliacao: React.FC = () => {
       alert("Por favor, preencha todos os campos obrigatórios!");
       return;
     }
-    if (!usuarioLogado?.id || !monitor?.id) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Você precisa estar logado para avaliar.");
+      return;
+    }
+    let alunoId: string | undefined;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      alunoId = payload?.id as string | undefined;
+    } catch {}
+    const mid = monitorId ?? (monitorSelecionado as any)?.id ?? (monitorSelecionado as any)?._id;
+    if (!alunoId || !mid) {
       alert("Você precisa estar logado e selecionar um monitor para avaliar.");
       return;
     }
-    await dispatch(
-      criarAvaliacao({
-        usuarioId: usuarioLogado.id,
-        monitorId: monitor.id,
-        nota: formData.rating,
-        comentario: formData.comentario,
-      })
-    );
+    await avaliacaoService.create({
+      aluno: String(alunoId),
+      monitor: String(mid),
+      nota: formData.rating || 0,
+      comentario: formData.comentario,
+      agendamento: undefined,
+      dataAvaliacao: new Date(),
+    });
     handleModalClose();
     alert("Avaliação enviada com sucesso!");
-    dispatch(buscarAvaliacoesPorMonitor(Number(monitor.id)));
+    try {
+      const res = await avaliacaoService.getByMonitorId(String(mid));
+      setAvaliacoes(res || []);
+    } catch (e) {
+      console.error("Erro ao recarregar avaliações:", e);
+    }
   };
 
   if (loading) {

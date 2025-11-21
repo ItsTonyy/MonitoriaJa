@@ -1,23 +1,17 @@
 import "./agendamentoMonitor.css";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import {
-  updateAgendamentoStatus,
-  updateAgendamentoPagamento,
-} from "../../redux/features/agendamento/agendamentoSlice";
+import { agendamentoService } from "../../services/agendamentoService";
 import { useState } from "react";
 
 function AgendamentoMonitor() {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const currentAgendamento = useAppSelector(
-    (state) => state.agendamento.currentAgendamento
-  );
+  const location = useLocation();
+  const currentAgendamento = (location.state as any)?.agendamento;
   const [servicoSelecionado, setServicoSelecionado] = useState<string[]>([]);
   const [formaPagamento, setFormaPagamento] = useState<"CARTAO" | "PIX" | "">(
     ""
@@ -39,31 +33,36 @@ function AgendamentoMonitor() {
     });
   };
 
-  const handleAgendar = () => {
-    if (!currentAgendamento.id || !formaPagamento) return;
+  const handleAgendar = async () => {
+    if (!formaPagamento) return;
 
-    // Atualiza status do pagamento e do agendamento
-    dispatch(
-      updateAgendamentoPagamento({
-        agendamentoId: currentAgendamento.id,
+    try {
+      await agendamentoService.create({
+        monitor: currentAgendamento.monitor,
+        data: currentAgendamento.data,
+        hora: currentAgendamento.hora,
+        valor: currentAgendamento.valor,
         statusPagamento: "PENDENTE",
-        formaPagamento: formaPagamento,
-      })
-    );
-    dispatch(
-      updateAgendamentoStatus({
-        agendamentoId: currentAgendamento.id,
+        formaPagamento,
         status: "AGUARDANDO",
-      })
-    );
+        servico:
+          servicoSelecionado.length === 2
+            ? "Aula"
+            : servicoSelecionado.includes("aula")
+            ? "Aula"
+            : "Exercícios",
+        topicos,
+      });
 
-    // Redireciona conforme a forma de pagamento
-    if (formaPagamento === "PIX") {
-      navigate("/MonitoriaJa/pix");
-    } else if (formaPagamento === "CARTAO") {
-      navigate("/MonitoriaJa/lista-cartao");
-    } else {
-      navigate("/MonitoriaJa/lista-agendamentos");
+      if (formaPagamento === "PIX") {
+        navigate("/MonitoriaJa/pix");
+      } else if (formaPagamento === "CARTAO") {
+        navigate("/MonitoriaJa/lista-cartao");
+      } else {
+        navigate("/MonitoriaJa/lista-agendamentos");
+      }
+    } catch (e) {
+      alert("Erro ao atualizar agendamento");
     }
   };
 
