@@ -65,6 +65,8 @@ function DetalhesMonitor() {
     []
   );
   const [loading, setLoading] = useState<boolean>(false);
+  const [fixedLessons, setFixedLessons] = useState<number>(0);
+  const [fixedConquista, setFixedConquista] = useState<string>("");
   // usuário autenticado é inferido pelo token no header (api.ts)
 
   useEffect(() => {
@@ -86,6 +88,8 @@ function DetalhesMonitor() {
         setHorarios(
           (disp || []).map((d: any) => ({ day: d.day, times: d.times || [] }))
         );
+        setFixedLessons(getRandomInt(10, 100));
+        setFixedConquista(conquistas[getRandomInt(0, conquistas.length)]);
       } catch (e) {
         console.error("Erro ao carregar dados do monitor:", e);
       } finally {
@@ -188,11 +192,11 @@ function DetalhesMonitor() {
               </div>
               <div className="monitor-detalhes-atributos">
                 <AccessTimeIcon />
-                <p>{`${getRandomInt(10, 100)} lições`}</p>
+                <p>{`${fixedLessons} lições`}</p>
               </div>
               <div className="monitor-detalhes-atributos">
                 <EmojiEventsIcon />
-                <p>{conquistas[getRandomInt(0, conquistas.length)]}</p>
+                <p>{fixedConquista}</p>
               </div>
             </div>
           </div>
