@@ -10,15 +10,14 @@ import {
   Checkbox,
   ListItemText,
   FormControl,
+  Snackbar,
 } from "@mui/material";
-import { useAppSelector, useAppDispatch } from "../../redux/hooks";
+import Alert from "@mui/material/Alert";
 import { useEffect, useState } from "react";
 import { Disponibilidade } from "../../models/disponibilidade.model";
-import {
-  atualizarDisponibilidades,
-  updateMonitor,
-} from "../../redux/features/perfilMonitor/slice";
 import "./ModalAgendamento.css";
+import { disponibilidadeService } from "../../services/disponibilidadeService";
+import { getUserIdFromToken } from "../../pages/Pagamento/Cartao/CadastraCartao/authUtils";
 
 const HORARIOS = [
   "00:00",
@@ -62,10 +61,6 @@ const MenuProps = {
 };
 
 function ModalAgendamento(props: { onClose: () => void }) {
-  const dispatch = useAppDispatch();
-  const currentMonitor = useAppSelector(
-    (state) => state.perfilMonitor.currentMonitor
-  );
 
   const [dias, setDias] = useState<string[]>([]);
   console.log(dias);
@@ -80,24 +75,41 @@ function ModalAgendamento(props: { onClose: () => void }) {
     []
   );
 
+  const [existingDisponibilidades, setExistingDisponibilidades] = useState<Disponibilidade[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const [snackSeverity, setSnackSeverity] = useState<"success" | "error">("success");
+
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
 
-  // Inicializa dias e horários a partir das disponibilidades existentes do monitor
   useEffect(() => {
-    const lista = currentMonitor?.listaDisponibilidades || [];
-    if (lista.length > 0) {
-      const diasIniciais = lista.map((d) => d.day);
-      setDias(diasIniciais);
-
-      const horariosIniciais: Record<string, string[]> = {};
-      lista.forEach((d) => {
-        horariosIniciais[d.day] = d.times || [];
-      });
-      setHorariosPorDia(horariosIniciais);
-
-      setDisponibilidades(lista);
-    }
-  }, [currentMonitor]);
+    const load = async () => {
+      const monitorId = getUserIdFromToken();
+      if (!monitorId) return;
+      try {
+        const lista = await disponibilidadeService.getByMonitorId(String(monitorId));
+        const normalizada = (lista || []).map((d: any) => ({
+          id: (d as any).id ?? (d as any)._id,
+          usuario: (d as any).usuario,
+          day: (d as any).day,
+          times: (d as any).times || [],
+        }));
+        setExistingDisponibilidades(normalizada as Disponibilidade[]);
+        const diasIniciais = normalizada
+          .map((d) => d.day)
+          .filter(Boolean) as string[];
+        setDias(diasIniciais);
+        const horariosIniciais: Record<string, string[]> = {};
+        normalizada.forEach((d) => {
+          if (d.day) horariosIniciais[d.day] = d.times || [];
+        });
+        setHorariosPorDia(horariosIniciais);
+        setDisponibilidades(normalizada as Disponibilidade[]);
+      } catch (e) {}
+    };
+    load();
+  }, []);
 
   const handleTimeSlotClick = (day: string | undefined, time: string) => {
     if (!day) return;
@@ -146,25 +158,52 @@ function ModalAgendamento(props: { onClose: () => void }) {
     };
 
   const handleConfirmarDisponibilidade = async () => {
-    if (!currentMonitor) return;
-
+    const monitorId = getUserIdFromToken();
+    if (!monitorId) return;
     const novasDisponibilidades: Disponibilidade[] = dias.map((day) => ({
       day,
       times: horariosPorDia[day] ?? [],
     }));
-
     try {
-      dispatch(atualizarDisponibilidades(novasDisponibilidades));
-
-      await dispatch(
-        updateMonitor({
-          listaDisponibilidades: novasDisponibilidades,
-        })
-      ).unwrap();
-
+      setSaving(true);
+      const mapExistente = new Map<string, Disponibilidade>();
+      existingDisponibilidades.forEach((d) => {
+        if (d.day) mapExistente.set(d.day, d);
+      });
+      const setNovosDias = new Set(novasDisponibilidades.map((d) => d.day));
+      for (const nova of novasDisponibilidades) {
+        const existente = mapExistente.get(nova.day);
+        if (existente && existente.id) {
+          const atuais = (existente.times || []).slice().sort().join(",");
+          const novos = (nova.times || []).slice().sort().join(",");
+          if (atuais !== novos) {
+            await disponibilidadeService.update(String(existente.id), {
+              times: nova.times || [],
+            });
+          }
+        } else {
+          await disponibilidadeService.create({
+            usuario: String(monitorId),
+            day: nova.day,
+            times: nova.times || [],
+          });
+        }
+      }
+      for (const existente of existingDisponibilidades) {
+        if (existente.day && !setNovosDias.has(existente.day) && existente.id) {
+          await disponibilidadeService.remove(String(existente.id));
+        }
+      }
+      setSnackSeverity("success");
+      setSnackMessage("Disponibilidade atualizada com sucesso");
+      setSnackOpen(true);
       props.onClose();
     } catch (error) {
-      console.error("Erro ao atualizar disponibilidades:", error);
+      setSnackSeverity("error");
+      setSnackMessage("Falha ao atualizar disponibilidade");
+      setSnackOpen(true);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -308,11 +347,16 @@ function ModalAgendamento(props: { onClose: () => void }) {
               opacity: 0.6,
             },
           }}
-          disabled={disponibilidades.length === 0}
+          disabled={disponibilidades.length === 0 || saving}
           onClick={handleConfirmarDisponibilidade}
         >
           Confirmar Disponibilidade
         </Button>
+        <Snackbar open={snackOpen} autoHideDuration={3000} onClose={() => setSnackOpen(false)}>
+          <Alert onClose={() => setSnackOpen(false)} severity={snackSeverity} sx={{ width: '100%' }}>
+            {snackMessage}
+          </Alert>
+        </Snackbar>
       </Box>
     </Box>
   );

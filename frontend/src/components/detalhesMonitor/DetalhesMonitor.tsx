@@ -55,7 +55,9 @@ function DetalhesMonitor() {
   const location = useLocation();
   const navigate = useNavigate();
   const monitorId = (location.state as any)?.monitorId as string | undefined;
-  const monitorFromNav = (location.state as any)?.monitor as Usuario | undefined;
+  const monitorFromNav = (location.state as any)?.monitor as
+    | Usuario
+    | undefined;
   const [monitor, setMonitor] = useState<any | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
@@ -147,7 +149,6 @@ function DetalhesMonitor() {
     });
   };
 
-
   return (
     <div className="main">
       <div className="monitor-details-detalhes">
@@ -174,11 +175,13 @@ function DetalhesMonitor() {
 
             <div className="monitor-atributos">
               <h2>
-                {monitor.listaDisciplinas?.map((materia, index) => (
-                  <span key={index} className="materia">
-                    {materia}
-                  </span>
-                ))}
+                {monitor.listaDisciplinas?.map(
+                  (materia: string, index: number) => (
+                    <span key={index} className="materia">
+                      {materia}
+                    </span>
+                  )
+                )}
               </h2>
               <div className="monitor-detalhes-atributos">
                 <AttachMoneyIcon />
@@ -264,7 +267,9 @@ function DetalhesMonitor() {
           Agendar
         </Button>
       </div>
-      <ComentariosAvaliacao monitorId={String((monitor as any).id ?? (monitor as any)._id)} />
+      <ComentariosAvaliacao
+        monitorId={String((monitor as any).id ?? (monitor as any)._id)}
+      />
     </div>
   );
 }

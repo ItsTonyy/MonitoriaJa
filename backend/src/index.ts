@@ -8,6 +8,7 @@ import disponibilidadeRoutes from "./routes/disponibilidadeRoutes";
 import avaliacaoRoutes from "./routes/avaliacaoRoutes";
 import notificacaoRoutes from "./routes/notificacaoRoutes";
 import loginRoutes from "./routes/login";
+import cors from "cors";
 
 // Se usar dotenv para variáveis de ambiente:
 import dotenv from "dotenv";
