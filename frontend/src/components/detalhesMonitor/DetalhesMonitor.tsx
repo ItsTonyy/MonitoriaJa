@@ -73,8 +73,7 @@ function DetalhesMonitor() {
       try {
         let m: any = monitorFromNav;
         if (!m && monitorId) {
-          const lista = await usuarioService.getMonitoresAtivos();
-          m = lista.find((u: any) => (u.id ?? u._id) === monitorId);
+          m = await usuarioService.getById(String(monitorId));
         }
         if (!m) return;
         setMonitor(m);
