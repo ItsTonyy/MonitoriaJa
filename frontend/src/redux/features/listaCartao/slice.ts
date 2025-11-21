@@ -10,7 +10,7 @@ const CARTAO_ENDPOINT = `${API_BASE_URL}/cartao`;
 // Tipo para o cartão retornado pela API (com id obrigatório)
 export type Cartao = {
   id: string;
-  usuario?: string;
+  usuario: string;
   numero?: string;
   titular?: string;
   validade?: string;
@@ -19,9 +19,8 @@ export type Cartao = {
   ultimosDigitos?: string;
 };
 
-// Tipo para criar um novo cartão (sem id)
+// Tipo para criar um novo cartão (sem id, usuário será preenchido automaticamente)
 export type NovoCartao = {
-  usuario: string;
   numero: string;
   titular: string;
   validade: string;
@@ -32,124 +31,128 @@ export type NovoCartao = {
 
 const cartaoAdapter = createEntityAdapter<Cartao>();
 
-// Thunk para buscar todos os cartões
+// Thunk para buscar cartões do usuário logado
 export const fetchCartoes = createAsyncThunk(
   'cartoes/fetchCartoes',
-  async () => {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${CARTAO_ENDPOINT}`, {
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || `Erro ${response.status}: ${response.statusText}`);
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        return rejectWithValue('Usuário não autenticado');
+      }
+
+      const response = await fetch(`${CARTAO_ENDPOINT}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          return rejectWithValue('Token expirado ou inválido');
+        }
+        const errorText = await response.text();
+        return rejectWithValue(errorText || `Erro ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      // Já vem com id do backend
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Erro desconhecido ao buscar cartões');
     }
-    
-    const data = await response.json();
-    
-    // Mapeia _id do MongoDB para id
-    const cartoes = data.map((cartao: any) => ({
-      ...cartao,
-      id: cartao._id || cartao.id,
-    }));
-    
-    return cartoes as Cartao[];
   }
 );
 
-// Thunk para adicionar cartão (integração real com backend)
+// Thunk para adicionar cartão (será vinculado ao usuário logado automaticamente)
 export const adicionarCartao = createAsyncThunk(
   'cartoes/adicionarCartao',
-  async (novoCartao: NovoCartao) => {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${CARTAO_ENDPOINT}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(novoCartao),
-    });
-
-    if (!response.ok) {
-      let errorMessage = `Erro ${response.status}: ${response.statusText}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorData.erro || errorMessage;
-      } catch {
-        const errorText = await response.text();
-        errorMessage = errorText || errorMessage;
+  async (novoCartao: NovoCartao, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        return rejectWithValue('Usuário não autenticado');
       }
-      throw new Error(errorMessage);
-    }
 
-    let data;
-    const contentType = response.headers.get('content-type');
-    
-    if (contentType && contentType.includes('application/json')) {
-      data = await response.json();
-    } else {
-      // Se não retornar JSON, busca todos os cartões
-      const cartoesResponse = await fetch(`${CARTAO_ENDPOINT}`, {
+      const response = await fetch(`${CARTAO_ENDPOINT}`, {
+        method: 'POST',
         headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify(novoCartao),
       });
-      const cartoes = await cartoesResponse.json();
-      const ultimoCartao = cartoes[cartoes.length - 1];
+
+      if (!response.ok) {
+        let errorMessage = `Erro ${response.status}: ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.erro || errorMessage;
+        } catch {
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+        }
+        return rejectWithValue(errorMessage);
+      }
+
+      const contentType = response.headers.get('content-type');
+      let data;
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        return rejectWithValue('Resposta do servidor inválida');
+      }
+      
       return {
-        ...ultimoCartao,
-        id: ultimoCartao._id || ultimoCartao.id,
+        ...data,
+        id: data.id,
       } as Cartao;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Erro desconhecido ao adicionar cartão');
     }
-    
-    // Se a API retornar apenas uma mensagem, busca o cartão novamente
-    if (data.message && !data._id && !data.id) {
-      const cartoesResponse = await fetch(`${CARTAO_ENDPOINT}`, {
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-          'Content-Type': 'application/json',
-        },
-      });
-      const cartoes = await cartoesResponse.json();
-      const ultimoCartao = cartoes[cartoes.length - 1];
-      return {
-        ...ultimoCartao,
-        id: ultimoCartao._id || ultimoCartao.id,
-      } as Cartao;
-    }
-    
-    return {
-      ...data,
-      id: data._id || data.id,
-    } as Cartao;
   }
 );
 
 // Thunk para remover cartão
 export const removerCartao = createAsyncThunk(
   'cartoes/removerCartao',
-  async (id: string) => {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${CARTAO_ENDPOINT}/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json',
-      },
-    });
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        return rejectWithValue('Usuário não autenticado');
+      }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || `Erro ${response.status}: ${response.statusText}`);
+      const response = await fetch(`${CARTAO_ENDPOINT}/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return rejectWithValue('Cartão não encontrado');
+        }
+        if (response.status === 403) {
+          return rejectWithValue('Você não tem permissão para remover este cartão');
+        }
+        const errorText = await response.text();
+        return rejectWithValue(errorText || `Erro ${response.status}: ${response.statusText}`);
+      }
+
+      return id;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Erro desconhecido ao remover cartão');
     }
-
-    return id;
   }
 );
 
@@ -159,7 +162,11 @@ const listaCartaoSlice = createSlice({
     loading: false,
     error: null as string | null,
   }),
-  reducers: {},
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Fetch cartões
@@ -173,7 +180,7 @@ const listaCartaoSlice = createSlice({
       })
       .addCase(fetchCartoes.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Erro ao buscar cartões';
+        state.error = action.payload as string || 'Erro ao buscar cartões';
       })
       // Adicionar cartão
       .addCase(adicionarCartao.pending, (state) => {
@@ -186,7 +193,7 @@ const listaCartaoSlice = createSlice({
       })
       .addCase(adicionarCartao.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Erro ao adicionar cartão';
+        state.error = action.payload as string || 'Erro ao adicionar cartão';
       })
       // Remover cartão
       .addCase(removerCartao.pending, (state) => {
@@ -199,11 +206,12 @@ const listaCartaoSlice = createSlice({
       })
       .addCase(removerCartao.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Erro ao remover cartão';
+        state.error = action.payload as string || 'Erro ao remover cartão';
       });
   },
 });
 
+export const { clearError } = listaCartaoSlice.actions;
 export default listaCartaoSlice.reducer;
 
 // Exporta seletores prontos do entity adapter
