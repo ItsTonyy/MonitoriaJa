@@ -82,46 +82,53 @@ export default function AppNavBar() {
       navigate("/MonitoriaJa/lista-agendamentos");
     }
   }
+  function handleClickListarUsuarios() {
+    if (isAuthenticated) {
+      navigate("/MonitoriaJa/listar-usuarios");
+    }
+  }
+  function handleClickAdicionarAgendamento() {
+    if (isAuthenticated) {
+      navigate("/MonitoriaJa/adiciona-disciplina");
+    }
+  }
 
   function handleClickLogin() {
     navigate("/MonitoriaJa/login");
   }
+  const token = getToken()
+  const decodedToken = token ? decodeToken(token) : null;
+  const userType = decodedToken?.role;
+  function handleClickPerfil() {
+    try {
+      const token = getToken()
+      if (!token) {
+        navigate("/MonitoriaJa/perfil-usuario");
+        return;
+      }
+      const decodedToken = decodeToken(token);
+      if (!decodedToken) {
+        navigate("/MonitoriaJa/perfil-usuario");
+        return;
+      }
+      const userType = decodedToken.role;
+      const isMonitorOrAdmin: boolean = 
+        userType === "MONITOR" || 
+        userType === "ADMIN";
 
-function handleClickPerfil() {
-  try {
-    const token = getToken();
-    
-    if (!token) {
+      if (isMonitorOrAdmin) {
+        navigate("/MonitoriaJa/perfil-monitor");
+      } else {
+        navigate("/MonitoriaJa/perfil-usuario");
+      }
+
+    } catch (error) {
+      console.error('Erro ao verificar perfil:', error);
       navigate("/MonitoriaJa/perfil-usuario");
-      return;
     }
-
-    const decodedToken = decodeToken(token);
-    
-    if (!decodedToken) {
-      navigate("/MonitoriaJa/perfil-usuario");
-      return;
-    }
-
-    // Obtém o tipo de usuário do token decodificado
-    // Ajuste o campo conforme o que sua API envia no token
-    const userType = decodedToken.tipoUsuario || decodedToken.role;
-
-    const isMonitorOrAdmin: boolean = 
-      userType === "MONITOR" || 
-      userType === "ADMIN";
-
-    if (isMonitorOrAdmin) {
-      navigate("/MonitoriaJa/perfil-monitor");
-    } else {
-      navigate("/MonitoriaJa/perfil-usuario");
-    }
-
-  } catch (error) {
-    console.error('Erro ao verificar perfil:', error);
-    navigate("/MonitoriaJa/perfil-usuario");
   }
-}
+
+  const isAdmin:boolean = userType === "ADMIN";
 
   function handleClickHistorico() {}
 
@@ -150,6 +157,8 @@ function handleClickPerfil() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  var autenticado = localStorage.getItem('token');
 
   return (
     <AppBar
@@ -208,20 +217,52 @@ function handleClickPerfil() {
               >
                 Monitores
               </Button>
-
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{
-                  paddingLeft: "10px",
-                  paddingRight: "10px",
-                  ":hover": { transform: "none" },
-                }}
-                onClick={handleClickAgendamento}
-              >
-                Agendamento
-              </Button>
+              {autenticado && 
+                <Button
+                  variant="text"
+                  color="info"
+                  size="small"
+                  sx={{
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    ":hover": { transform: "none" },
+                  }}
+                  onClick={handleClickAgendamento}
+                >
+                  Agendamento
+                </Button>
+              }
+              {isAdmin && 
+                <Button
+                  variant="text"
+                  color="info"
+                  size="small"
+                  sx={{
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    ":hover": { transform: "none" },
+                  }}
+                  onClick={handleClickListarUsuarios}
+                >
+                  
+                  Usuarios
+                </Button>
+              }
+              {isAdmin && 
+                <Button
+                  variant="text"
+                  color="info"
+                  size="small"
+                  sx={{
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    ":hover": { transform: "none" },
+                  }}
+                  onClick={handleClickAdicionarAgendamento}
+                >
+                  +Disciplinas
+                </Button>
+              }
             </Box>
           </Box>
           <Box
