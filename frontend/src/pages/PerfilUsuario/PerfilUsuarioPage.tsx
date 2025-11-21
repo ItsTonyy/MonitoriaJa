@@ -17,37 +17,73 @@ import {
   updateUsuario,
   clearValidationErrors,
   validateField,
-  clearError
+  clearError,
+  clearCurrentUser
 } from '../../redux/features/perfilUsuario/slice';
+import { isAuthenticated, getUserIdFromToken } from '../Pagamento/Cartao/CadastraCartao/authUtils';
 
 const PerfilUsuarioPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  
+  // Pega userId da URL (se existir) - usado quando admin acessa perfil de outro usuário
   const { userId } = useParams<{ userId: string }>();
 
-  const authUser = useSelector((state: RootState) => state.login.user);
-  const { currentUser, loading, error, validationErrors } = useSelector((state: RootState) => state.usuario);
+  const { currentUser, loading, error, validationErrors } = useSelector(
+    (state: RootState) => state.usuario
+  );
 
   // Estados locais
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const [fotoFile, setFotoFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const nomeRef = useRef<HTMLDivElement | null>(null);
 
-  // Buscar usuário
+  // Verifica autenticação e busca usuário
   useEffect(() => {
-    const userToFetch = userId ? Number(userId) : (authUser?.id ? Number(authUser.id) : null);
+    // Verifica se está autenticado
+    if (!isAuthenticated()) {
+      dispatch(clearCurrentUser());
+      navigate('/MonitoriaJa/login');
+      return;
+    }
+
+    // LÓGICA IMPORTANTE:
+    // 1. Se userId existe na URL -> busca esse usuário (admin acessando perfil de outro)
+    // 2. Se userId não existe -> busca usuário do token (usuário acessando próprio perfil)
+    let targetUserId: string | null = null;
     
-    if (userToFetch) {
-      dispatch(fetchUsuario(userToFetch));
+    if (userId) {
+      // Admin acessando perfil de outro usuário
+      targetUserId = userId;
+      console.log('👤 Admin acessando usuário:', userId);
     } else {
+      // Usuário acessando próprio perfil
+      const tokenUserId = getUserIdFromToken();
+      targetUserId = tokenUserId;
+      console.log('👤 Usuário acessando próprio perfil:', tokenUserId);
+    }
+
+    console.log('🎯 Target User ID final:', targetUserId);
+    
+    if (targetUserId) {
+      dispatch(fetchUsuario(targetUserId));
+    } else {
+      console.error('❌ Nenhum ID de usuário disponível');
       navigate('/MonitoriaJa/login');
     }
-  }, [dispatch, navigate, authUser, userId]);
+
+    // Cleanup ao desmontar
+    return () => {
+      dispatch(clearValidationErrors());
+      dispatch(clearError());
+    };
+  }, [dispatch, navigate, userId]); // userId como dependência para reagir a mudanças na URL
 
   // Atualizar campos ao carregar usuário
   useEffect(() => {
@@ -55,6 +91,7 @@ const PerfilUsuarioPage: React.FC = () => {
       setNome(currentUser.nome || '');
       setTelefone(currentUser.telefone || '');
       setEmail(currentUser.email || '');
+      setFotoPreview(currentUser.foto || null);
 
       // Atualiza o conteúdo visual do nome sem re-renderizar
       if (nomeRef.current) {
@@ -63,7 +100,7 @@ const PerfilUsuarioPage: React.FC = () => {
     }
   }, [currentUser]);
 
-  // Limpar erro global
+  // Limpar erro global quando campos mudarem
   useEffect(() => {
     if (error) {
       dispatch(clearError());
@@ -73,22 +110,40 @@ const PerfilUsuarioPage: React.FC = () => {
   // onChange handlers
   const handleTelefoneChange = (value: string) => {
     setTelefone(value);
-    if (hasSubmitted) dispatch(validateField({ field: 'telefone', value }));
+    if (hasSubmitted) {
+      dispatch(validateField({ field: 'telefone', value }));
+    }
   };
 
   const handleEmailChange = (value: string) => {
     setEmail(value);
-    if (hasSubmitted) dispatch(validateField({ field: 'email', value }));
+    if (hasSubmitted) {
+      dispatch(validateField({ field: 'email', value }));
+    }
   };
 
   // Nome só é atualizado no blur para não causar salto do cursor
   const handleNomeBlur = () => {
     const newNome = nomeRef.current?.textContent?.trim() || '';
     setNome(newNome);
-    if (hasSubmitted) dispatch(validateField({ field: 'nome', value: newNome }));
+    if (hasSubmitted) {
+      dispatch(validateField({ field: 'nome', value: newNome }));
+    }
   };
 
-  // Salvar usuário - ADMIN PODE EDITAR QUALQUER USUÁRIO
+  // Upload de foto
+  const handleFileSelect = (file: File | null) => {
+    if (file) {
+      setFotoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Salvar usuário
   const handleSalvar = async () => {
     if (!currentUser) return;
 
@@ -96,42 +151,84 @@ const PerfilUsuarioPage: React.FC = () => {
 
     const nomeFinal = nomeRef.current?.textContent?.trim() || nome;
 
+    // Valida todos os campos
     dispatch(validateField({ field: 'nome', value: nomeFinal }));
     dispatch(validateField({ field: 'telefone', value: telefone }));
     dispatch(validateField({ field: 'email', value: email }));
 
+    // Verifica se há erros de validação
     const hasValidationErrors = Object.values(validationErrors).some(err => err !== undefined);
-    if (hasValidationErrors) return;
+    if (hasValidationErrors) {
+      return;
+    }
 
     try {
-      await dispatch(updateUsuario({ nome: nomeFinal, telefone, email })).unwrap();
+      // Prepara dados para envio
+      const updateData: {
+        nome: string;
+        telefone: string;
+        email: string;
+        fotoUrl?: string;
+      } = {
+        nome: nomeFinal,
+        telefone,
+        email,
+      };
+
+      // Se houver foto para upload, converte para base64
+      if (fotoFile) {
+        updateData.fotoUrl = fotoPreview || undefined;
+      }
+
+      await dispatch(updateUsuario(updateData)).unwrap();
       setOpen(true);
-    } catch (err) {
+      setHasSubmitted(false);
+    } catch (err: any) {
       console.error('Erro ao salvar:', err);
+      // O erro já está sendo tratado pelo Redux
     }
   };
 
-  // Loading global
-  if (loading)
-    return <div className={styles.centralizeContent}>Carregando...</div>;
+  // Redirecionar se erro de autenticação
+  useEffect(() => {
+    if (error && (error.includes('Token') || error.includes('autorizado'))) {
+      const timer = setTimeout(() => {
+        navigate('/MonitoriaJa/login');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, navigate]);
 
-  if (error)
+  // Loading global
+  if (loading && !currentUser) {
+    return <div className={styles.centralizeContent}>Carregando...</div>;
+  }
+
+  if (error && !currentUser) {
     return (
       <div className={styles.centralizeContent}>
-        <p>{error}</p>
-        <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>Fazer Login</ConfirmationButton>
+        <div className={styles.profileCard}>
+          <p>{error}</p>
+          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
+            Fazer Login
+          </ConfirmationButton>
+        </div>
       </div>
     );
+  }
 
-  if (!currentUser)
+  if (!currentUser) {
     return (
       <div className={styles.centralizeContent}>
         <div className={styles.profileCard}>
           <p>Usuário não encontrado</p>
-          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>Fazer Login</ConfirmationButton>
+          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
+            Fazer Login
+          </ConfirmationButton>
         </div>
       </div>
     );
+  }
 
   return (
     <main className={styles.centralizeContent}>
@@ -145,7 +242,7 @@ const PerfilUsuarioPage: React.FC = () => {
               contentEditable
               suppressContentEditableWarning
               role="textbox"
-              aria-label="Nome do aluno"
+              aria-label="Nome do usuário"
               tabIndex={0}
               onBlur={handleNomeBlur}
             />
@@ -167,13 +264,7 @@ const PerfilUsuarioPage: React.FC = () => {
           <div className={styles.uploadButtonContainer}>
             <UploadButton
               className={styles.uploadButton}
-              onFileSelect={(file) => {
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onloadend = () => setFotoPreview(reader.result as string);
-                  reader.readAsDataURL(file);
-                }
-              }}
+              onFileSelect={handleFileSelect}
             />
           </div>
         </div>
@@ -205,21 +296,37 @@ const PerfilUsuarioPage: React.FC = () => {
           />
         </div>
 
+        {/* Erro global */}
+        {error && (
+          <div className={styles.errorContainer}>
+            <span className={styles.error}>{error}</span>
+          </div>
+        )}
+
         {/* Botões */}
         <div className={styles.buttonSection}>
           <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>
             Trocar senha
           </ConfirmationButton>
           <ConfirmationButton onClick={handleSalvar} disabled={loading}>
-            Confirmar Mudanças
+            {loading ? 'Salvando...' : 'Confirmar Mudanças'}
           </ConfirmationButton>
-          <ConfirmationButton onClick={() => navigate(-1)}>Voltar</ConfirmationButton>
+          <ConfirmationButton onClick={() => navigate(-1)}>
+            Voltar
+          </ConfirmationButton>
         </div>
       </div>
 
       <StatusModal
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setOpen(false);
+          // Recarrega dados após sucesso
+          const reloadUserId = userId || getUserIdFromToken();
+          if (reloadUserId) {
+            dispatch(fetchUsuario(reloadUserId));
+          }
+        }}
         status="sucesso"
         mensagem="Alterações salvas com sucesso!"
       />

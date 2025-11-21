@@ -206,7 +206,7 @@ function DetalhesMonitor() {
       <div className="formação">
         <h1 className="titulo">Sobre o Monitor e Suas Formações</h1>
         <p className="formação-paragrafo">
-          {monitor.formacao || "Informação não disponível"}
+          {monitor.biografia || "Informação não disponível"}
         </p>
       </div>
       <div

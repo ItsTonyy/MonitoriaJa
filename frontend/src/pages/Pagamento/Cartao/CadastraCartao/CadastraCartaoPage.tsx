@@ -14,7 +14,8 @@ import Title from '../../../AlterarSenha/Titulo/Titulo';
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../../redux/store";
-import { adicionarCartao } from "../../../../redux/features/listaCartao/slice";
+import { adicionarCartao, NovoCartao } from "../../../../redux/features/listaCartao/slice";
+import { getUserIdFromToken, isAuthenticated } from "./authUtils";
 
 const CadastraCartaoPage: React.FC = () => {
   const [numero, setNumero] = useState("");
@@ -38,7 +39,7 @@ const CadastraCartaoPage: React.FC = () => {
       return;
     }
 
-    if (numero.length < 13) {
+    if (numero.replace(/\s/g, "").length < 13) {
       alert("Número do cartão inválido!");
       return;
     }
@@ -48,23 +49,47 @@ const CadastraCartaoPage: React.FC = () => {
       return;
     }
 
+    // Verifica se o usuário está autenticado
+    if (!isAuthenticated()) {
+      alert("Sessão expirada. Por favor, faça login novamente.");
+      navigate("/login");
+      return;
+    }
+
+    // Obtém o ID do usuário do token
+    const usuarioId = getUserIdFromToken();
+    if (!usuarioId) {
+      alert("Erro ao identificar usuário. Por favor, faça login novamente.");
+      navigate("/login");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Adiciona o cartão
-      await dispatch(
-        adicionarCartao({
-          numero,
-          nome,
-          bandeira: bandeira as "Visa" | "MasterCard" | "Elo",
-        })
-      ).unwrap();
+      // Prepara os dados no formato esperado pelo backend
+      const validade = `${mes}/${ano}`;
+      const numeroLimpo = numero.replace(/\s/g, "");
+      const ultimosDigitos = numeroLimpo.slice(-4);
 
+      const novoCartao = {
+        usuario: usuarioId,
+        numero: numeroLimpo,
+        titular: nome,
+        validade: validade,
+        cvv: cvv,
+        bandeira: bandeira,
+        ultimosDigitos: ultimosDigitos,
+      };
+
+      // Adiciona o cartão via API real
+      await dispatch(adicionarCartao(novoCartao)).unwrap();
+      
       // Volta para a página de listagem
       navigate("/MonitoriaJa/lista-cartao");
     } catch (error) {
       console.error("Erro ao cadastrar cartão:", error);
-      alert("Erro ao cadastrar cartão. Tente novamente.");
+      alert(`Erro ao cadastrar cartão: ${error instanceof Error ? error.message : 'Tente novamente.'}`);
     } finally {
       setLoading(false);
     }

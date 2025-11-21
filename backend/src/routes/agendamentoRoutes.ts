@@ -2,10 +2,11 @@ import express from "express";
 import Agendamento from "../models/agendamento.model";
 import { criarNotificacaoAgendamento, criarNotificacaoCancelamento, criarNotificacaoReagendamento } from "../service/notificacaoService";
 import autenticar from "../middleware/auth";
+import adminAuth from "../middleware/adminAuth";
 const router = express.Router();
 
 // CREATE - Adiciona um novo agendamento
-router.post("/", async (req, res) => {
+router.post("/", autenticar,  async (req, res) => {
   const agendamento = req.body;
 
   try {
@@ -33,7 +34,7 @@ router.post("/", async (req, res) => {
 });
 
 // READ ALL - Lista todos os agendamentos (com monitor e aluno preenchidos)
-router.get("/", async (req, res) => {
+router.get("/", adminAuth, async (req, res) => {
   try {
     const agendamentos = await Agendamento.find()
       .populate("monitor")
@@ -64,7 +65,7 @@ router.get("/usuario/:usuarioId", autenticar, async (req, res) => {
 });
 
 // READ ONE - Busca agendamento por id (com monitor e aluno preenchidos)
-router.get("/:id", async (req, res) => {
+router.get("/:id", autenticar, async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -84,7 +85,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE - Atualiza agendamento por id
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", autenticar, async (req, res) => {
   const id = req.params.id;
   const update = req.body;
 
@@ -132,7 +133,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // DELETE - Remove agendamento por id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",adminAuth, async (req, res) => {
   const id = req.params.id;
 
   const agendamento = await Agendamento.findOne({ _id: id });

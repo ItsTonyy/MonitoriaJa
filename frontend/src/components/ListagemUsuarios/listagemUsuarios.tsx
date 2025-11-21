@@ -133,12 +133,12 @@ function ListagemUsuarios() {
 
   // Função para navegar para o perfil correto baseado na role
   const handleVisualizarUsuario = (usuario: UserData) => {
-    if (usuario.role === 'monitor') {
+    if (usuario.role === 'monitor' || usuario.role === 'admin') {
       navigate(`/MonitoriaJa/perfil-monitor/${usuario.id}`);
     } else {
       navigate(`/MonitoriaJa/perfil-usuario/${usuario.id}`);
     }
-  };
+  };  
 
   if (loading) {
     return (

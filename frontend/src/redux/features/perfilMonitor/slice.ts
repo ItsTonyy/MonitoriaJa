@@ -1,6 +1,21 @@
+import { getToken, getUserIdFromToken, isTokenExpired } from "../../../pages/Pagamento/Cartao/CadastraCartao/authUtils";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Disponibilidade } from '../../../models/disponibilidade.model';
-import { Usuario } from '../../../models/usuario.model';
+
+// Interface específica para Monitor
+interface Monitor {
+  id?: string;
+  nome?: string;
+  email?: string;
+  telefone?: string;
+  foto?: string;
+  tipoUsuario?: "ALUNO" | "ADMIN" | "MONITOR";
+  biografia?: string;
+  materia?: string[];
+  avaliacao?: number;
+  formacao?: string;
+  listaDisponibilidades?: Disponibilidade[];
+}
 
 interface ValidationErrors {
   nome?: string;
@@ -36,98 +51,251 @@ const validateMonitorField = (field: keyof ValidationErrors, value: string): str
   }
 };
 
-// AsyncThunk: buscar monitor pelo id - CORRIGIDO
-export const fetchMonitor = createAsyncThunk<Usuario, number>(
-  "monitor/fetchMonitor",
-  async (id) => {
-    const response = await fetch(`http://localhost:3001/usuarios/${id}`);
-    if (!response.ok) throw new Error("Monitor não encontrado");
-    const user = await response.json();
-    
-    console.log('Dados brutos da API para monitor ID', id, ':', user);
-    
-    return {
-      id: user.id,
-      nome: user.name || user.nome || '',
-      email: user.email || '',
-      telefone: user.telefone || user.phone || '',
-      role: user.role || 'user',
-      descricao: user.description || user.descricao || '',
-      materias: user.materias || user.subjects || [],
-      fotoUrl: user.fotoUrl || user.foto || user.photo || '',
-      listaDisponibilidades: user.listaDisponibilidades || user.disponibilidades || [],
-    };
+// AsyncThunk: buscar monitor pelo id
+export const fetchMonitor = createAsyncThunk<
+  Monitor,
+  string | undefined,
+  { rejectValue: string }
+>(
+  "perfilMonitor/fetchMonitor",
+  async (monitorId, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      console.log('🔑 Token encontrado:', token ? 'Sim' : 'Não');
+      
+      if (!token || isTokenExpired()) {
+        console.log('❌ Token inválido ou expirado');
+        return rejectWithValue("Token inválido ou expirado. Faça login novamente.");
+      }
+
+      const targetMonitorId = monitorId || getUserIdFromToken();
+      console.log('👤 Target Monitor ID:', targetMonitorId);
+      
+      if (!targetMonitorId) {
+        console.log('❌ ID do monitor não encontrado');
+        return rejectWithValue("ID do monitor não encontrado");
+      }
+
+      const url = `http://localhost:3001/usuario/${targetMonitorId}`;
+      console.log('🌐 Fazendo requisição para:', url);
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('📡 Status da resposta:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('❌ Erro na resposta:', errorText);
+        
+        if (response.status === 404) {
+          return rejectWithValue("Monitor não encontrado");
+        }
+        if (response.status === 401) {
+          return rejectWithValue("Não autorizado. Faça login novamente.");
+        }
+        throw new Error("Erro ao buscar monitor");
+      }
+
+      const user = await response.json();
+      console.log('✅ Dados recebidos:', user);
+      
+      // Normalizar materia para sempre ser array
+      let materias: string[] = [];
+      if (user.materia) {
+        if (Array.isArray(user.materia)) {
+          materias = user.materia;
+        } else if (typeof user.materia === 'string') {
+          materias = [user.materia];
+        }
+      }
+      // Tratar listaDisciplinas se vier do backend
+      if (user.listaDisciplinas && Array.isArray(user.listaDisciplinas)) {
+        materias = user.listaDisciplinas;
+      }
+      
+      return {
+        id: user.id || user._id,
+        nome: user.nome || user.name || '',
+        email: user.email || '',
+        telefone: user.telefone || user.phone || '',
+        tipoUsuario: user.tipoUsuario || 'MONITOR',
+        biografia: user.biografia || user.description || '',
+        materia: materias,
+        foto: user.foto || user.fotoUrl || user.photo || '',
+        avaliacao: user.avaliacao || 0,
+        formacao: user.formacao || '',
+        listaDisponibilidades: user.listaDisponibilidades || user.disponibilidades || [],
+      };
+    } catch (error: any) {
+      console.error('💥 Erro no catch:', error);
+      return rejectWithValue(error.message || "Erro ao carregar monitor");
+    }
   }
 );
 
-// AsyncThunk: atualizar monitor - CORRIGIDO
+// AsyncThunk: atualizar monitor
 export const updateMonitor = createAsyncThunk<
-  Usuario,
-  Partial<Omit<Usuario, 'id' | 'role'>>
+  Monitor,
+  {
+    nome: string;
+    telefone: string;
+    email: string;
+    biografia?: string;
+    materia?: string[];
+    foto?: string;
+    listaDisponibilidades?: Disponibilidade[];
+  },
+  { rejectValue: { validationErrors?: ValidationErrors; message?: string } }
 >(
-  "monitor/updateMonitor",
-  async (updatedMonitor, { getState, rejectWithValue }) => {
-    const state = getState() as any;
-    const currentMonitor: Usuario = state.perfilMonitor.currentMonitor!;
+  "perfilMonitor/updateMonitor",
+  async (updateData, { getState, rejectWithValue }) => {
+    console.log('🔄 Iniciando updateMonitor com dados:', updateData);
+    
+    try {
+      // Validações
+      const errors: ValidationErrors = {};
+      errors.nome = validateMonitorField('nome', updateData.nome);
+      errors.telefone = validateMonitorField('telefone', updateData.telefone);
+      errors.email = validateMonitorField('email', updateData.email);
+      if (updateData.biografia) {
+        errors.descricao = validateMonitorField('descricao', updateData.biografia);
+      }
 
-    const errors: ValidationErrors = {};
-    if (updatedMonitor.nome !== undefined) {
-      const nomeError = validateMonitorField('nome', updatedMonitor.nome);
-      if (nomeError) errors.nome = nomeError;
-    }
-    if (updatedMonitor.telefone !== undefined) {
-      const telefoneError = validateMonitorField('telefone', updatedMonitor.telefone);
-      if (telefoneError) errors.telefone = telefoneError;
-    }
-    if (updatedMonitor.email !== undefined) {
-      const emailError = validateMonitorField('email', updatedMonitor.email);
-      if (emailError) errors.email = emailError;
-    }
-    if (updatedMonitor.biografia !== undefined) {
-      const descricaoError = validateMonitorField('descricao', updatedMonitor.biografia);
-      if (descricaoError) errors.descricao = descricaoError;
-    }
+      // Remove erros undefined
+      Object.keys(errors).forEach(key => {
+        if (errors[key as keyof ValidationErrors] === undefined) {
+          delete errors[key as keyof ValidationErrors];
+        }
+      });
 
-    if (Object.keys(errors).length > 0) {
-      return rejectWithValue(errors);
+      console.log('✅ Validações:', errors);
+
+      if (Object.keys(errors).length > 0) {
+        console.log('❌ Erros de validação encontrados');
+        return rejectWithValue({ validationErrors: errors });
+      }
+
+      // Verifica token
+      const token = getToken();
+      if (!token || isTokenExpired()) {
+        return rejectWithValue({ message: "Token inválido ou expirado. Faça login novamente." });
+      }
+
+      // Pega monitor atual do estado
+      const state = getState() as any;
+      console.log('🗂️ Estado completo:', state);
+      console.log('👤 State.perfilMonitor:', state.perfilMonitor);
+      
+      const currentMonitor: Monitor | null = state.perfilMonitor?.currentMonitor;
+
+      if (!currentMonitor || !currentMonitor.id) {
+        console.error('❌ CurrentMonitor não encontrado:', currentMonitor);
+        console.error('❌ Estado disponível:', Object.keys(state));
+        return rejectWithValue({ message: "Monitor não encontrado no estado. Recarregue a página." });
+      }
+
+      console.log('👤 Atualizando monitor:', currentMonitor.id);
+
+      // Prepara o body da requisição
+      const requestBody: any = {
+        nome: updateData.nome,
+        email: updateData.email,
+        telefone: updateData.telefone,
+      };
+
+      if (updateData.biografia) requestBody.biografia = updateData.biografia;
+      if (updateData.materia) requestBody.listaDisciplinas = updateData.materia; // Backend usa listaDisciplinas
+      if (updateData.foto) requestBody.foto = updateData.foto;
+      if (updateData.listaDisponibilidades) requestBody.listaDisponibilidades = updateData.listaDisponibilidades;
+
+      // Faz a requisição PATCH
+      const response = await fetch(`http://localhost:3001/usuario/${currentMonitor.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      console.log('📡 Status da resposta:', response.status);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          return rejectWithValue({ message: "Não autorizado. Faça login novamente." });
+        }
+        if (response.status === 400) {
+          const errorData = await response.json();
+          return rejectWithValue({ message: errorData.message || "Dados inválidos" });
+        }
+        throw new Error('Erro ao atualizar monitor');
+      }
+
+      const result = await response.json();
+      console.log('✅ Resposta do servidor:', result);
+
+      // Atualiza o monitor no estado
+      const updatedMonitor: Monitor = {
+        ...currentMonitor,
+        nome: updateData.nome,
+        email: updateData.email,
+        telefone: updateData.telefone,
+      };
+
+      if (updateData.biografia !== undefined) {
+        updatedMonitor.biografia = updateData.biografia;
+      }
+      if (updateData.materia !== undefined) {
+        updatedMonitor.materia = updateData.materia;
+      }
+      if (updateData.foto !== undefined) {
+        updatedMonitor.foto = updateData.foto;
+      }
+      if (updateData.listaDisponibilidades !== undefined) {
+        updatedMonitor.listaDisponibilidades = updateData.listaDisponibilidades;
+      }
+
+      // Atualiza localStorage se for o monitor logado
+      const loggedUserId = getUserIdFromToken();
+      if (loggedUserId === currentMonitor.id) {
+        const userInStorage = localStorage.getItem("user");
+        if (userInStorage) {
+          const parsedUser = JSON.parse(userInStorage);
+          localStorage.setItem("user", JSON.stringify({ ...parsedUser, ...updatedMonitor }));
+        }
+      }
+
+      return updatedMonitor;
+    } catch (error: any) {
+      console.error('💥 Erro no catch:', error);
+      return rejectWithValue({ message: error.message || "Erro ao atualizar monitor" });
     }
-
-    const newMonitor = {
-      ...currentMonitor,
-      ...updatedMonitor
-    };
-
-    const response = await fetch(`http://localhost:3001/usuarios/${currentMonitor.id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        nome: newMonitor.nome,
-        email: newMonitor.email,
-        telefone: newMonitor.telefone,
-        description: newMonitor.biografia,
-        materias: newMonitor.materia,
-        foto: newMonitor.foto || '',
-       // listaDisponibilidades: newMonitor.listaDisponibilidades,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Erro ao atualizar monitor no servidor');
-    }
-
-    await response.json();
-    return newMonitor;
   }
 );
 
 // AsyncThunk: buscar disciplinas do backend
-export const fetchDisciplinas = createAsyncThunk<{ id: string; nome: string }[]>(
+export const fetchDisciplinas = createAsyncThunk<
+  { id: string; nome: string }[],
+  void,
+  { rejectValue: string }
+>(
   "perfilMonitor/fetchDisciplinas",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:3001/disciplinas");
+      const token = getToken();
+      
+      const response = await fetch("http://localhost:3001/disciplina", {
+        headers: {
+          ...(token && { 'Authorization': `Bearer ${token}` }),
+          'Content-Type': 'application/json'
+        }
+      });
+      
       if (!response.ok) throw new Error("Erro ao buscar disciplinas");
       const data = await response.json();
       return data;
@@ -138,7 +306,7 @@ export const fetchDisciplinas = createAsyncThunk<{ id: string; nome: string }[]>
 );
 
 interface MonitorState {
-  currentMonitor: Usuario | null;
+  currentMonitor: Monitor | null;
   materiasDisponiveis: { id: string; nome: string }[];
   loading: boolean;
   error: string | null;
@@ -153,8 +321,8 @@ const initialState: MonitorState = {
   validationErrors: {},
 };
 
-const monitorSlice = createSlice({
-  name: "monitor",
+const perfilMonitorSlice = createSlice({
+  name: "perfilMonitor",
   initialState,
   reducers: {
     validateField: (state, action: PayloadAction<{ field: keyof ValidationErrors; value: string }>) => {
@@ -169,6 +337,11 @@ const monitorSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    clearCurrentMonitor: (state) => {
+      state.currentMonitor = null;
+      state.error = null;
+      state.validationErrors = {};
+    },
     atualizarDescricao: (state, action: PayloadAction<string>) => {
       if (state.currentMonitor) state.currentMonitor.biografia = action.payload;
     },
@@ -179,26 +352,40 @@ const monitorSlice = createSlice({
       }
     },
     atualizarMaterias: (state, action: PayloadAction<string[]>) => {
-    //  if (state.currentMonitor) state.currentMonitor.materia = action.payload;
+      if (state.currentMonitor) {
+        state.currentMonitor.materia = action.payload;
+      }
     },
     atualizarDisponibilidades: (state, action: PayloadAction<Disponibilidade[]>) => {
-   //   if (state.currentMonitor) state.currentMonitor.listaDisponibilidades = action.payload;
+      if (state.currentMonitor) {
+        state.currentMonitor.listaDisponibilidades = action.payload;
+      }
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchMonitor.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(fetchMonitor.fulfilled, (state, action: PayloadAction<Usuario>) => {
+      // fetchMonitor
+      .addCase(fetchMonitor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.validationErrors = {};
+      })
+      .addCase(fetchMonitor.fulfilled, (state, action: PayloadAction<Monitor>) => {
         state.loading = false;
         state.currentMonitor = action.payload;
         state.validationErrors = {};
       })
       .addCase(fetchMonitor.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Monitor não encontrado";
+        state.error = action.payload || "Monitor não encontrado";
       })
-      .addCase(updateMonitor.pending, (state) => { state.loading = true; })
-      .addCase(updateMonitor.fulfilled, (state, action: PayloadAction<Usuario>) => {
+      // updateMonitor
+      .addCase(updateMonitor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.validationErrors = {};
+      })
+      .addCase(updateMonitor.fulfilled, (state, action: PayloadAction<Monitor>) => {
         state.loading = false;
         state.currentMonitor = action.payload;
         state.validationErrors = {};
@@ -206,17 +393,25 @@ const monitorSlice = createSlice({
       })
       .addCase(updateMonitor.rejected, (state, action) => {
         state.loading = false;
-        if (action.payload) state.validationErrors = action.payload as ValidationErrors;
-        else state.error = action.error.message || "Erro ao atualizar monitor";
+        if (action.payload && 'validationErrors' in action.payload && action.payload.validationErrors) {
+          state.validationErrors = action.payload.validationErrors;
+        } else {
+          state.error = action.payload?.message || "Erro ao atualizar monitor";
+          state.validationErrors = {};
+        }
       })
-      .addCase(fetchDisciplinas.pending, (state) => { state.loading = true; state.error = null; })
+      // fetchDisciplinas
+      .addCase(fetchDisciplinas.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchDisciplinas.fulfilled, (state, action: PayloadAction<{ id: string; nome: string }[]>) => {
         state.loading = false;
         state.materiasDisponiveis = action.payload;
       })
       .addCase(fetchDisciplinas.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string || "Erro ao buscar disciplinas";
+        state.error = action.payload || "Erro ao buscar disciplinas";
       });
   },
 });
@@ -225,10 +420,11 @@ export const {
   validateField,
   clearValidationErrors,
   clearError,
+  clearCurrentMonitor,
   atualizarDescricao,
   atualizarContato,
   atualizarMaterias,
   atualizarDisponibilidades,
-} = monitorSlice.actions;
+} = perfilMonitorSlice.actions;
 
-export default monitorSlice.reducer;
+export default perfilMonitorSlice.reducer;

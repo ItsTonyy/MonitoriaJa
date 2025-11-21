@@ -3,9 +3,11 @@ dotenv.config({quiet: true});
 import express from "express";
 import Notificacao from "../models/notificacao.model";
 import jwt from "jsonwebtoken";
+import autenticar from "../middleware/auth";
+import adminAuth from "../middleware/adminAuth";
 const router = express.Router();
 // CREATE - Adiciona uma nova notificação
-router.post("/", async (req, res) => {
+router.post("/", autenticar, async (req, res) => {
   const notificacao = req.body;
 
   try {
@@ -17,7 +19,7 @@ router.post("/", async (req, res) => {
 });
 
 // READ ALL - Lista todas as notificações (com destinatario e agendamento populados)
-router.get("/", async (req, res) => {
+router.get("/",adminAuth, async (req, res) => {
   try {
     const notificacoes = await Notificacao.find()
       .populate("destinatario")
@@ -29,7 +31,7 @@ router.get("/", async (req, res) => {
 });
 
 // READ ONE - Busca notificação por id (com destinatario e agendamento populados)
-router.get("/user", async (req, res) => {
+router.get("/user", autenticar, async (req, res) => {
   const id = req.headers.authorization?.split(" ")[1];
   try {
     const notificacao = await Notificacao.findOne({ _id: id })
@@ -48,7 +50,7 @@ router.get("/user", async (req, res) => {
 });
 
 // UPDATE - Atualiza notificação por id
-router.patch("/update", async (req, res) => {
+router.patch("/update", autenticar, async (req, res) => {
   const id = req.headers.authorization?.split(" ")[1];
   const update = req.body;
 
@@ -67,7 +69,7 @@ router.patch("/update", async (req, res) => {
 });
 
 // PATCH - Marca notificação como lida
-router.patch("/:id/marcar-lida", async (req, res) => {
+router.patch("/:id/marcar-lida",autenticar, async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -127,7 +129,7 @@ router.patch("/:id/marcar-lida", async (req, res) => {
 });
 
 // DELETE - Remove notificação por id
-router.delete("/delete", async (req, res) => {
+router.delete("/delete", adminAuth, async (req, res) => {
   const id = req.headers.authorization?.split(" ")[1];
 
   const notificacao = await Notificacao.findOne({ _id: id });
@@ -146,7 +148,7 @@ router.delete("/delete", async (req, res) => {
 });
 
 // GET - Todas as notificações de um destinatário específico
-router.get("/destinatario/", async (req, res) => {
+router.get("/destinatario/", autenticar, async (req, res) => {
   const destinatarioId = req.headers.authorization?.split(" ")[1];
   if(!destinatarioId){
     return res.status(401).json({message:"Token de autenticação ausente."});
