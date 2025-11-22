@@ -6,6 +6,27 @@ import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /disciplina:
+ *   post:
+ *     summary: adiciona uma disciplina
+ *     tags: [Disciplina]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       201:
+ *         description: Disciplina inserida com sucesso
+ *       500:
+ *         description: Erro ao inserir disciplina
+ */
+
 // CREATE - Adiciona uma nova disciplina
 router.post("/", adminAuth, async (req, res) => {
   const disciplina = req.body;
@@ -18,6 +39,19 @@ router.post("/", adminAuth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /disciplina:
+ *   get:
+ *     summary: Retorna todas as disciplinas
+ *     tags: [Disciplina]
+ *     responses:
+ *       200:
+ *         description: Disciplinas retornadas com sucesso
+ *       500:
+ *         description: Erro ao retornar disciplinas
+ */
+
 // GET todas as disciplinas (apenas nomes)
 router.get("/", async (req, res) => {
   try {
@@ -28,7 +62,24 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET disciplina por id (apenas nome)
+/**
+ * @swagger
+ * /disciplina/{id}:
+ *   get:
+ *     summary: Obtém nome da disciplina por ID
+ *     tags: [Disciplina]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Nome da disciplina
+ *       404:
+ *         description: Disciplina não encontrada
+ */
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
   try {
@@ -41,8 +92,37 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ erro: error });
   }
 });
-
-// UPDATE - Atualiza disciplina por id
+/**
+ * @swagger
+ * /disciplina/{id}:
+ *   patch:
+ *     summary: Atualiza uma disciplina por ID
+ *     tags: [Disciplina]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Disciplina atualizada
+ *       404:
+ *         description: Disciplina não encontrada
+ *       500:
+ *         description: Erro ao atualizar disciplina
+ */
 router.patch("/:id", adminAuth, async (req, res) => {
   const id = req.params.id;
   const disciplina = req.body;
@@ -63,8 +143,29 @@ router.patch("/:id", adminAuth, async (req, res) => {
   }
 });
 
-// DELETE - Remove disciplina por id
-router.delete("/:id",adminAuth, async (req, res) => {
+/**
+ * @swagger
+ * /disciplina/{id}:
+ *   delete:
+ *     summary: Remove uma disciplina por ID
+ *     tags: [Disciplina]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Disciplina removida com sucesso
+ *       404:
+ *         description: Disciplina não encontrada
+ *       500:
+ *         description: Erro ao remover disciplina
+ */
+router.delete("/:id", adminAuth, async (req, res) => {
   const id = req.params.id;
 
   const disciplina = await Disciplina.findOne({ _id: id });
@@ -82,13 +183,42 @@ router.delete("/:id",adminAuth, async (req, res) => {
   }
 });
 
-// Adiciona um monitor à disciplina
+/**
+ * @swagger
+ * /disciplina/monitor:
+ *   post:
+ *     summary: Adiciona um monitor à uma disciplina
+ *     tags: [Disciplina]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               disciplinaId:
+ *                 type: string
+ *               monitorId:
+ *                 type: string
+ *             required:
+ *               - disciplinaId
+ *               - monitorId
+ *     responses:
+ *       200:
+ *         description: Monitor adicionado à disciplina
+ *       404:
+ *         description: Disciplina não encontrada
+ *       500:
+ *         description: Erro ao adicionar monitor à disciplina
+ */
 router.post("/monitor", autenticar, async (req, res) => {
   const { disciplinaId, monitorId } = req.body;
   try {
     const disciplina = await Disciplina.findByIdAndUpdate(
       disciplinaId,
-      { $addToSet: { listaMonitores: monitorId } }, // $addToSet evita duplicidade
+      { $addToSet: { listaMonitores: monitorId } },
       { new: true }
     );
     if (!disciplina) {
@@ -100,7 +230,36 @@ router.post("/monitor", autenticar, async (req, res) => {
   }
 });
 
-// Remove um monitor da disciplina
+/**
+ * @swagger
+ * /disciplina/monitor:
+ *   delete:
+ *     summary: Remove um monitor de uma disciplina
+ *     tags: [Disciplina]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               disciplinaId:
+ *                 type: string
+ *               monitorId:
+ *                 type: string
+ *             required:
+ *               - disciplinaId
+ *               - monitorId
+ *     responses:
+ *       200:
+ *         description: Monitor removido da disciplina
+ *       404:
+ *         description: Disciplina não encontrada
+ *       500:
+ *         description: Erro ao remover monitor da disciplina
+ */
 router.delete("/monitor", autenticar, async (req, res) => {
   const { disciplinaId, monitorId } = req.body;
   try {
@@ -118,7 +277,27 @@ router.delete("/monitor", autenticar, async (req, res) => {
   }
 });
 
-// GET monitores de uma disciplina
+/**
+ * @swagger
+ * /disciplina/monitor/{disciplinaId}:
+ *   get:
+ *     summary: Lista monitores de uma disciplina
+ *     tags: [Disciplina]
+ *     parameters:
+ *       - in: path
+ *         name: disciplinaId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Lista de monitores por ID
+ *       404:
+ *         description: Disciplina não encontrada
+ *       500:
+ *         description: Erro ao listar monitores por ID da disciplina
+ */
+
 router.get("/monitor/:disciplinaId", async (req, res) => {
   const disciplinaId = req.params.disciplinaId;
   try {

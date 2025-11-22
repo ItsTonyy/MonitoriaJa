@@ -22,7 +22,7 @@ const app: Application = express();
 const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
-    info: { title: "Monitoria Já API", version: "1.0.0" },
+    info: { title: "Documentação do Projeto MonitoriaJá", version: "1.0.0" },
     servers: [{ url: "http://localhost:3001" }],
     components: {
       securitySchemes: {
