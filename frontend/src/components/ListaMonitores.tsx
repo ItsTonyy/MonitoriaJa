@@ -19,8 +19,6 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import StarIcon from "@mui/icons-material/Star";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../redux/hooks";
-import { setSelectedMonitor } from "../redux/features/monitor/monitorSlice";
 import { listarMonitores } from "../redux/features/monitor/fetch";
 import { Disciplina } from "../models/disciplina.model";
 import { listarDisciplinas } from "../redux/features/disciplina/fetch";
@@ -62,7 +60,6 @@ function getCardsPerPage() {
 }
 
 function ListaMonitores() {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [monitores, setmonitores] = useState<Usuario[]>([]);
   const [, setLoading] = useState(true);
@@ -415,8 +412,12 @@ function ListaMonitores() {
                         color="primary"
                         size="medium"
                         onClick={() => {
-                          dispatch(setSelectedMonitor(monitor));
-                          navigate("/MonitoriaJa/detalhes-monitor");
+                          navigate("/MonitoriaJa/detalhes-monitor", {
+                            state: {
+                              monitorId: (monitor as any).id ?? (monitor as any)._id,
+                              monitor,
+                            },
+                          });
                         }}
                       >
                         Acessar

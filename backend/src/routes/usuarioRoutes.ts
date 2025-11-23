@@ -42,10 +42,13 @@ router.get("/", autenticarAdmin, async (req, res) => {
 });
 
 // GET usuários ativos filtrando por tipoUsuario (ex: /usuario/tipo/MONITOR)
-router.get("/tipo/:tipoUsuario", autenticar || autenticarAdmin, async (req, res) => {
+router.get("/tipo/:tipoUsuario", async (req, res) => {
   const tipoUsuario = req.params.tipoUsuario.toUpperCase();
   try {
-    const usuarios = await Usuario.find({ isAtivo: true, tipoUsuario }).populate({
+    const usuarios = await Usuario.find({
+      isAtivo: true,
+      tipoUsuario,
+    }).populate({
       path: "listaDisciplinas",
       select: "nome -_id",
     });
@@ -62,8 +65,6 @@ router.get("/tipo/:tipoUsuario", autenticar || autenticarAdmin, async (req, res)
     res.status(500).json({ erro: error });
   }
 });
-
-
 
 // GET usuário ativo por id (com nomes das disciplinas ministradas)
 router.get("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
@@ -129,7 +130,7 @@ router.delete("/:id", autenticarAdmin, async (req, res) => {
 });
 
 // Adiciona uma disciplina à listaDisciplinas do usuário ativo
-router.post("/disciplina",autenticar, ownerOrAdminAuth, async (req, res) => {
+router.post("/disciplina", autenticar, ownerOrAdminAuth, async (req, res) => {
   const { usuarioId, disciplinaId } = req.body;
   try {
     const usuario = await Usuario.findOneAndUpdate(
