@@ -2,7 +2,6 @@ import express from "express";
 import Disciplina from "../models/disciplina.model";
 import autenticar from "../middleware/auth";
 import adminAuth from "../middleware/adminAuth";
-import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
 
 const router = express.Router();
 
@@ -10,16 +9,21 @@ const router = express.Router();
  * @swagger
  * /disciplina:
  *   post:
- *     summary: adiciona uma disciplina
+ *     summary: Cria uma disciplina
  *     tags: [Disciplina]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *             required:
+ *               - nome
  *     responses:
  *       201:
  *         description: Disciplina inserida com sucesso
@@ -79,6 +83,8 @@ router.get("/", async (req, res) => {
  *         description: Nome da disciplina
  *       404:
  *         description: Disciplina não encontrada
+ *       500:
+ *         description: Erro ao buscar disciplina
  */
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
