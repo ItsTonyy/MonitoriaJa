@@ -1,3 +1,5 @@
+// pages/PerfilUsuarioPage/PerfilUsuarioPage.tsx
+
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -44,16 +46,22 @@ const PerfilUsuarioPage: React.FC = () => {
 
   const nomeRef = useRef<HTMLDivElement | null>(null);
 
-  // Verifica autenticação e busca usuário
+  // ============ VERIFICAR AUTENTICAÇÃO E CARREGAR USUÁRIO ============
+  // pages/PerfilUsuarioPage/PerfilUsuarioPage.tsx - Apenas o useEffect principal corrigido
+
+// ============ VERIFICAR AUTENTICAÇÃO E CARREGAR USUÁRIO ============
   useEffect(() => {
+    console.log('🔍 useEffect: Verificando autenticação');
+
     // Verifica se está autenticado
     if (!isAuthenticated()) {
+      console.log('❌ Não autenticado - redirecionando para login');
       dispatch(clearCurrentUser());
       navigate('/MonitoriaJa/login');
       return;
     }
 
-    // LÓGICA IMPORTANTE:
+    // LÓGICA ORIGINAL PRESERVADA:
     // 1. Se userId existe na URL -> busca esse usuário (admin acessando perfil de outro)
     // 2. Se userId não existe -> busca usuário do token (usuário acessando próprio perfil)
     let targetUserId: string | null = null;
@@ -63,7 +71,7 @@ const PerfilUsuarioPage: React.FC = () => {
       targetUserId = userId;
       console.log('👤 Admin acessando usuário:', userId);
     } else {
-      // Usuário acessando próprio perfil
+      // Usuário acessando próprio perfil - CORREÇÃO AQUI: garantir que é string
       const tokenUserId = getUserIdFromToken();
       targetUserId = tokenUserId;
       console.log('👤 Usuário acessando próprio perfil:', tokenUserId);
@@ -72,6 +80,7 @@ const PerfilUsuarioPage: React.FC = () => {
     console.log('🎯 Target User ID final:', targetUserId);
     
     if (targetUserId) {
+      // CORREÇÃO: garantir que targetUserId é sempre string
       dispatch(fetchUsuario(targetUserId));
     } else {
       console.error('❌ Nenhum ID de usuário disponível');
@@ -83,10 +92,12 @@ const PerfilUsuarioPage: React.FC = () => {
       dispatch(clearValidationErrors());
       dispatch(clearError());
     };
-  }, [dispatch, navigate, userId]); // userId como dependência para reagir a mudanças na URL
+  }, [dispatch, navigate, userId]);
 
-  // Atualizar campos ao carregar usuário
+  // ============ ATUALIZAR CAMPOS AO CARREGAR USUÁRIO ============
   useEffect(() => {
+    console.log('🔄 useEffect: Atualizando campos locais');
+    
     if (currentUser) {
       setNome(currentUser.nome || '');
       setTelefone(currentUser.telefone || '');
@@ -100,14 +111,14 @@ const PerfilUsuarioPage: React.FC = () => {
     }
   }, [currentUser]);
 
-  // Limpar erro global quando campos mudarem
+  // ============ LIMPAR ERRO GLOBAL QUANDO CAMPOS MUDAREM ============
   useEffect(() => {
     if (error) {
       dispatch(clearError());
     }
   }, [nome, telefone, email, error, dispatch]);
 
-  // onChange handlers
+  // ============ HANDLERS DE MUDANÇA ============
   const handleTelefoneChange = (value: string) => {
     setTelefone(value);
     if (hasSubmitted) {
@@ -131,7 +142,7 @@ const PerfilUsuarioPage: React.FC = () => {
     }
   };
 
-  // Upload de foto
+  // ============ UPLOAD DE FOTO ============
   const handleFileSelect = (file: File | null) => {
     if (file) {
       setFotoFile(file);
@@ -143,13 +154,19 @@ const PerfilUsuarioPage: React.FC = () => {
     }
   };
 
-  // Salvar usuário
+  // ============ SALVAR USUÁRIO ============
   const handleSalvar = async () => {
-    if (!currentUser) return;
+    console.log('💾 handleSalvar: Iniciando...');
+    
+    if (!currentUser) {
+      console.error('❌ currentUser não existe');
+      return;
+    }
 
     setHasSubmitted(true);
 
     const nomeFinal = nomeRef.current?.textContent?.trim() || nome;
+    console.log('📋 Dados a salvar:', { nomeFinal, telefone, email });
 
     // Valida todos os campos
     dispatch(validateField({ field: 'nome', value: nomeFinal }));
@@ -159,6 +176,7 @@ const PerfilUsuarioPage: React.FC = () => {
     // Verifica se há erros de validação
     const hasValidationErrors = Object.values(validationErrors).some(err => err !== undefined);
     if (hasValidationErrors) {
+      console.log('❌ Erros de validação encontrados');
       return;
     }
 
@@ -180,18 +198,22 @@ const PerfilUsuarioPage: React.FC = () => {
         updateData.fotoUrl = fotoPreview || undefined;
       }
 
+      console.log('📤 Despachando updateUsuario...');
       await dispatch(updateUsuario(updateData)).unwrap();
+      
+      console.log('✅ Usuário atualizado com sucesso');
       setOpen(true);
       setHasSubmitted(false);
     } catch (err: any) {
-      console.error('Erro ao salvar:', err);
+      console.error('❌ Erro ao salvar:', err);
       // O erro já está sendo tratado pelo Redux
     }
   };
 
-  // Redirecionar se erro de autenticação
+  // ============ REDIRECIONAR SE ERRO DE AUTENTICAÇÃO ============
   useEffect(() => {
     if (error && (error.includes('Token') || error.includes('autorizado'))) {
+      console.log('🚨 Erro de autenticação - redirecionando');
       const timer = setTimeout(() => {
         navigate('/MonitoriaJa/login');
       }, 2000);
@@ -199,17 +221,20 @@ const PerfilUsuarioPage: React.FC = () => {
     }
   }, [error, navigate]);
 
-  // Loading global
+  // ============ LOADING STATE ============
   if (loading && !currentUser) {
     return <div className={styles.centralizeContent}>Carregando...</div>;
   }
 
+  // ============ ERROR STATE ============
   if (error && !currentUser) {
     return (
       <div className={styles.centralizeContent}>
         <div className={styles.profileCard}>
           <p>{error}</p>
-          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
+          <ConfirmationButton onClick={() => {
+            navigate('/MonitoriaJa/login');
+          }}>
             Fazer Login
           </ConfirmationButton>
         </div>
@@ -217,12 +242,15 @@ const PerfilUsuarioPage: React.FC = () => {
     );
   }
 
+  // ============ NOT FOUND STATE ============
   if (!currentUser) {
     return (
       <div className={styles.centralizeContent}>
         <div className={styles.profileCard}>
           <p>Usuário não encontrado</p>
-          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/login')}>
+          <ConfirmationButton onClick={() => {
+            navigate('/MonitoriaJa/login');
+          }}>
             Fazer Login
           </ConfirmationButton>
         </div>
@@ -230,6 +258,7 @@ const PerfilUsuarioPage: React.FC = () => {
     );
   }
 
+  // ============ RENDER PRINCIPAL ============
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
@@ -305,7 +334,14 @@ const PerfilUsuarioPage: React.FC = () => {
 
         {/* Botões */}
         <div className={styles.buttonSection}>
-          <ConfirmationButton onClick={() => navigate('/MonitoriaJa/alterar-senha')}>
+          <ConfirmationButton 
+            onClick={() => {
+              const targetPath = userId 
+                ? `/MonitoriaJa/alterar-senha/${userId}`
+                : '/MonitoriaJa/alterar-senha';
+              navigate(targetPath);
+            }}
+          >
             Trocar senha
           </ConfirmationButton>
           <ConfirmationButton onClick={handleSalvar} disabled={loading}>
@@ -322,9 +358,9 @@ const PerfilUsuarioPage: React.FC = () => {
         onClose={() => {
           setOpen(false);
           // Recarrega dados após sucesso
-          const reloadUserId = userId || getUserIdFromToken();
-          if (reloadUserId) {
-            dispatch(fetchUsuario(reloadUserId));
+          const tokenUserId = getUserIdFromToken();
+          if (tokenUserId) {
+            dispatch(fetchUsuario(tokenUserId));
           }
         }}
         status="sucesso"

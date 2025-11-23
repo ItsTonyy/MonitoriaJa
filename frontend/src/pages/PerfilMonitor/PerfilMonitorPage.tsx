@@ -263,7 +263,7 @@ const PerfilMonitorPage: React.FC = () => {
       </div>
     );
   }
-
+  const userId = getUserIdFromToken();
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
@@ -409,11 +409,16 @@ const PerfilMonitorPage: React.FC = () => {
           </Modal>
 
           <div className={styles.buttonGroup}>
-            <ConfirmationButton
-              onClick={() => navigate("/MonitoriaJa/alterar-senha")}
-            >
-              Trocar senha
-            </ConfirmationButton>
+          <ConfirmationButton 
+            onClick={() => {
+              const targetPath = userId 
+                ? `/MonitoriaJa/alterar-senha/${userId}`
+                : '/MonitoriaJa/alterar-senha';
+              navigate(targetPath);
+            }}
+          >
+            Trocar senha
+          </ConfirmationButton>
           </div>
           <div className={styles.buttonGroup}>
             <ConfirmationButton onClick={handleSalvar} disabled={loading}>

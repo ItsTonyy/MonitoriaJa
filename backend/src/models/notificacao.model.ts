@@ -20,7 +20,7 @@ export interface INotificacao extends Document {
   status?: "LIDA" | "NAO_LIDA" | "ARQUIVADA";
   dataEnvio?: Date;
   dataLeitura?: Date;
-  destinatario?: mongoose.Types.ObjectId;
+  destinatario: mongoose.Types.ObjectId;
   agendamento?: mongoose.Types.ObjectId;
   prioridade?: "ALTA" | "MEDIA" | "BAIXA";
 }

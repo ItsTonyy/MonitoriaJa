@@ -5,20 +5,11 @@
  */
 export interface TokenPayload {
   id?: string;
-  userId?: string;
-  _id?: string;
-  email?: string;
-  nome?: string;
-  exp?: number;
+  role?: string;
   iat?: number;
-  [key: string]: any;
+  exp?: number;
 }
 
-/**
- * Decodifica um token JWT e retorna seu payload
- * @param token - Token JWT completo
- * @returns Payload decodificado ou null se houver erro
- */
 export const decodeToken = (token: string): TokenPayload | null => {
   try {
     // Divide o token em suas três partes (header.payload.signature)
@@ -40,10 +31,6 @@ export const decodeToken = (token: string): TokenPayload | null => {
   }
 };
 
-/**
- * Obtém o token armazenado no localStorage
- * @returns Token JWT ou null se não existir
- */
 export const getToken = (): string | null => {
   try {
     return localStorage.getItem('token');
@@ -53,10 +40,6 @@ export const getToken = (): string | null => {
   }
 };
 
-/**
- * Obtém o ID do usuário a partir do token armazenado no localStorage
- * @returns ID do usuário ou null se não encontrado
- */
 export const getUserIdFromToken = (): string | null => {
   const token = getToken();
   
@@ -72,13 +55,9 @@ export const getUserIdFromToken = (): string | null => {
   }
 
   // Tenta diferentes campos que podem conter o ID do usuário
-  return payload.id || payload.userId || payload._id || null;
+  return payload.id || null;
 };
 
-/**
- * Verifica se o token está expirado
- * @returns true se o token estiver expirado, false caso contrário
- */
 export const isTokenExpired = (): boolean => {
   const token = getToken();
   
@@ -97,18 +76,11 @@ export const isTokenExpired = (): boolean => {
   return payload.exp < currentTime;
 };
 
-/**
- * Verifica se o usuário está autenticado (possui token válido)
- * @returns true se estiver autenticado, false caso contrário
- */
 export const isAuthenticated = (): boolean => {
   const token = getToken();
   return token !== null && !isTokenExpired();
 };
 
-/**
- * Remove o token do localStorage (logout)
- */
 export const removeToken = (): void => {
   try {
     localStorage.removeItem('token');
@@ -117,10 +89,6 @@ export const removeToken = (): void => {
   }
 };
 
-/**
- * Salva o token no localStorage
- * @param token - Token JWT a ser salvo
- */
 export const setToken = (token: string): void => {
   try {
     localStorage.setItem('token', token);

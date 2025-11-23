@@ -26,40 +26,39 @@ const CadastraCartaoPage: React.FC = () => {
   const [mes, setMes] = useState("");
   const [ano, setAno] = useState("");
   const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErro(null);
 
-    // Validações básicas
     if (!numero || !nome || !bandeira || !cpf || !cvv || !mes || !ano) {
-      alert("Por favor, preencha todos os campos!");
+      setErro("Por favor, preencha todos os campos!");
       return;
     }
 
     if (numero.replace(/\s/g, "").length < 13) {
-      alert("Número do cartão inválido!");
+      setErro("Número do cartão inválido!");
       return;
     }
 
     if (cvv.length < 3) {
-      alert("CVV inválido!");
+      setErro("CVV inválido!");
       return;
     }
 
-    // Verifica se o usuário está autenticado
     if (!isAuthenticated()) {
-      alert("Sessão expirada. Por favor, faça login novamente.");
+      setErro("Sessão expirada. Por favor, faça login novamente.");
       navigate("/login");
       return;
     }
 
-    // Obtém o ID do usuário do token
     const usuarioId = getUserIdFromToken();
     if (!usuarioId) {
-      alert("Erro ao identificar usuário. Por favor, faça login novamente.");
+      setErro("Erro ao identificar usuário.");
       navigate("/login");
       return;
     }
@@ -67,12 +66,11 @@ const CadastraCartaoPage: React.FC = () => {
     setLoading(true);
 
     try {
-      // Prepara os dados no formato esperado pelo backend
       const validade = `${mes}/${ano}`;
       const numeroLimpo = numero.replace(/\s/g, "");
       const ultimosDigitos = numeroLimpo.slice(-4);
 
-      const novoCartao = {
+      const novoCartao: NovoCartao = {
         usuario: usuarioId,
         numero: numeroLimpo,
         titular: nome,
@@ -82,37 +80,29 @@ const CadastraCartaoPage: React.FC = () => {
         ultimosDigitos: ultimosDigitos,
       };
 
-      // Adiciona o cartão via API real
       await dispatch(adicionarCartao(novoCartao)).unwrap();
-      
-      // Volta para a página de listagem
       navigate("/MonitoriaJa/lista-cartao");
     } catch (error) {
-      console.error("Erro ao cadastrar cartão:", error);
-      alert(`Erro ao cadastrar cartão: ${error instanceof Error ? error.message : 'Tente novamente.'}`);
+      setErro(error instanceof Error ? error.message : 'Erro ao cadastrar cartão');
     } finally {
       setLoading(false);
     }
   };
 
-  // Formata o número do cartão (adiciona espaços a cada 4 dígitos)
   const formatarNumeroCartao = (valor: string) => {
     const apenasNumeros = valor.replace(/\D/g, "");
     const formatado = apenasNumeros.replace(/(\d{4})(?=\d)/g, "$1 ");
-    return formatado.substring(0, 19); // Limita a 16 dígitos + 3 espaços
+    return formatado.substring(0, 19);
   };
 
-  // Formata CPF/CNPJ
   const formatarCPF = (valor: string) => {
     const apenasNumeros = valor.replace(/\D/g, "");
     if (apenasNumeros.length <= 11) {
-      // CPF: 000.000.000-00
       return apenasNumeros
         .replace(/(\d{3})(\d)/, "$1.$2")
         .replace(/(\d{3})(\d)/, "$1.$2")
         .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
     } else {
-      // CNPJ: 00.000.000/0000-00
       return apenasNumeros
         .replace(/^(\d{2})(\d)/, "$1.$2")
         .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
@@ -126,6 +116,22 @@ const CadastraCartaoPage: React.FC = () => {
     <main className={styles.centralizeContent}>
       <div className={styles.card}>
         <Title text="Cadastro de Cartão" />
+        
+        {erro && (
+          <div
+            style={{
+              padding: "10px",
+              marginBottom: "20px",
+              backgroundColor: "#ffebee",
+              color: "#c62828",
+              borderRadius: "4px",
+              textAlign: "center",
+            }}
+          >
+            {erro}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className={styles.formContainer}>
           <TextField
             label="Número do Cartão"
@@ -136,6 +142,7 @@ const CadastraCartaoPage: React.FC = () => {
             onChange={(e) => setNumero(formatarNumeroCartao(e.target.value))}
             placeholder="0000 0000 0000 0000"
             inputProps={{ maxLength: 19 }}
+            disabled={loading}
           />
           <TextField
             label="Nome no Cartão"
@@ -145,8 +152,9 @@ const CadastraCartaoPage: React.FC = () => {
             value={nome}
             onChange={(e) => setNome(e.target.value.toUpperCase())}
             placeholder="NOME COMO NO CARTÃO"
+            disabled={loading}
           />
-          <FormControl fullWidth required>
+          <FormControl fullWidth required disabled={loading}>
             <InputLabel>Bandeira</InputLabel>
             <Select
               value={bandeira}
@@ -167,6 +175,7 @@ const CadastraCartaoPage: React.FC = () => {
             onChange={(e) => setCpf(formatarCPF(e.target.value))}
             placeholder="000.000.000-00"
             inputProps={{ maxLength: 18 }}
+            disabled={loading}
           />
           <TextField
             label="CVV"
@@ -178,9 +187,10 @@ const CadastraCartaoPage: React.FC = () => {
             value={cvv}
             onChange={(e) => setCvv(e.target.value.replace(/\D/g, ""))}
             placeholder="000"
+            disabled={loading}
           />
           <Box className={styles.row}>
-            <FormControl fullWidth className={styles.mes} required>
+            <FormControl fullWidth required disabled={loading}>
               <InputLabel>Mês</InputLabel>
               <Select
                 value={mes}
@@ -206,6 +216,7 @@ const CadastraCartaoPage: React.FC = () => {
               required
               inputProps={{ maxLength: 4 }}
               placeholder="2025"
+              disabled={loading}
             />
           </Box>
           <div className={styles.buttonGroup}>

@@ -76,12 +76,14 @@ export default function NotificacaoCard() {
     setAnchorEl(null);
   };
 
-  const handleNotificationClick = (notificacao: any) => {
+  const handleNotificationClick = async (notificacao: any) => {
     console.log("Clicou na notificação:", notificacao);
     console.log("Agendamento da notificação:", notificacao.agendamento);
 
     if (notificacao.status !== 'LIDA') {
-      dispatch(markAsReadServer(notificacao.id));
+      console.log("Marcando como lida...");
+      await dispatch(markAsReadServer(notificacao.id));
+      console.log("Marcada como lida!");
     }
 
     const notificacaoData = {

@@ -1,9 +1,9 @@
 // AlterarSenhaPage.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
 import ConfirmationButton from '../botaoTemporario/botaoTemporario';
 import styles from './AlterarSenhaPage.module.css';
-import { useNavigate } from 'react-router-dom';
 import CampoFormulario from '../PerfilMonitor/CampoFormulario/CampoFormulario';
 import Title from './Titulo/Titulo';
 import StatusModal from './StatusModal/StatusModal';
@@ -14,34 +14,67 @@ import {
   setErrors,
   resetStatus,
   atualizarSenha,
+  atualizarSenhaAdmin,
+  ativarModoAdmin,
+  desativarModoAdmin,
+  resetForm,
 } from '../../redux/features/alterarSenha/slice';
 import type { AppDispatch } from '../../redux/store';
 import type { RootState } from '../../redux/root-reducer';
+import { getUserIdFromToken } from '../../pages/Pagamento/Cartao/CadastraCartao/authUtils'; // ✅ Import correto
 
 const AlterarSenhaPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  const { userId } = useParams<{ userId: string }>();
 
-  // ✅ Seletor do Redux com todos os estados
-  const { senhaAnterior, novaSenha, confirmarSenha, errors, status, errorMessage } = useSelector(
-    (state: RootState) => state.alterarSenha
-  );
+  // ✅ Seletor do Redux
+  const { 
+    senhaAnterior, 
+    novaSenha, 
+    confirmarSenha, 
+    errors, 
+    status, 
+    errorMessage,
+    modoAdmin,
+    userIdAlvo 
+  } = useSelector((state: RootState) => state.alterarSenha);
+
+  // ✅ Efeito para detectar se é modo admin
+  useEffect(() => {
+    console.log('🔍 useEffect - userId da URL:', userId);
+    console.log('🔍 useEffect - UserID do token:', getUserIdFromToken());
+    
+    if (userId) {
+      // Se tem userId na URL, é admin alterando senha de outro usuário
+      console.log('👤 ADMIN - Ativando modo admin para userId:', userId);
+      dispatch(ativarModoAdmin(userId));
+    } else {
+      console.log('👤 USUÁRIO - Modo usuário comum');
+      dispatch(desativarModoAdmin());
+    }
+
+    // Cleanup ao desmontar
+    return () => {
+      dispatch(resetForm());
+    };
+  }, [userId, dispatch]);
 
   const validarSenha = (): boolean => {
     let newErrors: { anterior?: string; nova?: string; confirmar?: string } = {};
 
-    // ✅ Validar campo senha anterior
-    if (!senhaAnterior) {
+    // ✅ VALIDAÇÃO DIFERENCIADA: Admin não precisa de senha anterior
+    if (!modoAdmin && !senhaAnterior) {
       newErrors.anterior = 'Senha anterior é obrigatória.';
     }
 
-    // ✅ Regex atualizada conforme especificação
+    // ✅ Regex para nova senha (igual para ambos)
     const senhaRegex = {
-      minLen: /^.{8,}$/, // Mínimo 8 caracteres
-      minuscula: /[a-z]/, // Pelo menos 1 letra minúscula
-      maiuscula: /[A-Z]/, // Pelo menos 1 letra maiúscula
-      numero: /\d/, // Pelo menos 1 número
-      especial: /[-_@*]/, // Pelo menos 1 caractere especial: -, _, @, *
+      minLen: /^.{8,}$/,
+      minuscula: /[a-z]/,
+      maiuscula: /[A-Z]/,
+      numero: /\d/,
+      especial: /[-_@*]/,
     };
 
     // Validação da nova senha
@@ -71,25 +104,66 @@ const AlterarSenhaPage: React.FC = () => {
   };
 
   const handleSubmit = () => {
+    console.log('🎯 handleSubmit - Modo Admin:', modoAdmin);
+    console.log('🎯 handleSubmit - UserID Alvo:', userIdAlvo);
+    console.log('🎯 handleSubmit - UserID do Token:', getUserIdFromToken()); // ✅ Corrigido
+    
     if (validarSenha()) {
-      dispatch(atualizarSenha({ senhaAnterior, novaSenha }));
+      if (modoAdmin && userIdAlvo) {
+        // ✅ Admin alterando senha de outro usuário
+        console.log('👤 ADMIN - Enviando requisição para userId:', userIdAlvo);
+        dispatch(atualizarSenhaAdmin({ 
+          novaSenha,
+          userIdAlvo 
+        }));
+      } else {
+        // ✅ Usuário comum alterando própria senha
+        console.log('👤 USUÁRIO - Enviando requisição com senha anterior');
+        dispatch(atualizarSenha({ 
+          senhaAnterior, 
+          novaSenha 
+        }));
+      }
+    } else {
+      console.log('❌ Validação falhou');
+    }
+  };
+
+  const handleVoltar = () => {
+    if (modoAdmin && userIdAlvo) {
+      // ✅ Admin voltando para o perfil do usuário
+      navigate(`/MonitoriaJa/perfil-usuario/${userIdAlvo}`);
+    } else {
+      // ✅ Usuário comum voltando para próprio perfil
+      navigate(-1);
     }
   };
 
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
-        <Title text="Alterar Senha" />
+        {/* ✅ Título dinâmico */}
+        <Title text={modoAdmin ? "Alterar Senha do Usuário" : "Alterar Senha"} />
+
+        {/* ✅ Indicador de modo admin */}
+        {modoAdmin && (
+          <div className={styles.adminInfo}>
+            <p>Modo Administrador: Alterando senha de outro usuário</p>
+          </div>
+        )}
 
         <div className={styles.fieldsContainer}>
-          <CampoFormulario
-            label="Senha anterior"
-            type="password"
-            value={senhaAnterior}
-            onChange={(e) => dispatch(setSenhaAnterior(e.target.value))}
-            error={!!errors.anterior}
-            helperText={errors.anterior}
-          />
+          {/* ✅ Campo senha anterior APENAS para usuário comum */}
+          {!modoAdmin && (
+            <CampoFormulario
+              label="Senha anterior"
+              type="password"
+              value={senhaAnterior}
+              onChange={(e) => dispatch(setSenhaAnterior(e.target.value))}
+              error={!!errors.anterior}
+              helperText={errors.anterior}
+            />
+          )}
 
           <CampoFormulario
             label="Nova senha"
@@ -111,11 +185,20 @@ const AlterarSenhaPage: React.FC = () => {
         </div>
 
         <div className={styles.buttonSection}>
-          <ConfirmationButton onClick={handleSubmit}>
-            {status === 'loading' ? 'Alterando...' : 'Trocar senha'}
+          <ConfirmationButton 
+            onClick={handleSubmit}
+            disabled={status === 'loading'}
+          >
+            {status === 'loading' 
+              ? 'Alterando...' 
+              : (modoAdmin ? 'Alterar Senha do Usuário' : 'Trocar senha')
+            }
           </ConfirmationButton>
 
-          <ConfirmationButton onClick={() => navigate(-1)}>
+          <ConfirmationButton 
+            onClick={handleVoltar}
+            disabled={status === 'loading'}
+          >
             Voltar
           </ConfirmationButton>
         </div>
@@ -126,10 +209,10 @@ const AlterarSenhaPage: React.FC = () => {
         open={status === 'success'}
         onClose={() => {
           dispatch(resetStatus());
-          navigate(-1); // ✅ Redirecionar após sucesso
+          handleVoltar(); // ✅ Redirecionar após sucesso
         }}
         status="sucesso"
-        mensagem="Senha alterada com sucesso!"
+        mensagem={modoAdmin ? "Senha do usuário alterada com sucesso!" : "Senha alterada com sucesso!"}
       />
 
       {/* ✅ Modal de Erro */}

@@ -7,7 +7,7 @@ import admin from "../middleware/adminAuth";
 const router = express.Router();
 
 // CREATE - Adiciona um novo cartão
-router.post("/", autenticar, ownerOrAdminAuth, async (req, res) => {
+router.post("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
   const cartao = req.body;
 
   try {
@@ -25,6 +25,16 @@ router.get("/", admin,  async (req, res) => {
     res.status(200).json(cartoes);
   } catch (error) {
     res.status(500).json({ erro: error });
+  }
+});
+
+router.get("/meus-cartoes/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
+  try {
+    const cartoes = await Cartao.find({ usuario: req.id }).populate("usuario");
+    res.status(200).json(cartoes);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Erro ao buscar cartões";
+    res.status(500).json({ erro: errorMessage });
   }
 });
 
@@ -66,22 +76,24 @@ router.patch("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
 });
 
 // DELETE - Remove cartão por id
-router.delete("/:id",autenticar, ownerOrAdminAuth, async (req, res) => {
-  const id = req.params.id;
-
-  const cartao = await Cartao.findOne({ _id: id });
-
-  if (!cartao) {
-    res.status(404).json({ message: "Cartão não encontrado!" });
-    return;
-  }
+router.delete("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
+  const userId = req.params.id;
+  const { cartaoId } = req.query;
 
   try {
-    await Cartao.deleteOne({ _id: id });
+    const cartao = await Cartao.findOne({ _id: cartaoId, usuario: userId });
+
+    if (!cartao) {
+      res.status(404).json({ message: "Cartão não encontrado!" });
+      return;
+    }
+
+    await Cartao.deleteOne({ _id: cartaoId });
     res.status(200).json({ message: "Cartão removido com sucesso!" });
   } catch (error) {
     res.status(500).json({ erro: error });
   }
 });
+
 
 export default router;
