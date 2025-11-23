@@ -7,11 +7,12 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { agendamentoService } from "../../services/agendamentoService";
 import { useState } from "react";
+import { stat } from "fs";
 
 function AgendamentoMonitor() {
   const navigate = useNavigate();
   const location = useLocation();
-  const currentAgendamento = (location.state as any)?.agendamento;
+  let currentAgendamento = (location.state as any)?.agendamento;
   const [servicoSelecionado, setServicoSelecionado] = useState<string[]>([]);
   const [formaPagamento, setFormaPagamento] = useState<"CARTAO" | "PIX" | "">(
     ""
@@ -35,34 +36,29 @@ function AgendamentoMonitor() {
 
   const handleAgendar = async () => {
     if (!formaPagamento) return;
-
-    try {
-      await agendamentoService.create({
-        monitor: currentAgendamento.monitor,
-        data: currentAgendamento.data,
-        hora: currentAgendamento.hora,
-        valor: currentAgendamento.valor,
-        statusPagamento: "PENDENTE",
-        formaPagamento,
-        status: "AGUARDANDO",
-        servico:
-          servicoSelecionado.length === 2
-            ? "Aula"
-            : servicoSelecionado.includes("aula")
-            ? "Aula"
-            : "Exercícios",
-        topicos,
+    currentAgendamento = {
+      ...currentAgendamento,
+      topicos,
+      formaPagamento,
+      servico:
+        servicoSelecionado.length === 2
+          ? "Aula"
+          : servicoSelecionado.includes("aula")
+          ? "Aula"
+          : "Exercícios",
+      statusPagamento: "PENDENTE",
+      status: "AGUARDANDO",
+    };
+    if (formaPagamento === "PIX") {
+      navigate("/MonitoriaJa/pix", {
+        state: { agendamento: currentAgendamento },
       });
-
-      if (formaPagamento === "PIX") {
-        navigate("/MonitoriaJa/pix");
-      } else if (formaPagamento === "CARTAO") {
-        navigate("/MonitoriaJa/lista-cartao");
-      } else {
-        navigate("/MonitoriaJa/lista-agendamentos");
-      }
-    } catch (e) {
-      alert("Erro ao atualizar agendamento");
+    } else if (formaPagamento === "CARTAO") {
+      navigate("/MonitoriaJa/lista-cartao", {
+        state: { agendamento: currentAgendamento },
+      });
+    } else {
+      navigate("/MonitoriaJa/lista-agendamentos");
     }
   };
 

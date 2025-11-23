@@ -14,6 +14,7 @@ import { avaliacaoService } from "../../services/avaliacaoService";
 import { disponibilidadeService } from "../../services/disponibilidadeService";
 import { usuarioService } from "../../services/usuarioService";
 
+
 /*interface TimeSlot {
   day: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
   times: string[];
@@ -24,6 +25,24 @@ function getRandomInt(min: number, max: number) {
   const maxFloored = Math.floor(max);
   return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
 }
+
+function decodeJwtPayload(token: string) {
+  try {
+    const payloadBase64 = token.split(".")[1];
+    // Corrige padding do base64 se necessário
+    const base64 = payloadBase64.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
+
 
 let conquistas: string[] = [
   "Realizou sua primeira monitoria com sucesso.",
@@ -54,6 +73,9 @@ let conquistas: string[] = [
 function DetalhesMonitor() {
   const location = useLocation();
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const payload = token ? decodeJwtPayload(token) : null;
+  const usuarioId = payload?.id; //  id do usuário logado
   const monitorId = (location.state as any)?.monitorId as string | undefined;
   const monitorFromNav = (location.state as any)?.monitor as
     | Usuario
@@ -145,6 +167,9 @@ function DetalhesMonitor() {
       status: "AGUARDANDO",
       valor: monitor.valor,
       statusPagamento: "PENDENTE",
+      duracao:1,
+      link:"https://meet.google.com/zyw-jymr-ipg",
+      aluno:  usuarioId, 
     };
 
     navigate("/MonitoriaJa/agendamento-monitor", {

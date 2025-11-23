@@ -18,11 +18,11 @@ router.post("/", adminAuth, async (req, res) => {
   }
 });
 
-// GET todas as disciplinas (apenas nomes)
+// GET todas as disciplinas (nome e id)
 router.get("/", async (req, res) => {
   try {
-    const disciplinas = await Disciplina.find().select("nome -_id");
-    res.status(200).json(disciplinas.map((d) => d.nome));
+    const disciplinas = await Disciplina.find().select("nome");
+    res.status(200).json(disciplinas);
   } catch (error) {
     res.status(500).json({ erro: error });
   }
@@ -64,7 +64,7 @@ router.patch("/:id", adminAuth, async (req, res) => {
 });
 
 // DELETE - Remove disciplina por id
-router.delete("/:id",adminAuth, async (req, res) => {
+router.delete("/:id", adminAuth, async (req, res) => {
   const id = req.params.id;
 
   const disciplina = await Disciplina.findOne({ _id: id });
