@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { getUserIdFromToken } from '../../../pages/Pagamento/Cartao/CadastraCartao/authUtils';
 
 const API_BASE_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001';
 const CARTAO_ENDPOINT = `${API_BASE_URL}/cartao`;
 
 export type Cartao = {
   _id: string;
-  usuario: string | { _id?: string; nome?: string; email?: string } ;
+  usuario: string | { _id?: string; nome?: string; email?: string };
   numero: string;
   titular: string;
   validade: string;
@@ -16,7 +17,7 @@ export type Cartao = {
 };
 
 export type NovoCartao = {
-  usuario?: string; // opcional no front; backend deve validar com token
+  usuario?: string;
   numero: string;
   titular: string;
   validade: string;
@@ -38,26 +39,28 @@ const initialState: CartoesState = {
 };
 
 /**
- * Busca os cartões do usuário logado.
- * Usa a rota: GET /cartao/meus-cartoes
+ * Busca os cartões do usuário logado
+ * GET /cartao/meus-cartoes/:id
  */
-// redux/features/listaCartao/slice.ts
-// redux/features/listaCartao/slice.ts
-
-// redux/features/listaCartao/slice.ts
 export const fetchCartoes = createAsyncThunk(
   'cartoes/fetchCartoes',
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
-      
-      const response = await fetch(`${CARTAO_ENDPOINT}/meus-cartoes`, {
+      const userId = getUserIdFromToken();
+
+      if (!userId) {
+        return rejectWithValue('Usuário não autenticado');
+      }
+
+      const response = await fetch(`${CARTAO_ENDPOINT}/meus-cartoes/${userId}`, {
+        method: 'GET',
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (!response.ok) {
         let errMsg = `Erro ${response.status}`;
         try {
@@ -65,9 +68,7 @@ export const fetchCartoes = createAsyncThunk(
           if (body && (body.erro || body.message)) {
             errMsg = body.erro || body.message;
           }
-        } catch (parseError) {
-          // Silencioso em produção
-        }
+        } catch (_) {}
         throw new Error(errMsg);
       }
 
@@ -83,12 +84,22 @@ export const fetchCartoes = createAsyncThunk(
   }
 );
 
+/**
+ * Adiciona um novo cartão
+ * POST /cartao/:id
+ */
 export const adicionarCartao = createAsyncThunk(
   'cartoes/adicionarCartao',
   async (novoCartao: NovoCartao, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(CARTAO_ENDPOINT, {
+      const userId = getUserIdFromToken();
+
+      if (!userId) {
+        return rejectWithValue('Usuário não autenticado');
+      }
+
+      const response = await fetch(`${CARTAO_ENDPOINT}/${userId}`, {
         method: 'POST',
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
@@ -111,7 +122,6 @@ export const adicionarCartao = createAsyncThunk(
       const data = await response.json();
       return data;
     } catch (error) {
-      // CORREÇÃO: Verificar o tipo do erro
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       } else {
@@ -121,15 +131,25 @@ export const adicionarCartao = createAsyncThunk(
   }
 );
 
+/**
+ * Remove cartão por id
+ * DELETE /cartao/:id
+ */
 export const removerCartao = createAsyncThunk(
   'cartoes/removerCartao',
-  async (id: string, { rejectWithValue }) => {
+  async (cartaoId: string, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${CARTAO_ENDPOINT}/${id}`, {
+      const userId = getUserIdFromToken();
+
+      if (!token || !userId) {
+        return rejectWithValue('Usuário não autenticado');
+      }
+
+      const response = await fetch(`${CARTAO_ENDPOINT}/${userId}?cartaoId=${cartaoId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -145,13 +165,59 @@ export const removerCartao = createAsyncThunk(
         throw new Error(errMsg);
       }
 
-      return id;
+      return cartaoId;
     } catch (error) {
-      // CORREÇÃO: Verificar o tipo do erro
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       } else {
         return rejectWithValue('Erro ao remover cartão');
+      }
+    }
+  }
+);
+
+/**
+ * Atualiza cartão por id
+ * PATCH /cartao/:id
+ */
+export const atualizarCartao = createAsyncThunk(
+  'cartoes/atualizarCartao',
+  async ({ id, updates }: { id: string; updates: Partial<Cartao> }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const userId = getUserIdFromToken();
+
+      if (!token || !userId) {
+        return rejectWithValue('Usuário não autenticado');
+      }
+
+      const response = await fetch(`${CARTAO_ENDPOINT}/${userId}?cartaoId=${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        let errMsg = `Erro ${response.status}`;
+        try {
+          const body = await response.json();
+          if (body && (body.erro || body.message)) {
+            errMsg = body.erro || body.message;
+          }
+        } catch (_) {}
+        throw new Error(errMsg);
+      }
+
+      const data = await response.json();
+      return { id, updates: data };
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('Erro ao atualizar cartão');
       }
     }
   }
@@ -164,20 +230,24 @@ const listaCartaoSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    // opcional: limpar lista (útil no logout)
     clearCartoes: (state) => {
       state.items = [];
       state.error = null;
       state.loading = false;
     },
-    // opcional: set manual de cartoes (útil para testes)
     setCartoes: (state, action) => {
       state.items = action.payload;
+    },
+    addCartao: (state, action) => {
+      state.items.push(action.payload);
+    },
+    removeCartao: (state, action) => {
+      state.items = state.items.filter(cartao => cartao._id !== action.payload);
     },
   },
   extraReducers: (builder) => {
     builder
-      // FETCH
+      // FETCH CARTOES
       .addCase(fetchCartoes.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -191,17 +261,18 @@ const listaCartaoSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // ADD
+      // ADD CARTAO
       .addCase(adicionarCartao.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(adicionarCartao.fulfilled, (state, action) => {
         state.loading = false;
-        // se backend retornar objeto criado, tenta adicionar. se só message, não faz push.
         const payload = action.payload as any;
         if (payload && payload._id) {
           state.items.push(payload);
+        } else if (payload && payload.cartao) {
+          state.items.push(payload.cartao);
         }
       })
       .addCase(adicionarCartao.rejected, (state, action) => {
@@ -209,7 +280,7 @@ const listaCartaoSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // REMOVE
+      // REMOVE CARTAO
       .addCase(removerCartao.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -222,13 +293,42 @@ const listaCartaoSlice = createSlice({
       .addCase(removerCartao.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+
+      // UPDATE CARTAO
+      .addCase(atualizarCartao.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(atualizarCartao.fulfilled, (state, action) => {
+        state.loading = false;
+        const { id, updates } = action.payload;
+        const index = state.items.findIndex(cartao => cartao._id === id);
+        if (index !== -1) {
+          state.items[index] = { ...state.items[index], ...updates };
+        }
+      })
+      .addCase(atualizarCartao.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { clearError, clearCartoes, setCartoes } = listaCartaoSlice.actions;
+export const { 
+  clearError, 
+  clearCartoes, 
+  setCartoes, 
+  addCartao, 
+  removeCartao 
+} = listaCartaoSlice.actions;
+
 export default listaCartaoSlice.reducer;
 
+// Selectors
 export const selectAllCartoes = (state: any) => state.cartoes.items;
 export const selectCartoesLoading = (state: any) => state.cartoes.loading;
 export const selectCartoesError = (state: any) => state.cartoes.error;
+export const selectCartaoById = (state: any, cartaoId: string) => 
+  state.cartoes.items.find((cartao: Cartao) => cartao._id === cartaoId);
+export const selectCartoesCount = (state: any) => state.cartoes.items.length;

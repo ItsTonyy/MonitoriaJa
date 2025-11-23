@@ -1,13 +1,15 @@
-// slice.ts
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { getUserIdFromToken, getToken } from '../../../pages/Pagamento/Cartao/CadastraCartao/authUtils';
 
 interface AlterarSenhaState {
   senhaAnterior: string;
   novaSenha: string;
   confirmarSenha: string;
-  errors: { anterior?: string; nova?: string; confirmar?: string }; // ✅ Corrigido o tipo
+  errors: { anterior?: string; nova?: string; confirmar?: string };
   status: 'idle' | 'loading' | 'success' | 'error';
   errorMessage: string | null;
+  modoAdmin: boolean;
+  userIdAlvo?: string;
 }
 
 const initialState: AlterarSenhaState = {
@@ -17,66 +19,88 @@ const initialState: AlterarSenhaState = {
   errors: {},
   status: 'idle',
   errorMessage: null,
+  modoAdmin: false,
+  userIdAlvo: undefined,
 };
 
-// AsyncThunk para atualizar senha no JSON Server
+// ✅ AsyncThunk para usuário comum (com senha anterior)
 export const atualizarSenha = createAsyncThunk(
   'alterarSenha/atualizarSenha',
   async (
     senhaData: { senhaAnterior: string; novaSenha: string },
-    { getState, rejectWithValue }
+    { rejectWithValue }
   ) => {
     try {
-      const state = getState() as any;
-      const currentUser = state.login.user;
-
-      console.log('🔍 DEBUG - Usuário atual:', currentUser);
-      console.log('🔍 DEBUG - Senha anterior digitada:', senhaData.senhaAnterior);
-
-      if (!currentUser) {
-        return rejectWithValue('Usuário não encontrado');
-      }
-
-      // ✅ BUSCAR USUÁRIO COMPLETO DIRETO DO SERVIDOR (com a senha)
-      const userResponse = await fetch(`http://localhost:3001/usuarios/${currentUser.id}`);
-      if (!userResponse.ok) {
-        return rejectWithValue('Erro ao buscar dados do usuário');
-      }
+      const userId = getUserIdFromToken(); // ✅ Usando getUserIdFromToken
       
-      const userFromServer = await userResponse.json();
-      
-      console.log('🔍 DEBUG - Usuário do servidor:', userFromServer);
-      console.log('🔍 DEBUG - Senha no servidor:', userFromServer.password);
-
-      // ✅ AGORA comparar com a senha real do servidor
-      if (userFromServer.password !== senhaData.senhaAnterior) {
-        console.log('❌ Senha não coincide!');
-        console.log('Esperado:', userFromServer.password);
-        console.log('Recebido:', senhaData.senhaAnterior);
-        return rejectWithValue('Senha anterior incorreta');
+      if (!userId) {
+        return rejectWithValue('Usuário não autenticado. Faça login novamente.');
       }
 
-      console.log('✅ Senha coincide! Prosseguindo...');
+      console.log('🔍 USUÁRIO COMUM - Alterando própria senha');
+      console.log('🔍 UserID:', userId);
 
-      // ✅ Atualizar senha no JSON Server
-      const response = await fetch(`http://localhost:3001/usuarios/${currentUser.id}`, {
+      const response = await fetch(`http://localhost:3001/usuario/${userId}/alterar-senha`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
         },
         body: JSON.stringify({
-          password: senhaData.novaSenha,
+          senhaAnterior: senhaData.senhaAnterior,
+          novaSenha: senhaData.novaSenha
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Erro ao comunicar com o servidor');
+        return rejectWithValue(data.message || 'Erro ao alterar senha');
       }
 
-      const data = await response.json();
       return data;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Erro desconhecido ao atualizar senha');
+      return rejectWithValue(error.message || 'Erro de conexão com o servidor');
+    }
+  }
+);
+
+// ✅ AsyncThunk para admin alterar senha de outros usuários
+export const atualizarSenhaAdmin = createAsyncThunk(
+  'alterarSenha/atualizarSenhaAdmin',
+  async (
+    senhaData: { novaSenha: string; userIdAlvo: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      console.log('🔍 ADMIN - Iniciando alteração de senha...');
+      console.log('🔍 ADMIN - UserID Alvo:', senhaData.userIdAlvo);
+      
+      const token = getToken();
+      if (!token) {
+        return rejectWithValue('Token não encontrado');
+      }
+
+      const response = await fetch(`http://localhost:3001/usuario/${senhaData.userIdAlvo}/alterar-senha-admin`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          novaSenha: senhaData.novaSenha
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return rejectWithValue(data.message || 'Erro ao alterar senha');
+      }
+
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erro de conexão com o servidor');
     }
   }
 );
@@ -87,7 +111,6 @@ const alterarSenhaSlice = createSlice({
   reducers: {
     setSenhaAnterior: (state, action: PayloadAction<string>) => {
       state.senhaAnterior = action.payload;
-      // ✅ Limpar erro ao digitar
       if (state.errors.anterior) {
         state.errors.anterior = undefined;
       }
@@ -97,14 +120,12 @@ const alterarSenhaSlice = createSlice({
     },
     setNovaSenha: (state, action: PayloadAction<string>) => {
       state.novaSenha = action.payload;
-      // ✅ Limpar erros de validação ao digitar
       if (state.errors.nova) {
         state.errors.nova = undefined;
       }
     },
     setConfirmarSenha: (state, action: PayloadAction<string>) => {
       state.confirmarSenha = action.payload;
-      // ✅ Limpar erros de validação ao digitar
       if (state.errors.confirmar) {
         state.errors.confirmar = undefined;
       }
@@ -117,7 +138,6 @@ const alterarSenhaSlice = createSlice({
       state.errorMessage = null;
     },
     resetForm: (state) => {
-      // ✅ Resetar formulário completo
       state.senhaAnterior = '';
       state.novaSenha = '';
       state.confirmarSenha = '';
@@ -125,9 +145,25 @@ const alterarSenhaSlice = createSlice({
       state.status = 'idle';
       state.errorMessage = null;
     },
+    // ✅ Reducers para modo admin
+    ativarModoAdmin: (state, action: PayloadAction<string>) => {
+      state.modoAdmin = true;
+      state.userIdAlvo = action.payload;
+      state.senhaAnterior = ''; // Limpa senha anterior no modo admin
+      state.errors = {}; // Limpa erros
+      state.errorMessage = null; // Limpa mensagem de erro
+    },
+    desativarModoAdmin: (state) => {
+      state.modoAdmin = false;
+      state.userIdAlvo = undefined;
+      state.senhaAnterior = '';
+      state.errors = {};
+      state.errorMessage = null;
+    },
   },
   extraReducers: (builder) => {
     builder
+      // ✅ Caso usuário comum
       .addCase(atualizarSenha.pending, (state) => {
         state.status = 'loading';
         state.errorMessage = null;
@@ -143,6 +179,22 @@ const alterarSenhaSlice = createSlice({
       .addCase(atualizarSenha.rejected, (state, action) => {
         state.status = 'error';
         state.errorMessage = action.payload as string || 'Erro ao alterar senha';
+      })
+      // ✅ Caso admin
+      .addCase(atualizarSenhaAdmin.pending, (state) => {
+        state.status = 'loading';
+        state.errorMessage = null;
+      })
+      .addCase(atualizarSenhaAdmin.fulfilled, (state) => {
+        state.status = 'success';
+        state.novaSenha = '';
+        state.confirmarSenha = '';
+        state.errors = {};
+        state.errorMessage = null;
+      })
+      .addCase(atualizarSenhaAdmin.rejected, (state, action) => {
+        state.status = 'error';
+        state.errorMessage = action.payload as string || 'Erro ao alterar senha';
       });
   },
 });
@@ -154,6 +206,8 @@ export const {
   setErrors,
   resetStatus,
   resetForm,
+  ativarModoAdmin,
+  desativarModoAdmin,
 } = alterarSenhaSlice.actions;
 
 export default alterarSenhaSlice.reducer;

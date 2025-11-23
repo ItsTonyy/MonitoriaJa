@@ -21,19 +21,16 @@ const ListaCartaoPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // Usando o slice do Redux
   const cartoes = useSelector((state: RootState) => selectAllCartoes(state));
   const loading = useSelector((state: RootState) => selectCartoesLoading(state));
   const error = useSelector((state: RootState) => selectCartoesError(state));
 
   const [removendoId, setRemovendoId] = React.useState<string | null>(null);
 
-  // Buscar cartões usando o slice
   useEffect(() => {
     dispatch(fetchCartoes());
   }, [dispatch]);
 
-  // Limpar erro automaticamente
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
@@ -48,20 +45,13 @@ const ListaCartaoPage: React.FC = () => {
   };
 
   const handleRemoverCartao = async (id: string) => {
-    if (!id) {
-      alert("ID do cartão inválido");
-      return;
-    }
-
-    if (!window.confirm("Tem certeza que deseja remover este cartão?")) return;
+    if (!id) return;
 
     setRemovendoId(id);
     try {
       await dispatch(removerCartao(id)).unwrap();
-      alert("Cartão removido com sucesso!");
     } catch (err: any) {
-      console.error("Erro ao remover cartão:", err);
-      alert(`Erro ao remover cartão: ${err?.message || err || "erro desconhecido"}`);
+      // Erro já está no estado Redux
     } finally {
       setRemovendoId(null);
     }
@@ -98,9 +88,6 @@ const ListaCartaoPage: React.FC = () => {
         {loading && cartoes.length === 0 ? (
           <div style={{ textAlign: "center", padding: "40px" }}>
             <CircularProgress />
-            <p style={{ marginTop: "20px", color: "#666" }}>
-              Carregando cartões...
-            </p>
           </div>
         ) : (
           <div className={styles.cardContainer}>
@@ -128,18 +115,6 @@ const ListaCartaoPage: React.FC = () => {
                     onEscolher={() => handleEscolherCartao(cartao)}
                     onRemover={() => handleRemoverCartao(cartao._id)}
                   />
-                  {removendoId === cartao._id && (
-                    <p
-                      style={{
-                        textAlign: "center",
-                        color: "#666",
-                        fontSize: "12px",
-                        marginTop: "5px",
-                      }}
-                    >
-                      Removendo...
-                    </p>
-                  )}
                 </div>
               ))
             )}

@@ -33,6 +33,7 @@ const App = () => {
       <MainLayout>
         <Routes>
           <Route path="/MonitoriaJa/historico-agendamento" element={< HistoricoAgendamentos/>} />
+          <Route path="/MonitoriaJa/alterar-senha/:userId" element={<AlterarSenhaPage />} />
           <Route path="/MonitoriaJa/perfil-usuario/:userId" element={<PerfilUsuarioPage />} />
           <Route path="/MonitoriaJa/perfil-monitor/:monitorId" element={<PerfilMonitorPage />} />
           <Route path="/MonitoriaJa" element={<LandingPage />} />
