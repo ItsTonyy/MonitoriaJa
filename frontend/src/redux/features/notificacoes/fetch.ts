@@ -30,10 +30,17 @@ export const fetchNotificacoes = createAsyncThunk<Notificacao[], FetchNotificaco
 export const markAsReadServer = createAsyncThunk<Notificacao, string>(
   'notificacoes/markAsReadServer',
   async (notificacaoId) => {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      throw new Error('Token não encontrado');
+    }
+
     const response = await fetch(`http://localhost:3001/notificacao/${notificacaoId}/marcar-lida`, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       }
     });
     
