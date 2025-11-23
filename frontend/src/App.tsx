@@ -24,6 +24,7 @@ import ConfirmaPagamento from "./pages/Pagamento/Cartao/ConfirmaPagamento/Confir
 import ListaCartaoPage from "./pages/Pagamento/Cartao/ListaCartao/ListaCartaoPage";
 import Middleware from "./components/routesMiddleware";
 import ListagemUsuarios from "./components/ListagemUsuarios/listagemUsuarios";
+import HistoricoAgendamentos from "./components/HistoricoAgendamentos"
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
       <AppNavBar />
       <MainLayout>
         <Routes>
+          <Route path="/MonitoriaJa/historico-agendamento" element={< HistoricoAgendamentos/>} />
           <Route path="/MonitoriaJa/perfil-usuario/:userId" element={<PerfilUsuarioPage />} />
           <Route path="/MonitoriaJa/perfil-monitor/:monitorId" element={<PerfilMonitorPage />} />
           <Route path="/MonitoriaJa" element={<LandingPage />} />

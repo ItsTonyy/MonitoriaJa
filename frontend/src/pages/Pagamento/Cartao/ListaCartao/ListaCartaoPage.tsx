@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styles from "./ListaCartaoPage.module.css";
 import Title from "../../../AlterarSenha/Titulo/Titulo";
 import CartaoItem from "../CartaoItem/CartaoItem";
@@ -11,60 +11,68 @@ import {
   fetchCartoes,
   removerCartao,
   selectAllCartoes,
+  selectCartoesLoading,
+  selectCartoesError,
+  clearError,
 } from "../../../../redux/features/listaCartao/slice";
 import { CircularProgress } from "@mui/material";
 
 const ListaCartaoPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  
-  // Seleciona os cartões do estado Redux
-  const cartoes = useSelector((state: RootState) => selectAllCartoes(state));
-  const { loading, error } = useSelector((state: RootState) => state.cartoes);
-  
-  const [removendoId, setRemovendoId] = useState<string | null>(null);
-  
-  // Verifica se existe agendamento
-  const currentAgendamento = useSelector(
-    (state: RootState) => state.agendamento.currentAgendamento
-  );
 
-  // Carrega os cartões ao montar o componente
+  // Usando o slice do Redux
+  const cartoes = useSelector((state: RootState) => selectAllCartoes(state));
+  const loading = useSelector((state: RootState) => selectCartoesLoading(state));
+  const error = useSelector((state: RootState) => selectCartoesError(state));
+
+  const [removendoId, setRemovendoId] = React.useState<string | null>(null);
+
+  // Buscar cartões usando o slice
   useEffect(() => {
     dispatch(fetchCartoes());
   }, [dispatch]);
 
-  // Verifica se há agendamento
+  // Limpar erro automaticamente
   useEffect(() => {
-    if (!currentAgendamento) {
-      alert("Nenhum agendamento encontrado!");
-      navigate("/MonitoriaJa/agendamento-monitor");
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(clearError());
+      }, 5000);
+      return () => clearTimeout(timer);
     }
-  }, [currentAgendamento, navigate]);
+  }, [error, dispatch]);
 
   const handleEscolherCartao = (cartao: any) => {
-    // Navega para confirmação de pagamento com o cartão selecionado
     navigate("/MonitoriaJa/confirma-pagamento", { state: { cartao } });
   };
 
   const handleRemoverCartao = async (id: string) => {
-      setRemovendoId(id);
-      try {
-        await dispatch(removerCartao(id)).unwrap();
-      } catch (error) {
-        console.error("Erro ao remover cartão:", error);
-        alert(
-          `Erro ao remover cartão: ${
-            error instanceof Error ? error.message : "Tente novamente."
-          }`
-        );
-      } finally {
-        setRemovendoId(null);
-      }
+    if (!id) {
+      alert("ID do cartão inválido");
+      return;
+    }
+
+    if (!window.confirm("Tem certeza que deseja remover este cartão?")) return;
+
+    setRemovendoId(id);
+    try {
+      await dispatch(removerCartao(id)).unwrap();
+      alert("Cartão removido com sucesso!");
+    } catch (err: any) {
+      console.error("Erro ao remover cartão:", err);
+      alert(`Erro ao remover cartão: ${err?.message || err || "erro desconhecido"}`);
+    } finally {
+      setRemovendoId(null);
+    }
   };
 
   const handleCancel = () => {
     navigate("/MonitoriaJa/agendamento-monitor");
+  };
+
+  const handleCadastrarCartao = () => {
+    navigate("/MonitoriaJa/cadastra-cartao");
   };
 
   return (
@@ -72,7 +80,6 @@ const ListaCartaoPage: React.FC = () => {
       <div className={styles.profileCard}>
         <Title text="Cartões Cadastrados" />
 
-        {/* Exibe erro se houver */}
         {error && (
           <div
             style={{
@@ -88,7 +95,6 @@ const ListaCartaoPage: React.FC = () => {
           </div>
         )}
 
-        {/* Exibe loading ao carregar pela primeira vez */}
         {loading && cartoes.length === 0 ? (
           <div style={{ textAlign: "center", padding: "40px" }}>
             <CircularProgress />
@@ -99,30 +105,38 @@ const ListaCartaoPage: React.FC = () => {
         ) : (
           <div className={styles.cardContainer}>
             {cartoes.length === 0 ? (
-              <p style={{ textAlign: "center", color: "#666" }}>
-                Nenhum cartão cadastrado. Cadastre um novo cartão para
-                continuar.
+              <p style={{ textAlign: "center", color: "#666", marginBottom: "20px" }}>
+                Nenhum cartão cadastrado. Cadastre um novo cartão para continuar.
               </p>
             ) : (
-              cartoes.map((cartao) => (
+              cartoes.map((cartao: any) => (
                 <div
-                  key={cartao.id}
+                  key={cartao._id}
                   style={{
-                    opacity: removendoId === cartao.id ? 0.5 : 1,
-                    pointerEvents: removendoId === cartao.id ? "none" : "auto",
+                    opacity: removendoId === cartao._id ? 0.5 : 1,
+                    pointerEvents: removendoId === cartao._id ? "none" : "auto",
                     transition: "opacity 0.3s",
                   }}
                 >
                   <CartaoItem
-                    numero={cartao.ultimosDigitos || cartao.numero || "****"}
-                    nome={cartao.titular || ""}
-                    bandeira={(cartao.bandeira as "Visa" | "MasterCard" | "Elo") || "Visa"}
+                    numero={cartao.ultimosDigitos || "••••"}
+                    nome={cartao.titular || "Titular não informado"}
+                    bandeira={(cartao.bandeira === "Visa" || cartao.bandeira === "MasterCard" || cartao.bandeira === "Elo") 
+                      ? cartao.bandeira 
+                      : "Visa"}
                     mostrarBotoes={true}
                     onEscolher={() => handleEscolherCartao(cartao)}
-                    onRemover={() => handleRemoverCartao(cartao.id)}
+                    onRemover={() => handleRemoverCartao(cartao._id)}
                   />
-                  {removendoId === cartao.id && (
-                    <p style={{ textAlign: "center", color: "#666", fontSize: "12px", marginTop: "5px" }}>
+                  {removendoId === cartao._id && (
+                    <p
+                      style={{
+                        textAlign: "center",
+                        color: "#666",
+                        fontSize: "12px",
+                        marginTop: "5px",
+                      }}
+                    >
                       Removendo...
                     </p>
                   )}
@@ -133,7 +147,7 @@ const ListaCartaoPage: React.FC = () => {
         )}
 
         <ConfirmationButton
-          onClick={() => navigate("/MonitoriaJa/cadastra-cartao")}
+          onClick={handleCadastrarCartao}
           disabled={loading}
         >
           Cadastrar Novo Cartão
