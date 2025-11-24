@@ -2,8 +2,8 @@ import * as React from "react";
 import { styled, alpha } from "@mui/material/styles";
 import "./appNavBar.css";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks.js";
-import { logoutUserServer } from "../redux/features/login/fetch.js";
+import { isAuthenticated as isAuth, getUserIdFromToken, decodeToken, getToken } from '../pages/Pagamento/Cartao/CadastraCartao/authUtils.js';
+import { usuarioService } from "../services/usuarioService";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -25,7 +25,7 @@ import Typography from "@mui/material/Typography";
 import logo from "/logoMonitoriaJá.png";
 import anonUser from "/anon-user.avif";
 
-import { decodeToken, getToken } from '../pages/Pagamento/Cartao/CadastraCartao/authUtils.js';
+ 
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -62,10 +62,26 @@ export default function AppNavBar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const [avatarUrl, setAvatarUrl] = React.useState<string | undefined>(undefined);
 
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const { isAuthenticated } = useAppSelector((state) => state.login);
+  const isAuthenticated = isAuth();
+
+  React.useEffect(() => {
+    const loadUserAvatar = async () => {
+      try {
+        const id = getUserIdFromToken();
+        if (!id) return;
+        const user = await usuarioService.getById(String(id));
+        setAvatarUrl(user?.foto || undefined);
+      } catch {}
+    };
+    if (isAuthenticated) {
+      loadUserAvatar();
+    } else {
+      setAvatarUrl(undefined);
+    }
+  }, [isAuthenticated]);
 
   function handleClickHome() {
     navigate("/MonitoriaJa");
@@ -82,53 +98,63 @@ export default function AppNavBar() {
       navigate("/MonitoriaJa/lista-agendamentos");
     }
   }
+  function handleClickListarUsuarios() {
+    if (isAuthenticated) {
+      navigate("/MonitoriaJa/listar-usuarios");
+    }
+  }
+  function handleClickAdicionarAgendamento() {
+    if (isAuthenticated) {
+      navigate("/MonitoriaJa/adiciona-disciplina");
+    }
+  }
 
   function handleClickLogin() {
     navigate("/MonitoriaJa/login");
   }
+  const token = getToken()
+  const decodedToken = token ? decodeToken(token) : null;
+  const userType = decodedToken?.role;
+  function handleClickPerfil() {
+    try {
+      const token = getToken()
+      if (!token) {
+        navigate("/MonitoriaJa/perfil-usuario");
+        return;
+      }
+      const decodedToken = decodeToken(token);
+      if (!decodedToken) {
+        navigate("/MonitoriaJa/perfil-usuario");
+        return;
+      }
+      const userType = decodedToken.role;
+      const isMonitorOrAdmin: boolean = 
+        userType === "MONITOR" || 
+        userType === "ADMIN";
 
-function handleClickPerfil() {
-  try {
-    const token = getToken();
-    
-    if (!token) {
+      if (isMonitorOrAdmin) {
+        navigate("/MonitoriaJa/perfil-monitor");
+      } else {
+        navigate("/MonitoriaJa/perfil-usuario");
+      }
+
+    } catch (error) {
+      console.error('Erro ao verificar perfil:', error);
       navigate("/MonitoriaJa/perfil-usuario");
-      return;
     }
-
-    const decodedToken = decodeToken(token);
-    
-    if (!decodedToken) {
-      navigate("/MonitoriaJa/perfil-usuario");
-      return;
-    }
-
-    // Obtém o tipo de usuário do token decodificado
-    // Ajuste o campo conforme o que sua API envia no token
-    const userType = decodedToken.tipoUsuario || decodedToken.role;
-
-    const isMonitorOrAdmin: boolean = 
-      userType === "MONITOR" || 
-      userType === "ADMIN";
-
-    if (isMonitorOrAdmin) {
-      navigate("/MonitoriaJa/perfil-monitor");
-    } else {
-      navigate("/MonitoriaJa/perfil-usuario");
-    }
-
-  } catch (error) {
-    console.error('Erro ao verificar perfil:', error);
-    navigate("/MonitoriaJa/perfil-usuario");
   }
-}
 
-  function handleClickHistorico() {}
+  const isAdmin:boolean = userType === "ADMIN";
+
+  function handleClickHistorico() {
+    if (isAuthenticated) {
+      navigate("/MonitoriaJa/historico-agendamento");
+    }
+  }
 
   async function handleClickLogout(event: React.MouseEvent<HTMLElement>) {
     event.preventDefault();
     localStorage.clear();
-    await dispatch(logoutUserServer());
     navigate("/MonitoriaJa/login");
   }
 
@@ -150,6 +176,8 @@ function handleClickPerfil() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  var autenticado = localStorage.getItem('token');
 
   return (
     <AppBar
@@ -208,20 +236,67 @@ function handleClickPerfil() {
               >
                 Monitores
               </Button>
-
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{
-                  paddingLeft: "10px",
-                  paddingRight: "10px",
-                  ":hover": { transform: "none" },
-                }}
-                onClick={handleClickAgendamento}
-              >
-                Agendamento
-              </Button>
+              {autenticado && 
+                <Button
+                  variant="text"
+                  color="info"
+                  size="small"
+                  sx={{
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    ":hover": { transform: "none" },
+                  }}
+                  onClick={handleClickAgendamento}
+                >
+                  Agendamento
+                </Button>
+              }
+              {isAdmin && 
+                <Button
+                  variant="text"
+                  color="info"
+                  size="small"
+                  sx={{
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    ":hover": { transform: "none" },
+                  }}
+                  onClick={handleClickListarUsuarios}
+                >
+                  
+                  Usuarios
+                </Button>
+              }
+              {isAdmin && 
+                <Button
+                  variant="text"
+                  color="info"
+                  size="small"
+                  sx={{
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    ":hover": { transform: "none" },
+                  }}
+                  onClick={handleClickAdicionarAgendamento}
+                >
+                  +Disciplinas
+                </Button>
+              }
+              {isAdmin && 
+                <Button
+                  variant="text"
+                  color="info"
+                  size="small"
+                  sx={{
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    ":hover": { transform: "none" },
+                  }}
+                  onClick={handleClickHistorico}
+                >
+                  Historico
+                </Button>
+              }
             </Box>
           </Box>
           <Box
@@ -268,7 +343,7 @@ function handleClickPerfil() {
               {isAuthenticated && (
                 <div>
                   <IconButton onClick={handleClickPerfil} sx={{ p: 0 }}>
-                    <Avatar alt="Anonymous User" src={anonUser} />
+                    <Avatar alt="User" src={avatarUrl || anonUser} />
                   </IconButton>
                 </div>
               )}
@@ -281,7 +356,7 @@ function handleClickPerfil() {
               {isAuthenticated && (
                 <>
                   <IconButton onClick={handleClickPerfil} sx={{ p: 0 }}>
-                    <Avatar alt="Anonymous User" src={anonUser} />
+                    <Avatar alt="User" src={avatarUrl || anonUser} />
                   </IconButton>
                 </>
               )}

@@ -76,7 +76,7 @@ function CadastroForm() {
   const [fileAvatar, setFileAvatar] = useState<File | null>(null);
 
   const navigate = useNavigate();
-  const [opcoesEspecialidades, setOpcoesEspecialidades] = useState<Disciplina[] | string[]>([]);
+  const [opcoesEspecialidades, setOpcoesEspecialidades] = useState<Disciplina[]>([]);
 
   // carregar disciplinas e mapear para {label, value}
   useEffect(() => {
@@ -84,6 +84,7 @@ function CadastroForm() {
       try {
         const disciplinas: Disciplina[] = await listarDisciplinas();
         setOpcoesEspecialidades(disciplinas);
+
       } catch (err) {
         console.error("Erro ao carregar disciplinas:", err);
       }
@@ -401,8 +402,8 @@ function CadastroForm() {
             required
           >
             {opcoesEspecialidades.map((d) => (
-              <MenuItem key={d.toString()} value={d.toString()}>
-                {d.toString()}
+              <MenuItem key={d.id?.toString()} value={d.nome?.toString()}>
+                {d.nome?.toString()}
               </MenuItem>
             ))}
           </Select>

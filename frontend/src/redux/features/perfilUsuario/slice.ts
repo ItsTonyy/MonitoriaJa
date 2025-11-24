@@ -1,3 +1,5 @@
+// redux/features/perfilUsuario/slice.ts
+
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Usuario } from "../../../models/usuario.model";
 import { getToken, getUserIdFromToken, isTokenExpired } from "../../../pages/Pagamento/Cartao/CadastraCartao/authUtils";
@@ -40,7 +42,7 @@ const validarEmail = (email: string) => {
 // Thunk: Buscar usuário autenticado ou específico por ID
 export const fetchUsuario = createAsyncThunk<
   Usuario,
-  string | undefined,
+  string, // SEMPRE RECEBE STRING (não mais string | undefined)
   { rejectValue: string }
 >(
   "usuario/fetchUsuario",
@@ -55,16 +57,9 @@ export const fetchUsuario = createAsyncThunk<
         return rejectWithValue("Token inválido ou expirado. Faça login novamente.");
       }
 
-      // Se userId não for fornecido, pega do token
-      const targetUserId = userId || getUserIdFromToken();
-      console.log('👤 Target User ID:', targetUserId);
-      
-      if (!targetUserId) {
-        console.log('❌ ID do usuário não encontrado');
-        return rejectWithValue("ID do usuário não encontrado");
-      }
+      console.log('👤 UserID recebido no fetchUsuario:', userId);
 
-      const url = `http://localhost:3001/usuario/${targetUserId}`;
+      const url = `http://localhost:3001/usuario/${userId}`;
       console.log('🌐 Fazendo requisição para:', url);
 
       const response = await fetch(url, {
@@ -86,14 +81,18 @@ export const fetchUsuario = createAsyncThunk<
         if (response.status === 401) {
           return rejectWithValue("Não autorizado. Faça login novamente.");
         }
+        if (response.status === 403) {
+          return rejectWithValue("Acesso negado");
+        }
         throw new Error("Erro ao buscar usuário");
       }
 
       const data = await response.json();
       console.log('✅ Dados recebidos:', data);
       
+      // CORREÇÃO: Garantir que usamos o campo correto do ID
       return {
-        id: data.id || data._id,
+        id: data._id || data.id, // Tenta _id primeiro (padrão MongoDB)
         nome: data.nome,
         email: data.email,
         telefone: data.telefone || '',
@@ -151,7 +150,13 @@ export const updateUsuario = createAsyncThunk<
         return rejectWithValue({ message: "Usuário não encontrado no estado. Recarregue a página." });
       }
 
-      console.log('👤 Atualizando usuário:', currentUser.id);
+      console.log('👤 Atualizando usuário ID:', currentUser.id);
+      console.log('📝 Dados enviados:', {
+        nome: userData.nome,
+        email: userData.email,
+        telefone: userData.telefone,
+        ...(userData.fotoUrl && { foto: userData.fotoUrl })
+      });
 
       // Faz a requisição PATCH
       const response = await fetch(`http://localhost:3001/usuario/${currentUser.id}`, {
