@@ -138,7 +138,7 @@ export const fetchMonitor = createAsyncThunk<
   }
 );
 
-// AsyncThunk: atualizar monitor
+// AsyncThunk: atualizar monitor - AGORA RECEBE fotoUrl EM VEZ DE FILE
 export const updateMonitor = createAsyncThunk<
   Monitor,
   {
@@ -147,7 +147,7 @@ export const updateMonitor = createAsyncThunk<
     email: string;
     biografia?: string;
     materia?: string[];
-    foto?: string;
+    fotoUrl?: string; // ✅ MUDANÇA: Recebe URL da foto, não o arquivo
     listaDisponibilidades?: Disponibilidade[];
   },
   { rejectValue: { validationErrors?: ValidationErrors; message?: string } }
@@ -210,8 +210,11 @@ export const updateMonitor = createAsyncThunk<
 
       if (updateData.biografia) requestBody.biografia = updateData.biografia;
       if (updateData.materia) requestBody.listaDisciplinas = updateData.materia; // Backend usa listaDisciplinas
-      if (updateData.foto) requestBody.foto = updateData.foto;
+      // ✅ MUDANÇA: Se houver fotoUrl, inclui no payload
+      if (updateData.fotoUrl) requestBody.foto = updateData.fotoUrl;
       if (updateData.listaDisponibilidades) requestBody.listaDisponibilidades = updateData.listaDisponibilidades;
+
+      console.log('📝 Dados enviados para atualização:', requestBody);
 
       // Faz a requisição PATCH
       const response = await fetch(`http://localhost:3001/usuario/${currentMonitor.id}`, {
@@ -253,8 +256,9 @@ export const updateMonitor = createAsyncThunk<
       if (updateData.materia !== undefined) {
         updatedMonitor.materia = updateData.materia;
       }
-      if (updateData.foto !== undefined) {
-        updatedMonitor.foto = updateData.foto;
+      // ✅ MUDANÇA: Atualiza foto se houver nova URL
+      if (updateData.fotoUrl !== undefined) {
+        updatedMonitor.foto = updateData.fotoUrl;
       }
       if (updateData.listaDisponibilidades !== undefined) {
         updatedMonitor.listaDisponibilidades = updateData.listaDisponibilidades;

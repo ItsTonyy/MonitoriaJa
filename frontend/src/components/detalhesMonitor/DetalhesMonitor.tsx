@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import "./detalhesMonitor.css";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { clearSelectedMonitor } from "../../redux/features/monitor/monitorSlice";
-import { setCurrentAgendamento } from "../../redux/features/agendamento/agendamentoSlice";
+import { useNavigate, useLocation } from "react-router-dom";
 import ComentariosAvaliacao from "../comentariosAvaliacao/ComentariosAvaliacao";
 import StarIcon from "@mui/icons-material/Star";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -12,7 +9,11 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { Agendamento } from "../../models/agendamento.model";
-import { buscarAvaliacoesPorMonitor } from "../../redux/features/avaliacao/actions";
+import type { Usuario } from "../../models/usuario.model";
+import { avaliacaoService } from "../../services/avaliacaoService";
+import { disponibilidadeService } from "../../services/disponibilidadeService";
+import { usuarioService } from "../../services/usuarioService";
+
 
 /*interface TimeSlot {
   day: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
@@ -24,6 +25,24 @@ function getRandomInt(min: number, max: number) {
   const maxFloored = Math.floor(max);
   return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
 }
+
+function decodeJwtPayload(token: string) {
+  try {
+    const payloadBase64 = token.split(".")[1];
+    // Corrige padding do base64 se necessário
+    const base64 = payloadBase64.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
+
 
 let conquistas: string[] = [
   "Realizou sua primeira monitoria com sucesso.",
@@ -51,98 +70,112 @@ let conquistas: string[] = [
 
 // Interface não é mais necessária pois usamos Redux
 
-function decodeJwtPayload(token: string) {
-  try {
-    const payloadBase64 = token.split(".")[1];
-    const payloadJson = atob(payloadBase64);
-    return JSON.parse(payloadJson);
-  } catch {
-    return null;
-  }
-}
-
-
-
 function DetalhesMonitor() {
-  const dispatch = useAppDispatch();
-  const monitor = useAppSelector((state) => state.monitor.selectedMonitor);
- const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const location = useLocation();
   const navigate = useNavigate();
-
-const token = localStorage.getItem("token");
-let usuarioId: string | undefined = undefined;
-if (token) {
-  const payload = decodeJwtPayload(token);
-  usuarioId = payload?.id;
-}
-  const { avaliacoes, loading } = useAppSelector((state) => state.avaliacao);
+  const token = localStorage.getItem("token");
+  const payload = token ? decodeJwtPayload(token) : null;
+  const usuarioId = payload?.id; //  id do usuário logado
+  const monitorId = (location.state as any)?.monitorId as string | undefined;
+  const monitorFromNav = (location.state as any)?.monitor as
+    | Usuario
+    | undefined;
+  const [monitor, setMonitor] = useState<any | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
+  const [horarios, setHorarios] = useState<{ day: string; times: string[] }[]>(
+    []
+  );
+  const [loading, setLoading] = useState<boolean>(false);
+  const [fixedLessons, setFixedLessons] = useState<number>(0);
+  const [fixedConquista, setFixedConquista] = useState<string>("");
+  // usuário autenticado é inferido pelo token no header (api.ts)
 
   useEffect(() => {
-    if (monitor?.id) {
-      dispatch(buscarAvaliacoesPorMonitor(Number(monitor.id)));
-    }
-  }, [monitor?.id, dispatch]);
+    const load = async () => {
+      setLoading(true);
+      try {
+        let m: any = monitorFromNav;
+        if (!m && monitorId) {
+          m = await usuarioService.getById(String(monitorId));
+        }
+        if (!m) return;
+        setMonitor(m);
+        const monitorKey = (m as any).id ?? (m as any)._id;
+        const [avs, disp] = await Promise.all([
+          avaliacaoService.getByMonitorId(String(monitorKey)),
+          disponibilidadeService.getByMonitorId(String(monitorKey)),
+        ]);
+        setAvaliacoes(avs || []);
+        setHorarios(
+          (disp || []).map((d: any) => ({ day: d.day, times: d.times || [] }))
+        );
+        setFixedLessons(getRandomInt(10, 100));
+        setFixedConquista(conquistas[getRandomInt(0, conquistas.length)]);
+      } catch (e) {
+        console.error("Erro ao carregar dados do monitor:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [monitorId, monitorFromNav]);
 
   const totalAvaliacoes = avaliacoes.length;
   const somaNotas = avaliacoes.reduce((soma, av) => soma + (av.nota || 0), 0);
   const notaMedia =
     totalAvaliacoes > 0 ? (somaNotas / totalAvaliacoes).toFixed(1) : "0.0";
 
-  // Horários do monitor - idealmente viriam da disponibilidade do monitor no Redux
-  const horarios =  [
-    { day: "seg", times: ["10:00", "14:00", "16:00", "22:00"] },
-    { day: "ter", times: ["10:00", "14:00", "16:00"] },
-    { day: "qua", times: ["10:00", "14:00", "16:00", "20:00"] },
-    { day: "qui", times: ["10:00", "14:00", "16:00", "20:00"] },
-    { day: "sex", times: ["7:00", "10:00", "20:00"] },
-    { day: "sab", times: ["10:00"] },
-    { day: "dom", times: ["16:00", "20:00"] },
-  ];
+  // Horários carregados da disponibilidade via serviço
+  // Fallback: se serviço não retornar nada, mantém vazio
 
   useEffect(() => {
-    if (!monitor) {
+    if (!monitorId) {
       navigate("/MonitoriaJa/lista-monitores");
     }
-  }, [monitor, navigate]);
+  }, [monitorId, navigate]);
 
   if (!monitor) return null;
 
- const handleTimeSlotClick = (day: string | undefined, time: string) => {
-  if (!day) return;
-  setSelectedSlot(`${day}-${time}`); // só um horário por vez
-};
-
-  const handleAgendar = () => {
-  if (!selectedSlot) return;
-  const [diaSelecionado, horarioSelecionado] = selectedSlot.split("-");
-
-  // Calcula a data prevista (próximo dia da semana a partir de hoje)
-  const diasSemana = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
-  const hoje = new Date();
-  const hojeIndex = hoje.getDay(); // 0=domingo, 1=segunda, ...
-  const targetIndex = diasSemana.indexOf(diaSelecionado);
-
-  let diff = targetIndex - hojeIndex;
-  if (diff < 0) diff += 7; // pega o próximo dia, nunca o anterior
-
-  const dataPrevista = new Date(hoje);
-  dataPrevista.setDate(hoje.getDate() + diff);
-  const dataFormatada = dataPrevista.toLocaleDateString("pt-BR"); // dd/mm/aaaa
-
-  const novoAgendamento: Agendamento = {
-    id: Date.now().toString(),
-    monitor: monitor,
-    data: dataFormatada,
-    hora: horarioSelecionado,
-    status: "AGUARDANDO",
-    valor: monitor.valor,
-    statusPagamento: "PENDENTE",
-    aluno: usuarioId,
+  const handleTimeSlotClick = (day: string | undefined, time: string) => {
+    if (!day) return;
+    setSelectedSlot(`${day}-${time}`); // só um horário por vez
   };
 
-  dispatch(setCurrentAgendamento(novoAgendamento));
-  navigate("/MonitoriaJa/agendamento-monitor");
-};
+  const handleAgendar = () => {
+    if (!selectedSlot) return;
+    const [diaSelecionado, horarioSelecionado] = selectedSlot.split("-");
+
+    // Calcula a data prevista (próximo dia da semana a partir de hoje)
+    const diasSemana = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
+    const hoje = new Date();
+    const hojeIndex = hoje.getDay(); // 0=domingo, 1=segunda, ...
+    const targetIndex = diasSemana.indexOf(diaSelecionado);
+
+    let diff = targetIndex - hojeIndex;
+    if (diff < 0) diff += 7; // pega o próximo dia, nunca o anterior
+
+    const dataPrevista = new Date(hoje);
+    dataPrevista.setDate(hoje.getDate() + diff);
+    const dataFormatada = dataPrevista.toLocaleDateString("pt-BR"); // dd/mm/aaaa
+
+    const novoAgendamento: Agendamento = {
+      id: Date.now().toString(),
+      monitor: monitor,
+      data: dataFormatada,
+      hora: horarioSelecionado,
+      status: "AGUARDANDO",
+      valor: monitor.valor,
+      statusPagamento: "PENDENTE",
+      duracao:1,
+      link:"https://meet.google.com/zyw-jymr-ipg",
+      aluno:  usuarioId, 
+    };
+
+    navigate("/MonitoriaJa/agendamento-monitor", {
+      state: { agendamento: novoAgendamento },
+    });
+  };
 
   return (
     <div className="main">
@@ -170,11 +203,13 @@ if (token) {
 
             <div className="monitor-atributos">
               <h2>
-                {monitor.listaDisciplinas?.map((materia, index) => (
-                  <span key={index} className="materia">
-                    {materia}
-                  </span>
-                ))}
+                {monitor.listaDisciplinas?.map(
+                  (materia: string, index: number) => (
+                    <span key={index} className="materia">
+                      {materia}
+                    </span>
+                  )
+                )}
               </h2>
               <div className="monitor-detalhes-atributos">
                 <AttachMoneyIcon />
@@ -182,11 +217,11 @@ if (token) {
               </div>
               <div className="monitor-detalhes-atributos">
                 <AccessTimeIcon />
-                <p>{`${getRandomInt(10, 100)} lições`}</p>
+                <p>{`${fixedLessons} lições`}</p>
               </div>
               <div className="monitor-detalhes-atributos">
                 <EmojiEventsIcon />
-                <p>{conquistas[getRandomInt(0, conquistas.length)]}</p>
+                <p>{fixedConquista}</p>
               </div>
             </div>
           </div>
@@ -246,7 +281,6 @@ if (token) {
           variant="outlined"
           sx={{ padding: "5px 40px" }}
           onClick={() => {
-            dispatch(clearSelectedMonitor());
             navigate("/MonitoriaJa/lista-monitores");
           }}
         >
@@ -261,7 +295,9 @@ if (token) {
           Agendar
         </Button>
       </div>
-      <ComentariosAvaliacao />
+      <ComentariosAvaliacao
+        monitorId={String((monitor as any).id ?? (monitor as any)._id)}
+      />
     </div>
   );
 }

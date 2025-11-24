@@ -2,8 +2,8 @@ import * as React from "react";
 import { styled, alpha } from "@mui/material/styles";
 import "./appNavBar.css";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks.js";
-import { logoutUserServer } from "../redux/features/login/fetch.js";
+import { isAuthenticated as isAuth, getUserIdFromToken, decodeToken, getToken } from '../pages/Pagamento/Cartao/CadastraCartao/authUtils.js';
+import { usuarioService } from "../services/usuarioService";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -25,7 +25,7 @@ import Typography from "@mui/material/Typography";
 import logo from "/logoMonitoriaJá.png";
 import anonUser from "/anon-user.avif";
 
-import { decodeToken, getToken } from '../pages/Pagamento/Cartao/CadastraCartao/authUtils.js';
+ 
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -62,10 +62,26 @@ export default function AppNavBar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const [avatarUrl, setAvatarUrl] = React.useState<string | undefined>(undefined);
 
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const { isAuthenticated } = useAppSelector((state) => state.login);
+  const isAuthenticated = isAuth();
+
+  React.useEffect(() => {
+    const loadUserAvatar = async () => {
+      try {
+        const id = getUserIdFromToken();
+        if (!id) return;
+        const user = await usuarioService.getById(String(id));
+        setAvatarUrl(user?.foto || undefined);
+      } catch {}
+    };
+    if (isAuthenticated) {
+      loadUserAvatar();
+    } else {
+      setAvatarUrl(undefined);
+    }
+  }, [isAuthenticated]);
 
   function handleClickHome() {
     navigate("/MonitoriaJa");
@@ -139,7 +155,6 @@ export default function AppNavBar() {
   async function handleClickLogout(event: React.MouseEvent<HTMLElement>) {
     event.preventDefault();
     localStorage.clear();
-    await dispatch(logoutUserServer());
     navigate("/MonitoriaJa/login");
   }
 
@@ -328,7 +343,7 @@ export default function AppNavBar() {
               {isAuthenticated && (
                 <div>
                   <IconButton onClick={handleClickPerfil} sx={{ p: 0 }}>
-                    <Avatar alt="Anonymous User" src={anonUser} />
+                    <Avatar alt="User" src={avatarUrl || anonUser} />
                   </IconButton>
                 </div>
               )}
@@ -341,7 +356,7 @@ export default function AppNavBar() {
               {isAuthenticated && (
                 <>
                   <IconButton onClick={handleClickPerfil} sx={{ p: 0 }}>
-                    <Avatar alt="Anonymous User" src={anonUser} />
+                    <Avatar alt="User" src={avatarUrl || anonUser} />
                   </IconButton>
                 </>
               )}

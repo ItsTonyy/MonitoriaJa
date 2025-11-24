@@ -25,6 +25,7 @@ import {
 import { isAuthenticated, getUserIdFromToken } from '../Pagamento/Cartao/CadastraCartao/authUtils';
 import Modal from "@mui/material/Modal";
 import ModalAgendamento from "../../components/modais/ModalAgendamento";
+import { uploadArquivo } from "../../redux/features/upload/fetch"; // ✅ IMPORTAR uploadArquivo
 
 export interface Disponibilidade {
   dia: string;
@@ -58,6 +59,7 @@ const PerfilMonitorPage: React.FC = () => {
   const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>([]);
   const [fotoUrl, setFotoUrl] = useState<string>("");
   const [fotoFile, setFotoFile] = useState<File | null>(null);
+  const [uploadingFoto, setUploadingFoto] = useState(false); // ✅ NOVO: estado para upload
   const [open, setOpen] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -172,15 +174,24 @@ const PerfilMonitorPage: React.FC = () => {
     setMateriasSelecionadas(novasMaterias);
   };
 
-  const handleFileSelect = (file: File) => {
-    setFotoFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFotoUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+  // ✅ CORREÇÃO: Seguindo o padrão do cadastro
+  const handleFileSelect = async (file: File) => {
+    console.log('📤 Arquivo selecionado:', file.name);
+
+    if (file && file.type.startsWith("image/")) {
+      // ✅ Cria preview local temporário (igual no cadastro)
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFotoUrl(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // ✅ Seta o arquivo para upload posterior (igual no cadastro)
+      setFotoFile(file);
+    }
   };
 
+  // ✅ CORREÇÃO: Seguindo o padrão do cadastro
   const handleSalvar = async () => {
     if (!monitor) return;
 
@@ -206,6 +217,20 @@ const PerfilMonitorPage: React.FC = () => {
     }
 
     try {
+      console.log('📤 Fazendo upload da foto se necessário...');
+      
+      // ✅ FAZ UPLOAD DA FOTO PRIMEIRO (igual no cadastro)
+      let fotoUrlFinal = monitor.foto;
+      if (fotoFile) {
+        setUploadingFoto(true);
+        console.log('📸 Iniciando upload da foto...');
+        fotoUrlFinal = await uploadArquivo(fotoFile);
+        console.log('✅ Upload da foto concluído:', fotoUrlFinal);
+        setUploadingFoto(false);
+      }
+
+      console.log('📤 Despachando updateMonitor...');
+      
       await dispatch(
         updateMonitor({
           nome: nomeFinal,
@@ -213,7 +238,7 @@ const PerfilMonitorPage: React.FC = () => {
           email: emailInput,
           biografia: descricaoInput,
           materia: materiasSelecionadas,
-          foto: fotoUrl,
+          fotoUrl: fotoUrlFinal, // ✅ MUDANÇA: Envia URL da foto, não o arquivo
         })
       ).unwrap();
 
@@ -225,9 +250,10 @@ const PerfilMonitorPage: React.FC = () => {
 
       setOpen(true);
       setHasSubmitted(false);
+      setFotoFile(null); // Limpa o arquivo após salvar
     } catch (err: any) {
       console.error("Erro ao salvar:", err);
-      // O erro já está sendo tratado pelo Redux
+      setUploadingFoto(false);
     }
   };
 
@@ -263,6 +289,7 @@ const PerfilMonitorPage: React.FC = () => {
       </div>
     );
   }
+  
   const userId = getUserIdFromToken();
   return (
     <main className={styles.centralizeContent}>
@@ -320,6 +347,7 @@ const PerfilMonitorPage: React.FC = () => {
           </div>
           <div className={styles.uploadButtonContainer}>
             <UploadButton onFileSelect={handleFileSelect} />
+            {uploadingFoto && <p className={styles.uploadingText}>Enviando foto...</p>}
           </div>
         </div>
 
@@ -421,7 +449,7 @@ const PerfilMonitorPage: React.FC = () => {
           </ConfirmationButton>
           </div>
           <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={handleSalvar} disabled={loading}>
+            <ConfirmationButton onClick={handleSalvar} disabled={loading || uploadingFoto}>
               {loading ? 'Salvando...' : 'Confirmar Mudanças'}
             </ConfirmationButton>
           </div>

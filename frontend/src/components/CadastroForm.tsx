@@ -14,6 +14,12 @@ import { criarAluno } from "../redux/features/aluno/fetch";
 import { listarDisciplinas } from "../redux/features/disciplina/fetch";
 import { useEffect } from "react";
 import { Usuario } from "../models/usuario.model";
+import FormControl from "@mui/material/FormControl";
+import FormHelperText from "@mui/material/FormHelperText";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import { uploadArquivo } from "../redux/features/upload/fetch";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -60,11 +66,17 @@ function CadastroForm() {
   const [erroSenha, setErroSenha] = useState("");
   const [erroConfirmacao, setErroConfirmacao] = useState("");
   const [abrirModalMonitor, setAbrirModalMonitor] = useState(false);
-  const [abrirModalEspecialidade, setAbrirModalEspecialidade] = useState(false);
   const [valorMonitor, setValorMonitor] = useState(0);
+  const [erroValorMonitor, setErroValorMonitor] = useState("");
+  const [opcaoMonitor, setOpcaoMonitor] = useState<boolean | null>(null);
+  const [especialidade, setEspecialidade] = useState<string>("");
+  const [biografia, setBiografia] = useState<string>("");
+
+  // useState usado para armazenar o arquivo para enviar como parâmetro na função de upload
+  const [fileAvatar, setFileAvatar] = useState<File | null>(null);
 
   const navigate = useNavigate();
-  const [opcoesEspecialidades, setOpcoesEspecialidades] = useState<Disciplina[] | string[]>([]);
+  const [opcoesEspecialidades, setOpcoesEspecialidades] = useState<Disciplina[]>([]);
 
   // carregar disciplinas e mapear para {label, value}
   useEffect(() => {
@@ -72,6 +84,7 @@ function CadastroForm() {
       try {
         const disciplinas: Disciplina[] = await listarDisciplinas();
         setOpcoesEspecialidades(disciplinas);
+
       } catch (err) {
         console.error("Erro ao carregar disciplinas:", err);
       }
@@ -79,23 +92,26 @@ function CadastroForm() {
     load();
   }, []);
 
+  // muda avatar ao selecionar arquivo
+  // talvez precise de um useState do tipo File para setar o arquivo para upload
   const mudarAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = (e) => {
+        // serve apenas para passar como string para o Avatar do MUI
         setAvatar(e.target?.result as string);
+
+        // seta o state do arquivo para upload
+        setFileAvatar(file);
       };
       reader.readAsDataURL(file);
     }
   };
 
   function handleOpcaoMonitor(opcao: string) {
-    // abrir modal de especialidade quando escolher se tornar monitor
-    if (opcao.toLowerCase() === "sim") {
-      setAbrirModalEspecialidade(true);
-    }
+    opcao.toLowerCase() === "sim" ? setOpcaoMonitor(true) : setOpcaoMonitor(false);
   }
 
   function aplicarMascaraCpf(cpf: string) {
@@ -153,7 +169,11 @@ function CadastroForm() {
     return senha === confirmacao;
   }
 
-  function onSubmit(e: React.FormEvent) {
+  function validarValorMonitor(valor: number) {
+    return valor >= 0;
+  }
+
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     let valido = true;
 
@@ -199,16 +219,55 @@ function CadastroForm() {
       setErroConfirmacao("");
     }
 
-    if (!valido) {
+    if (!validarValorMonitor(valorMonitor) && opcaoMonitor === true) {
+      setErroValorMonitor("O valor do monitor deve ser maior ou igual a zero.");
+      valido = false;
     } else {
-      setAbrirModalMonitor(true);
+      setErroValorMonitor("");
+    }
+
+    if (valido) {
+      if (opcaoMonitor === null) {
+        setAbrirModalMonitor(true);
+      } else if (opcaoMonitor === true) {
+        try {
+          const urlAvatar = fileAvatar ? await uploadArquivo(fileAvatar) : "https://cdn-icons-png.flaticon.com/512/3541/3541871.png";
+          // criar usuário associado ao monitor (role: monitor)
+          const novoMonitor: Usuario = {
+            nome: nome,
+            email: email,
+            cpf: cpf.replace(/\D/g, ""),
+            password: senha,
+            telefone: telefone.replace(/\D/g, ""),
+            foto: urlAvatar,
+
+            //  avatar === undefined
+            //    ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
+            //    : avatar,
+            
+            tipoUsuario: "MONITOR",
+            materia: especialidade,
+            valor: `R$ ${valorMonitor}/h`,
+            servico: "",
+            avaliacao: 0.0,
+            biografia: biografia,
+            listaDisciplinas: [],
+            listaAgendamentos: [],
+          };
+          await criarMonitor(novoMonitor);
+
+          navigate("/MonitoriaJa/login");
+        } catch (err) {
+          console.error("Erro ao criar monitor/usuario:", err);
+        }
+      }
     }
   }
 
   return (
     <Box>
       <Box sx={{ justifySelf: "center" }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+        <Typography variant="h4" component="h1" gutterBottom color="#0289d1ce" fontWeight={500}>
           Cadastre-se
         </Typography>
         <Avatar
@@ -250,6 +309,9 @@ function CadastroForm() {
           width: "100%",
         }}
       >
+
+      {opcaoMonitor === null || opcaoMonitor === false ? (
+        <>
         <TextField
           id="nome"
           label="Nome"
@@ -327,6 +389,49 @@ function CadastroForm() {
           margin="normal"
           autoComplete="new-password"
         />
+        </>
+      ) : (
+        <>
+        <FormControl error={especialidade === ""} sx={{ width: "100%" }} variant="outlined">
+          <InputLabel id="especialidade">Especialidade</InputLabel>
+          <Select
+            labelId="especialidade"
+            label="Especialidade"
+            value={especialidade}
+            onChange={(e) => setEspecialidade(e.target.value)}
+            required
+          >
+            {opcoesEspecialidades.map((d) => (
+              <MenuItem key={d.id?.toString()} value={d.nome?.toString()}>
+                {d.nome?.toString()}
+              </MenuItem>
+            ))}
+          </Select>
+          {especialidade === "" && (
+            <FormHelperText>Selecione uma especialidade</FormHelperText>
+          )}
+          <TextField
+            label="Valor por hora (R$)"           
+            type="number"
+            value={valorMonitor}
+            onChange={(e) => setValorMonitor(parseFloat(e.target.value))}
+            error={!!erroValorMonitor}
+            helperText={erroValorMonitor}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Biografia"
+            multiline
+            minRows={9}
+            value={biografia}
+            onChange={(e) => setBiografia(e.target.value)}
+            variant="outlined"
+            fullWidth
+          />
+        </FormControl>
+        </>
+      )}
         <Button
           variant="contained"
           type="submit"
@@ -354,13 +459,14 @@ function CadastroForm() {
             if (opcao.toLowerCase() === "não") {
               try {
                 // criar usuário associado ao aluno (role: aluno)
+                const urlAvatar = fileAvatar ? await uploadArquivo(fileAvatar) : "https://cdn-icons-png.flaticon.com/512/3541/3541871.png";
                 const novoAluno: Usuario = {
                   nome: nome,
                   email: email,
                   cpf: cpf.replace(/\D/g, ""),
                   password: senha,
                   telefone: telefone.replace(/\D/g, ""),
-                  foto: "https://cdn-icons-png.flaticon.com/512/3541/3541871.png",
+                  foto: urlAvatar,
                   /*
                     avatar === undefined
                       ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
@@ -376,51 +482,6 @@ function CadastroForm() {
               } catch (err) {
                 console.error("Erro ao criar usuário:", err);
               }
-            }
-          }}
-        />
-
-        <ModalSelect
-          open={abrirModalEspecialidade}
-          header="Selecione sua especialidade"
-          opcoes={opcoesEspecialidades.map((d) => ({
-            label: d.toString(),
-            value: d.toString(),
-          }))}  
-          onClose={() => setAbrirModalEspecialidade(false)}
-          monitor={true}
-          handleValorMonitor={(valor) => setValorMonitor(valor)}
-          onConfirm={async (especialidade) => {
-            setAbrirModalEspecialidade(false);
-            try {
-              // criar usuário associado ao monitor (role: monitor)
-              const novoMonitor: Usuario = {
-                nome: nome,
-                email: email,
-                cpf: cpf.replace(/\D/g, ""),
-                password: senha,
-                telefone: telefone.replace(/\D/g, ""),
-                foto: "https://cdn-icons-png.flaticon.com/512/3541/3541871.png",
-                /*
-                  avatar === undefined
-                    ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
-                    : avatar,
-                */
-                tipoUsuario: "MONITOR",
-                materia: especialidade,
-                valor: `R$ ${valorMonitor}/h`,
-                servico: "",
-                avaliacao: 0.0,
-                formacao: "",
-                biografia: "",
-                listaDisciplinas: [],
-                listaAgendamentos: [],
-              };
-              await criarMonitor(novoMonitor);
-
-              navigate("/MonitoriaJa/login");
-            } catch (err) {
-              console.error("Erro ao criar monitor/usuario:", err);
             }
           }}
         />

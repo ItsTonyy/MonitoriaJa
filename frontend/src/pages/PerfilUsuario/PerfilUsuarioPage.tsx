@@ -23,6 +23,7 @@ import {
   clearCurrentUser
 } from '../../redux/features/perfilUsuario/slice';
 import { isAuthenticated, getUserIdFromToken } from '../Pagamento/Cartao/CadastraCartao/authUtils';
+import { uploadArquivo } from '../../redux/features/upload/fetch';
 
 const PerfilUsuarioPage: React.FC = () => {
   const navigate = useNavigate();
@@ -131,46 +132,26 @@ const PerfilUsuarioPage: React.FC = () => {
     }
   };
 
-  // ============ UPLOAD DE FOTO ============
+  // ============ UPLOAD DE FOTO - SEGUINDO O PADRÃO DO CADASTRO ============
   const handleFileSelect = async (file: File | null) => {
     if (!file) return;
 
-    console.log('📤 Iniciando upload de foto:', file.name);
-    setUploadingFoto(true);
+    console.log('📤 Arquivo selecionado:', file.name);
 
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
+    if (file && file.type.startsWith("image/")) {
+      // ✅ Cria preview local temporário (igual no cadastro)
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFotoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
 
-      const response = await fetch('/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao fazer upload da foto');
-      }
-
-      const uploadedFile = await response.json();
-      console.log('✅ Arquivo enviado:', uploadedFile);
-
-      // Atualiza preview e arquivo
+      // ✅ Seta o arquivo para upload posterior (igual no cadastro)
       setFotoFile(file);
-      
-      // Monta o caminho correto do arquivo
-      const fotoUrl = `/uploads/${uploadedFile.filename}`;
-      setFotoPreview(fotoUrl);
-      
-      console.log('🖼️ Preview atualizado:', fotoUrl);
-    } catch (err) {
-      console.error('❌ Erro no upload:', err);
-      alert('Erro ao fazer upload da foto. Tente novamente.');
-    } finally {
-      setUploadingFoto(false);
     }
   };
 
-  // ============ SALVAR USUÁRIO ============
+  // ============ SALVAR USUÁRIO - SEGUINDO O PADRÃO DO CADASTRO ============
   const handleSalvar = async () => {
     console.log('💾 handleSalvar: Iniciando...');
     
@@ -182,7 +163,7 @@ const PerfilUsuarioPage: React.FC = () => {
     setHasSubmitted(true);
 
     const nomeFinal = nomeRef.current?.textContent?.trim() || nome;
-    console.log('📋 Dados a salvar:', { nomeFinal, telefone, email });
+    console.log('📋 Dados a salvar:', { nomeFinal, telefone, email, fotoFile });
 
     dispatch(validateField({ field: 'nome', value: nomeFinal }));
     dispatch(validateField({ field: 'telefone', value: telefone }));
@@ -195,31 +176,34 @@ const PerfilUsuarioPage: React.FC = () => {
     }
 
     try {
-      const updateData: {
-        nome: string;
-        telefone: string;
-        email: string;
-        fotoUrl?: string;
-      } = {
-        nome: nomeFinal,
-        telefone,
-        email,
-      };
-
-      // Se houver foto, inclui a URL do upload
-      if (fotoPreview && fotoPreview.startsWith('/uploads/')) {
-        updateData.fotoUrl = fotoPreview;
+      console.log('📤 Fazendo upload da foto se necessário...');
+      
+      // ✅ FAZ UPLOAD DA FOTO PRIMEIRO (igual no cadastro)
+      let fotoUrl = currentUser.foto;
+      if (fotoFile) {
+        setUploadingFoto(true);
+        console.log('📸 Iniciando upload da foto...');
+        fotoUrl = await uploadArquivo(fotoFile);
+        console.log('✅ Upload da foto concluído:', fotoUrl);
+        setUploadingFoto(false);
       }
 
       console.log('📤 Despachando updateUsuario...');
-      await dispatch(updateUsuario(updateData)).unwrap();
+      
+      await dispatch(updateUsuario({
+        nome: nomeFinal,
+        telefone,
+        email,
+        fotoUrl: fotoUrl // ✅ Envia a URL da foto (não o arquivo)
+      })).unwrap();
       
       console.log('✅ Usuário atualizado com sucesso');
       setOpen(true);
       setHasSubmitted(false);
-      setFotoFile(null);
+      setFotoFile(null); // Limpa o arquivo após salvar
     } catch (err: any) {
       console.error('❌ Erro ao salvar:', err);
+      setUploadingFoto(false);
     }
   };
 
