@@ -4,6 +4,26 @@ import autenticar from "../middleware/auth";
 import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
 const router = require("express").Router()
 
+/**
+ * @swagger
+ * /perfilUsuario/{id}:
+ *   get:
+ *     summary: Obtém perfil do usuário por ID
+ *     tags: [Perfil]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Perfil do usuário
+ *       404:
+ *         description: Usuário não encontrado
+ */
 router.get("/perfilUsuario/:id", autenticar, ownerOrAdminAuth, (req: Request, res: Response) => {
     const { id } = req.params;
     const usuario = users.find((u) => u.id === id);
@@ -20,6 +40,44 @@ router.get("/perfilUsuario/:id", autenticar, ownerOrAdminAuth, (req: Request, re
     });
 });
 
+/**
+ * @swagger
+ * /perfilUsuario/{id}:
+ *   patch:
+ *     summary: Atualiza perfil do usuário
+ *     tags: [Perfil]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               telefone:
+ *                 type: string
+ *               fotoUrl:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado com sucesso
+ *       400:
+ *         description: Dados inválidos
+ *       404:
+ *         description: Usuário não encontrado
+ */
 router.patch("/perfilUsuario/:id", autenticar, ownerOrAdminAuth, (req: Request, res: Response) => {
     const { id } = req.params;
     const usuarioIndex = users.findIndex((u) => u.id === id);

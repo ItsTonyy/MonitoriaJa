@@ -2,16 +2,6 @@ import { Request, Response } from "express";
 const router = require("express").Router();
 const { notificacoes, users } = require("../db-mock.ts");
 
-/**
- * @swagger
- * /notificacoes:
- *   get:
- *     summary: Lista todas as notificações
- *     tags: [Notificacao]
- *     responses:
- *       200:
- *         description: Notificações encontradas
- */
 router.get("/notificacoes", (req: Request, res: Response) => {
   res.status(200).json({
     message: "Notificações encontradas",
@@ -19,24 +9,6 @@ router.get("/notificacoes", (req: Request, res: Response) => {
   });
 });
 
-/**
- * @swagger
- * /notificacoes/{id}:
- *   get:
- *     summary: Lista notificações de um usuário por ID
- *     tags: [Notificacao]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Notificações encontradas
- *       404:
- *         description: Não há notificações para este usuário
- */
 router.get("/notificacoes/:id", (req: Request, res: Response) => {
   const id = req.params.id;
   const notificacoesUser = notificacoes.filter(
@@ -55,42 +27,11 @@ router.get("/notificacoes/:id", (req: Request, res: Response) => {
   });
 });
 
-/**
- * @swagger
- * /criar/notificacao/{id}:
- *   post:
- *     summary: Cria uma notificação para um usuário
- *     tags: [Notificacao]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               tipo:
- *                 type: string
- *                 enum: [AVALIACAO, CANCELAMENTO]
- *             required: [tipo]
- *     responses:
- *       201:
- *         description: Notificação criada
- *       400:
- *         description: Tipo de notificação inválido
- *       404:
- *         description: Usuário não encontrado
- */
 router.post("/criar/notificacao/:id", (req: Request, res: Response) => {
   const { tipo } = req.body;
   const userId = req.params.id;
-  const user = users.find((u: any) => u.id === userId);
-  console.log("User", user);
+  const user = users.find((u: any) => u.id===userId);
+  console.log("User",user)
   if (!user) {
     return res.status(404).json({ message: "Usuário não encontrado" });
   }
@@ -126,7 +67,7 @@ router.post("/criar/notificacao/:id", (req: Request, res: Response) => {
   }
 
   notificacoes.push(newNotificacao);
-  console.log(newNotificacao);
+  console.log(newNotificacao)
   res.status(201).json({
     message: "Notificação criada.",
     notificacao: newNotificacao,
