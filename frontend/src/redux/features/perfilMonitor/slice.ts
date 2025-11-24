@@ -15,6 +15,7 @@ interface Monitor {
   avaliacao?: number;
   formacao?: string;
   listaDisponibilidades?: Disponibilidade[];
+  listaDisciplinas?: string[]; // IDs das disciplinas associadas
 }
 
 interface ValidationErrors {
@@ -51,7 +52,46 @@ const validateMonitorField = (field: keyof ValidationErrors, value: string): str
   }
 };
 
-// AsyncThunk: buscar monitor pelo id
+// AsyncThunk: buscar disciplinas do backend
+export const fetchDisciplinas = createAsyncThunk<
+  { id: string; nome: string }[],
+  void,
+  { rejectValue: string }
+>(
+  "perfilMonitor/fetchDisciplinas",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      console.log('📚 [fetchDisciplinas] Buscando disciplinas...');
+      
+      const response = await fetch("http://localhost:3001/disciplina", {
+        headers: {
+          ...(token && { 'Authorization': `Bearer ${token}` }),
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) throw new Error("Erro ao buscar disciplinas");
+      
+      const data = await response.json();
+      console.log('✅ [fetchDisciplinas] Disciplinas carregadas (RAW):', data);
+      
+      // Mapear corretamente os IDs - o MongoDB usa _id
+      const disciplinasMapeadas = data.map((disciplina: any) => ({
+        id: disciplina._id || disciplina.id,
+        nome: disciplina.nome
+      }));
+      
+      console.log('✅ [fetchDisciplinas] Disciplinas mapeadas:', disciplinasMapeadas);
+      return disciplinasMapeadas;
+    } catch (err: any) {
+      console.error('❌ [fetchDisciplinas] Erro:', err);
+      return rejectWithValue(err.message || "Erro ao buscar disciplinas");
+    }
+  }
+);
+
+// AsyncThunk: buscar monitor pelo id - LÓGICA CORRIGIDA
 export const fetchMonitor = createAsyncThunk<
   Monitor,
   string | undefined,
@@ -61,23 +101,19 @@ export const fetchMonitor = createAsyncThunk<
   async (monitorId, { rejectWithValue }) => {
     try {
       const token = getToken();
-      console.log('🔑 Token encontrado:', token ? 'Sim' : 'Não');
       
       if (!token || isTokenExpired()) {
-        console.log('❌ Token inválido ou expirado');
         return rejectWithValue("Token inválido ou expirado. Faça login novamente.");
       }
 
       const targetMonitorId = monitorId || getUserIdFromToken();
-      console.log('👤 Target Monitor ID:', targetMonitorId);
       
       if (!targetMonitorId) {
-        console.log('❌ ID do monitor não encontrado');
         return rejectWithValue("ID do monitor não encontrado");
       }
 
       const url = `http://localhost:3001/usuario/${targetMonitorId}`;
-      console.log('🌐 Fazendo requisição para:', url);
+      console.log('🌐 [fetchMonitor] Fazendo requisição para:', url);
 
       const response = await fetch(url, {
         headers: {
@@ -86,11 +122,11 @@ export const fetchMonitor = createAsyncThunk<
         }
       });
 
-      console.log('📡 Status da resposta:', response.status);
+      console.log('📡 [fetchMonitor] Status da resposta:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.log('❌ Erro na resposta:', errorText);
+        console.log('❌ [fetchMonitor] Erro na resposta:', errorText);
         
         if (response.status === 404) {
           return rejectWithValue("Monitor não encontrado");
@@ -102,43 +138,68 @@ export const fetchMonitor = createAsyncThunk<
       }
 
       const user = await response.json();
-      console.log('✅ Dados recebidos:', user);
-      
-      // Normalizar materia para sempre ser array
-      let materias: string[] = [];
-      if (user.materia) {
-        if (Array.isArray(user.materia)) {
-          materias = user.materia;
-        } else if (typeof user.materia === 'string') {
-          materias = [user.materia];
+      console.log('✅ [fetchMonitor] Dados recebidos do backend:', user);
+
+      // ANÁLISE DA LÓGICA:
+      // O backend retorna listaDisciplinas como array de NOMES devido ao populate
+      // Mas para atualizar, precisamos enviar IDs
+      // Solução: Manter os nomes para exibição e mapear para IDs quando necessário
+
+      let materiasNomes: string[] = [];
+      let listaDisciplinasIds: string[] = []; // Não temos os IDs aqui, só os nomes
+
+      if (user.listaDisciplinas && Array.isArray(user.listaDisciplinas)) {
+        if (user.listaDisciplinas.length > 0) {
+          if (typeof user.listaDisciplinas[0] === 'string') {
+            // Backend retornou nomes (devido ao populate)
+            materiasNomes = user.listaDisciplinas;
+            console.log('📚 [fetchMonitor] Matérias recebidas como nomes:', materiasNomes);
+            // Não temos os IDs aqui - serão mapeados posteriormente quando necessário
+          } else if (typeof user.listaDisciplinas[0] === 'object') {
+            // Se por acaso vier como objetos (fallback)
+            materiasNomes = user.listaDisciplinas.map((disciplina: any) => disciplina.nome);
+            listaDisciplinasIds = user.listaDisciplinas.map((disciplina: any) => disciplina._id || disciplina.id);
+            console.log('📚 [fetchMonitor] Matérias extraídas de objetos:', materiasNomes);
+            console.log('🆔 [fetchMonitor] IDs extraídos de objetos:', listaDisciplinasIds);
+          }
         }
       }
-      // Tratar listaDisciplinas se vier do backend
-      if (user.listaDisciplinas && Array.isArray(user.listaDisciplinas)) {
-        materias = user.listaDisciplinas;
-      }
       
-      return {
+      // Fallback para materia antigo
+      if (materiasNomes.length === 0 && user.materia) {
+        console.log('🔄 [fetchMonitor] Usando fallback para campo materia antigo');
+        if (Array.isArray(user.materia)) {
+          materiasNomes = user.materia;
+        } else if (typeof user.materia === 'string') {
+          materiasNomes = [user.materia];
+        }
+      }
+
+      const monitorData = {
         id: user.id || user._id,
         nome: user.nome || user.name || '',
         email: user.email || '',
         telefone: user.telefone || user.phone || '',
         tipoUsuario: user.tipoUsuario || 'MONITOR',
         biografia: user.biografia || user.description || '',
-        materia: materias,
+        materia: materiasNomes, // Para exibição na UI
+        listaDisciplinas: listaDisciplinasIds, // IDs (se disponíveis) - geralmente vazio devido ao populate
         foto: user.foto || user.fotoUrl || user.photo || '',
         avaliacao: user.avaliacao || 0,
         formacao: user.formacao || '',
         listaDisponibilidades: user.listaDisponibilidades || user.disponibilidades || [],
       };
+
+      console.log('🎯 [fetchMonitor] Monitor processado:', monitorData);
+      return monitorData;
     } catch (error: any) {
-      console.error('💥 Erro no catch:', error);
+      console.error('💥 [fetchMonitor] Erro no catch:', error);
       return rejectWithValue(error.message || "Erro ao carregar monitor");
     }
   }
 );
 
-// AsyncThunk: atualizar monitor - AGORA RECEBE fotoUrl EM VEZ DE FILE
+// AsyncThunk: atualizar monitor - LÓGICA CORRIGIDA
 export const updateMonitor = createAsyncThunk<
   Monitor,
   {
@@ -146,15 +207,15 @@ export const updateMonitor = createAsyncThunk<
     telefone: string;
     email: string;
     biografia?: string;
-    materia?: string[];
-    fotoUrl?: string; // ✅ MUDANÇA: Recebe URL da foto, não o arquivo
+    materia?: string[]; // Nomes das matérias
+    fotoUrl?: string;
     listaDisponibilidades?: Disponibilidade[];
   },
   { rejectValue: { validationErrors?: ValidationErrors; message?: string } }
 >(
   "perfilMonitor/updateMonitor",
   async (updateData, { getState, rejectWithValue }) => {
-    console.log('🔄 Iniciando updateMonitor com dados:', updateData);
+    console.log('🔄 [updateMonitor] Iniciando updateMonitor com dados:', updateData);
     
     try {
       // Validações
@@ -166,42 +227,31 @@ export const updateMonitor = createAsyncThunk<
         errors.descricao = validateMonitorField('descricao', updateData.biografia);
       }
 
-      // Remove erros undefined
       Object.keys(errors).forEach(key => {
         if (errors[key as keyof ValidationErrors] === undefined) {
           delete errors[key as keyof ValidationErrors];
         }
       });
 
-      console.log('✅ Validações:', errors);
-
       if (Object.keys(errors).length > 0) {
-        console.log('❌ Erros de validação encontrados');
         return rejectWithValue({ validationErrors: errors });
       }
 
-      // Verifica token
       const token = getToken();
       if (!token || isTokenExpired()) {
         return rejectWithValue({ message: "Token inválido ou expirado. Faça login novamente." });
       }
 
-      // Pega monitor atual do estado
       const state = getState() as any;
-      console.log('🗂️ Estado completo:', state);
-      console.log('👤 State.perfilMonitor:', state.perfilMonitor);
-      
       const currentMonitor: Monitor | null = state.perfilMonitor?.currentMonitor;
 
       if (!currentMonitor || !currentMonitor.id) {
-        console.error('❌ CurrentMonitor não encontrado:', currentMonitor);
-        console.error('❌ Estado disponível:', Object.keys(state));
         return rejectWithValue({ message: "Monitor não encontrado no estado. Recarregue a página." });
       }
 
-      console.log('👤 Atualizando monitor:', currentMonitor.id);
+      console.log('👤 [updateMonitor] Atualizando monitor:', currentMonitor.id);
 
-      // Prepara o body da requisição
+      // Prepara o body da requisição para o backend
       const requestBody: any = {
         nome: updateData.nome,
         email: updateData.email,
@@ -209,15 +259,49 @@ export const updateMonitor = createAsyncThunk<
       };
 
       if (updateData.biografia) requestBody.biografia = updateData.biografia;
-      if (updateData.materia) requestBody.listaDisciplinas = updateData.materia; // Backend usa listaDisciplinas
-      // ✅ MUDANÇA: Se houver fotoUrl, inclui no payload
       if (updateData.fotoUrl) requestBody.foto = updateData.fotoUrl;
       if (updateData.listaDisponibilidades) requestBody.listaDisponibilidades = updateData.listaDisponibilidades;
 
-      console.log('📝 Dados enviados para atualização:', requestBody);
+      // LÓGICA CRÍTICA CORRIGIDA:
+      // O backend espera IDs em listaDisciplinas, mas recebemos nomes da UI
+      // Precisamos converter nomes para IDs usando as disciplinas disponíveis
+      if (updateData.materia && updateData.materia.length > 0) {
+        const disciplinasState = state.perfilMonitor?.materiasDisponiveis || [];
+        console.log('📋 [updateMonitor] Disciplinas disponíveis para mapeamento:', disciplinasState);
+        
+        // Mapear nomes para IDs
+        const disciplinasIds = updateData.materia.map(materiaNome => {
+          const disciplina = disciplinasState.find((d: any) => d.nome === materiaNome);
+          if (!disciplina) {
+            console.warn(`❌ [updateMonitor] Disciplina não encontrada: ${materiaNome}`);
+            return null;
+          }
+          console.log(`✅ [updateMonitor] Mapeando: ${materiaNome} -> ${disciplina.id}`);
+          return disciplina.id;
+        }).filter(Boolean); // Remove null/undefined
 
-      // Faz a requisição PATCH
-      const response = await fetch(`http://localhost:3001/usuario/${currentMonitor.id}`, {
+        console.log('📚 [updateMonitor] Matérias selecionadas (nomes):', updateData.materia);
+        console.log('🆔 [updateMonitor] IDs mapeados para envio:', disciplinasIds);
+        
+        if (disciplinasIds.length > 0) {
+          requestBody.listaDisciplinas = disciplinasIds;
+          console.log('✅ [updateMonitor] listaDisciplinas enviada (IDs):', disciplinasIds);
+        } else {
+          requestBody.listaDisciplinas = [];
+          console.warn('⚠️ [updateMonitor] Nenhum ID mapeado, enviando array vazio');
+        }
+      } else {
+        requestBody.listaDisciplinas = [];
+        console.log('📭 [updateMonitor] Nenhuma matéria selecionada, enviando listaDisciplinas vazia');
+      }
+
+      console.log('📝 [updateMonitor] Dados enviados para atualização:');
+      console.log(JSON.stringify(requestBody, null, 2));
+
+      const url = `http://localhost:3001/usuario/${currentMonitor.id}`;
+      console.log('🌐 [updateMonitor] Fazendo PATCH para:', url);
+
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -226,21 +310,23 @@ export const updateMonitor = createAsyncThunk<
         body: JSON.stringify(requestBody),
       });
 
-      console.log('📡 Status da resposta:', response.status);
+      console.log('📡 [updateMonitor] Status da resposta:', response.status);
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.log('❌ [updateMonitor] Erro na resposta:', errorText);
+        
         if (response.status === 401) {
           return rejectWithValue({ message: "Não autorizado. Faça login novamente." });
         }
         if (response.status === 400) {
-          const errorData = await response.json();
-          return rejectWithValue({ message: errorData.message || "Dados inválidos" });
+          return rejectWithValue({ message: errorText || "Dados inválidos" });
         }
-        throw new Error('Erro ao atualizar monitor');
+        throw new Error(`Erro ao atualizar monitor: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
-      console.log('✅ Resposta do servidor:', result);
+      console.log('✅ [updateMonitor] Resposta do servidor:', result);
 
       // Atualiza o monitor no estado
       const updatedMonitor: Monitor = {
@@ -248,21 +334,12 @@ export const updateMonitor = createAsyncThunk<
         nome: updateData.nome,
         email: updateData.email,
         telefone: updateData.telefone,
+        biografia: updateData.biografia !== undefined ? updateData.biografia : currentMonitor.biografia,
+        materia: updateData.materia !== undefined ? updateData.materia : currentMonitor.materia,
+        foto: updateData.fotoUrl !== undefined ? updateData.fotoUrl : currentMonitor.foto,
+        listaDisponibilidades: updateData.listaDisponibilidades !== undefined ? updateData.listaDisponibilidades : currentMonitor.listaDisponibilidades,
+        // Não atualizamos listaDisciplinas aqui pois o backend retorna nomes devido ao populate
       };
-
-      if (updateData.biografia !== undefined) {
-        updatedMonitor.biografia = updateData.biografia;
-      }
-      if (updateData.materia !== undefined) {
-        updatedMonitor.materia = updateData.materia;
-      }
-      // ✅ MUDANÇA: Atualiza foto se houver nova URL
-      if (updateData.fotoUrl !== undefined) {
-        updatedMonitor.foto = updateData.fotoUrl;
-      }
-      if (updateData.listaDisponibilidades !== undefined) {
-        updatedMonitor.listaDisponibilidades = updateData.listaDisponibilidades;
-      }
 
       // Atualiza localStorage se for o monitor logado
       const loggedUserId = getUserIdFromToken();
@@ -276,35 +353,8 @@ export const updateMonitor = createAsyncThunk<
 
       return updatedMonitor;
     } catch (error: any) {
-      console.error('💥 Erro no catch:', error);
+      console.error('💥 [updateMonitor] Erro no catch:', error);
       return rejectWithValue({ message: error.message || "Erro ao atualizar monitor" });
-    }
-  }
-);
-
-// AsyncThunk: buscar disciplinas do backend
-export const fetchDisciplinas = createAsyncThunk<
-  { id: string; nome: string }[],
-  void,
-  { rejectValue: string }
->(
-  "perfilMonitor/fetchDisciplinas",
-  async (_, { rejectWithValue }) => {
-    try {
-      const token = getToken();
-      
-      const response = await fetch("http://localhost:3001/disciplina", {
-        headers: {
-          ...(token && { 'Authorization': `Bearer ${token}` }),
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (!response.ok) throw new Error("Erro ao buscar disciplinas");
-      const data = await response.json();
-      return data;
-    } catch (err: any) {
-      return rejectWithValue(err.message || "Erro ao buscar disciplinas");
     }
   }
 );
