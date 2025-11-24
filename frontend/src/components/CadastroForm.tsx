@@ -19,6 +19,7 @@ import FormHelperText from "@mui/material/FormHelperText";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
+import { uploadArquivo } from "../redux/features/upload/fetch";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -71,6 +72,9 @@ function CadastroForm() {
   const [especialidade, setEspecialidade] = useState<string>("");
   const [biografia, setBiografia] = useState<string>("");
 
+  // useState usado para armazenar o arquivo para enviar como parâmetro na função de upload
+  const [fileAvatar, setFileAvatar] = useState<File | null>(null);
+
   const navigate = useNavigate();
   const [opcoesEspecialidades, setOpcoesEspecialidades] = useState<Disciplina[] | string[]>([]);
 
@@ -87,13 +91,19 @@ function CadastroForm() {
     load();
   }, []);
 
+  // muda avatar ao selecionar arquivo
+  // talvez precise de um useState do tipo File para setar o arquivo para upload
   const mudarAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = (e) => {
+        // serve apenas para passar como string para o Avatar do MUI
         setAvatar(e.target?.result as string);
+
+        // seta o state do arquivo para upload
+        setFileAvatar(file);
       };
       reader.readAsDataURL(file);
     }
@@ -220,6 +230,7 @@ function CadastroForm() {
         setAbrirModalMonitor(true);
       } else if (opcaoMonitor === true) {
         try {
+          const urlAvatar = fileAvatar ? await uploadArquivo(fileAvatar) : "https://cdn-icons-png.flaticon.com/512/3541/3541871.png";
           // criar usuário associado ao monitor (role: monitor)
           const novoMonitor: Usuario = {
             nome: nome,
@@ -227,8 +238,8 @@ function CadastroForm() {
             cpf: cpf.replace(/\D/g, ""),
             password: senha,
             telefone: telefone.replace(/\D/g, ""),
-            foto: "https://cdn-icons-png.flaticon.com/512/3541/3541871.png",
-            
+            foto: urlAvatar,
+
             //  avatar === undefined
             //    ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
             //    : avatar,
@@ -447,13 +458,14 @@ function CadastroForm() {
             if (opcao.toLowerCase() === "não") {
               try {
                 // criar usuário associado ao aluno (role: aluno)
+                const urlAvatar = fileAvatar ? await uploadArquivo(fileAvatar) : "https://cdn-icons-png.flaticon.com/512/3541/3541871.png";
                 const novoAluno: Usuario = {
                   nome: nome,
                   email: email,
                   cpf: cpf.replace(/\D/g, ""),
                   password: senha,
                   telefone: telefone.replace(/\D/g, ""),
-                  foto: "https://cdn-icons-png.flaticon.com/512/3541/3541871.png",
+                  foto: urlAvatar,
                   /*
                     avatar === undefined
                       ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
@@ -472,53 +484,6 @@ function CadastroForm() {
             }
           }}
         />
-
-{/*
-        <ModalSelect
-          open={abrirModalEspecialidade}
-          header="Selecione sua especialidade"
-          opcoes={opcoesEspecialidades.map((d) => ({
-            label: d.toString(),
-            value: d.toString(),
-          }))}  
-          onClose={() => setAbrirModalEspecialidade(false)}
-          monitor={true}
-          handleValorMonitor={(valor) => setValorMonitor(valor)}
-          onConfirm={async (especialidade) => {
-            setAbrirModalEspecialidade(false);
-            try {
-              // criar usuário associado ao monitor (role: monitor)
-              const novoMonitor: Usuario = {
-                nome: nome,
-                email: email,
-                cpf: cpf.replace(/\D/g, ""),
-                password: senha,
-                telefone: telefone.replace(/\D/g, ""),
-                foto: "https://cdn-icons-png.flaticon.com/512/3541/3541871.png",
-                
-                //  avatar === undefined
-                //    ? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
-                //    : avatar,
-                
-                tipoUsuario: "MONITOR",
-                materia: especialidade,
-                valor: `R$ ${valorMonitor}/h`,
-                servico: "",
-                avaliacao: 0.0,
-                formacao: "",
-                biografia: "",
-                listaDisciplinas: [],
-                listaAgendamentos: [],
-              };
-              await criarMonitor(novoMonitor);
-
-              navigate("/MonitoriaJa/login");
-            } catch (err) {
-              console.error("Erro ao criar monitor/usuario:", err);
-            }
-          }}
-        />
-*/}
       </Box>
     </Box>
   );
