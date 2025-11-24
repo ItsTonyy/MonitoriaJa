@@ -42,13 +42,12 @@ const validarEmail = (email: string) => {
 // Thunk: Buscar usuário autenticado ou específico por ID
 export const fetchUsuario = createAsyncThunk<
   Usuario,
-  string, // SEMPRE RECEBE STRING (não mais string | undefined)
+  string,
   { rejectValue: string }
 >(
   "usuario/fetchUsuario",
   async (userId, { rejectWithValue }) => {
     try {
-      // Verifica token
       const token = getToken();
       console.log('🔑 Token encontrado:', token ? 'Sim' : 'Não');
       
@@ -90,9 +89,8 @@ export const fetchUsuario = createAsyncThunk<
       const data = await response.json();
       console.log('✅ Dados recebidos:', data);
       
-      // CORREÇÃO: Garantir que usamos o campo correto do ID
       return {
-        id: data._id || data.id, // Tenta _id primeiro (padrão MongoDB)
+        id: data._id || data.id,
         nome: data.nome,
         email: data.email,
         telefone: data.telefone || '',
@@ -151,12 +149,21 @@ export const updateUsuario = createAsyncThunk<
       }
 
       console.log('👤 Atualizando usuário ID:', currentUser.id);
-      console.log('📝 Dados enviados:', {
+
+      // Prepara o payload
+      const payload: any = {
         nome: userData.nome,
         email: userData.email,
-        telefone: userData.telefone,
-        ...(userData.fotoUrl && { foto: userData.fotoUrl })
-      });
+        telefone: userData.telefone
+      };
+
+      // Se houver fotoUrl, adiciona ao payload
+      if (userData.fotoUrl) {
+        payload.foto = userData.fotoUrl;
+        console.log('📸 Foto URL incluída:', userData.fotoUrl);
+      }
+
+      console.log('📝 Dados enviados:', payload);
 
       // Faz a requisição PATCH
       const response = await fetch(`http://localhost:3001/usuario/${currentUser.id}`, {
@@ -165,12 +172,7 @@ export const updateUsuario = createAsyncThunk<
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          nome: userData.nome,
-          email: userData.email,
-          telefone: userData.telefone,
-          ...(userData.fotoUrl && { foto: userData.fotoUrl })
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -185,6 +187,7 @@ export const updateUsuario = createAsyncThunk<
       }
 
       const result = await response.json();
+      console.log('✅ Resposta do servidor:', result);
 
       // Atualiza o usuário no estado
       const updatedUser: Usuario = {
@@ -207,6 +210,7 @@ export const updateUsuario = createAsyncThunk<
 
       return updatedUser;
     } catch (error: any) {
+      console.error('💥 Erro:', error);
       return rejectWithValue({ message: error.message || "Erro ao atualizar usuário" });
     }
   }

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
-import { TextField } from '@mui/material';
+import { TextField, CircularProgress } from '@mui/material';
 
 import ConfirmationButton from '../botaoTemporario/botaoTemporario';
 import UploadButton from '../PerfilMonitor/UploadButton/UploadButton';
@@ -28,32 +28,27 @@ const PerfilUsuarioPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   
-  // Pega userId da URL (se existir) - usado quando admin acessa perfil de outro usuário
   const { userId } = useParams<{ userId: string }>();
 
   const { currentUser, loading, error, validationErrors } = useSelector(
     (state: RootState) => state.usuario
   );
 
-  // Estados locais
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [fotoFile, setFotoFile] = useState<File | null>(null);
+  const [uploadingFoto, setUploadingFoto] = useState(false);
   const [open, setOpen] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const nomeRef = useRef<HTMLDivElement | null>(null);
 
   // ============ VERIFICAR AUTENTICAÇÃO E CARREGAR USUÁRIO ============
-  // pages/PerfilUsuarioPage/PerfilUsuarioPage.tsx - Apenas o useEffect principal corrigido
-
-// ============ VERIFICAR AUTENTICAÇÃO E CARREGAR USUÁRIO ============
   useEffect(() => {
     console.log('🔍 useEffect: Verificando autenticação');
 
-    // Verifica se está autenticado
     if (!isAuthenticated()) {
       console.log('❌ Não autenticado - redirecionando para login');
       dispatch(clearCurrentUser());
@@ -61,17 +56,12 @@ const PerfilUsuarioPage: React.FC = () => {
       return;
     }
 
-    // LÓGICA ORIGINAL PRESERVADA:
-    // 1. Se userId existe na URL -> busca esse usuário (admin acessando perfil de outro)
-    // 2. Se userId não existe -> busca usuário do token (usuário acessando próprio perfil)
     let targetUserId: string | null = null;
     
     if (userId) {
-      // Admin acessando perfil de outro usuário
       targetUserId = userId;
       console.log('👤 Admin acessando usuário:', userId);
     } else {
-      // Usuário acessando próprio perfil - CORREÇÃO AQUI: garantir que é string
       const tokenUserId = getUserIdFromToken();
       targetUserId = tokenUserId;
       console.log('👤 Usuário acessando próprio perfil:', tokenUserId);
@@ -80,14 +70,12 @@ const PerfilUsuarioPage: React.FC = () => {
     console.log('🎯 Target User ID final:', targetUserId);
     
     if (targetUserId) {
-      // CORREÇÃO: garantir que targetUserId é sempre string
       dispatch(fetchUsuario(targetUserId));
     } else {
       console.error('❌ Nenhum ID de usuário disponível');
       navigate('/MonitoriaJa/login');
     }
 
-    // Cleanup ao desmontar
     return () => {
       dispatch(clearValidationErrors());
       dispatch(clearError());
@@ -102,9 +90,11 @@ const PerfilUsuarioPage: React.FC = () => {
       setNome(currentUser.nome || '');
       setTelefone(currentUser.telefone || '');
       setEmail(currentUser.email || '');
-      setFotoPreview(currentUser.foto || null);
+      
+      if (currentUser.foto) {
+        setFotoPreview(currentUser.foto);
+      }
 
-      // Atualiza o conteúdo visual do nome sem re-renderizar
       if (nomeRef.current) {
         nomeRef.current.textContent = currentUser.nome || '';
       }
@@ -133,7 +123,6 @@ const PerfilUsuarioPage: React.FC = () => {
     }
   };
 
-  // Nome só é atualizado no blur para não causar salto do cursor
   const handleNomeBlur = () => {
     const newNome = nomeRef.current?.textContent?.trim() || '';
     setNome(newNome);
@@ -143,14 +132,41 @@ const PerfilUsuarioPage: React.FC = () => {
   };
 
   // ============ UPLOAD DE FOTO ============
-  const handleFileSelect = (file: File | null) => {
-    if (file) {
+  const handleFileSelect = async (file: File | null) => {
+    if (!file) return;
+
+    console.log('📤 Iniciando upload de foto:', file.name);
+    setUploadingFoto(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao fazer upload da foto');
+      }
+
+      const uploadedFile = await response.json();
+      console.log('✅ Arquivo enviado:', uploadedFile);
+
+      // Atualiza preview e arquivo
       setFotoFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFotoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      
+      // Monta o caminho correto do arquivo
+      const fotoUrl = `/uploads/${uploadedFile.filename}`;
+      setFotoPreview(fotoUrl);
+      
+      console.log('🖼️ Preview atualizado:', fotoUrl);
+    } catch (err) {
+      console.error('❌ Erro no upload:', err);
+      alert('Erro ao fazer upload da foto. Tente novamente.');
+    } finally {
+      setUploadingFoto(false);
     }
   };
 
@@ -168,12 +184,10 @@ const PerfilUsuarioPage: React.FC = () => {
     const nomeFinal = nomeRef.current?.textContent?.trim() || nome;
     console.log('📋 Dados a salvar:', { nomeFinal, telefone, email });
 
-    // Valida todos os campos
     dispatch(validateField({ field: 'nome', value: nomeFinal }));
     dispatch(validateField({ field: 'telefone', value: telefone }));
     dispatch(validateField({ field: 'email', value: email }));
 
-    // Verifica se há erros de validação
     const hasValidationErrors = Object.values(validationErrors).some(err => err !== undefined);
     if (hasValidationErrors) {
       console.log('❌ Erros de validação encontrados');
@@ -181,7 +195,6 @@ const PerfilUsuarioPage: React.FC = () => {
     }
 
     try {
-      // Prepara dados para envio
       const updateData: {
         nome: string;
         telefone: string;
@@ -193,9 +206,9 @@ const PerfilUsuarioPage: React.FC = () => {
         email,
       };
 
-      // Se houver foto para upload, converte para base64
-      if (fotoFile) {
-        updateData.fotoUrl = fotoPreview || undefined;
+      // Se houver foto, inclui a URL do upload
+      if (fotoPreview && fotoPreview.startsWith('/uploads/')) {
+        updateData.fotoUrl = fotoPreview;
       }
 
       console.log('📤 Despachando updateUsuario...');
@@ -204,9 +217,9 @@ const PerfilUsuarioPage: React.FC = () => {
       console.log('✅ Usuário atualizado com sucesso');
       setOpen(true);
       setHasSubmitted(false);
+      setFotoFile(null);
     } catch (err: any) {
       console.error('❌ Erro ao salvar:', err);
-      // O erro já está sendo tratado pelo Redux
     }
   };
 
@@ -284,6 +297,11 @@ const PerfilUsuarioPage: React.FC = () => {
         {/* Foto e Upload */}
         <div className={styles.photoSection}>
           <div className={styles.photoContainer}>
+            {uploadingFoto && (
+              <div className={styles.loadingOverlay}>
+                <CircularProgress />
+              </div>
+            )}
             {fotoPreview ? (
               <img src={fotoPreview} alt="Foto do usuário" className={styles.profilePhoto} />
             ) : (
@@ -295,6 +313,7 @@ const PerfilUsuarioPage: React.FC = () => {
               className={styles.uploadButton}
               onFileSelect={handleFileSelect}
             />
+            {uploadingFoto && <p className={styles.uploadingText}>Enviando foto...</p>}
           </div>
         </div>
 
@@ -344,7 +363,7 @@ const PerfilUsuarioPage: React.FC = () => {
           >
             Trocar senha
           </ConfirmationButton>
-          <ConfirmationButton onClick={handleSalvar} disabled={loading}>
+          <ConfirmationButton onClick={handleSalvar} disabled={loading || uploadingFoto}>
             {loading ? 'Salvando...' : 'Confirmar Mudanças'}
           </ConfirmationButton>
           <ConfirmationButton onClick={() => navigate(-1)}>
@@ -357,7 +376,6 @@ const PerfilUsuarioPage: React.FC = () => {
         open={open}
         onClose={() => {
           setOpen(false);
-          // Recarrega dados após sucesso
           const tokenUserId = getUserIdFromToken();
           if (tokenUserId) {
             dispatch(fetchUsuario(tokenUserId));
