@@ -208,7 +208,7 @@ const Footer: React.FC = () => {
                 <GitHubIcon />
               </a>
               <a
-                href="#"
+                href="https://www.linkedin.com/in/paulo-eduardorj/"
                 className="link"
                 style={{ color: "white", textDecoration: "none" }}
               >

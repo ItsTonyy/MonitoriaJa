@@ -290,7 +290,7 @@ function DetalhesMonitor() {
           variant="contained"
           sx={{ padding: "5px 40px" }}
           onClick={handleAgendar}
-          disabled={!selectedSlot}
+          disabled={!selectedSlot || !token}
         >
           Agendar
         </Button>

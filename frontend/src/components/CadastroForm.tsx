@@ -267,7 +267,7 @@ function CadastroForm() {
   return (
     <Box>
       <Box sx={{ justifySelf: "center" }}>
-        <Typography variant="h4" component="h1" gutterBottom color="#0289d1ce" fontWeight={500}>
+        <Typography variant="h4" component="h1" gutterBottom color="#104c91" fontWeight={500}>
           Cadastre-se
         </Typography>
         <Avatar
