@@ -21,12 +21,10 @@ const ConfirmaPagamentoPage: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Redux Agendamento
   const currentAgendamento = useSelector(
     (state: RootState) => state.agendamento.currentAgendamento
   );
 
-  // Verifica se existe agendamento e cartão
   useEffect(() => {
     if (!currentAgendamento) {
       alert("Nenhum agendamento encontrado!");
@@ -38,7 +36,6 @@ const ConfirmaPagamentoPage: React.FC = () => {
     }
   }, [currentAgendamento, cartao, navigate]);
 
-  // Redireciona após sucesso
   useEffect(() => {
     if (success) {
       const timer = setTimeout(() => {
@@ -50,7 +47,7 @@ const ConfirmaPagamentoPage: React.FC = () => {
 
   const handleConfirmarPagamento = async () => {
     if (!currentAgendamento) {
-      alert("Nenhum agendamento encontrado!");
+      setError("Nenhum agendamento encontrado!");
       return;
     }
 
@@ -58,10 +55,8 @@ const ConfirmaPagamentoPage: React.FC = () => {
     setError(null);
 
     try {
-      // Simula processamento do pagamento
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Atualiza agendamento com dados de pagamento
       const novoAgendamento = {
         ...currentAgendamento,
         statusPagamento: "PAGO" as const,
@@ -69,12 +64,8 @@ const ConfirmaPagamentoPage: React.FC = () => {
         status: "CONFIRMADO" as const,
       };
 
-      // Salva no backend e recebe o agendamento com ID
       const agendamentoCriado = await criarAgendamento(novoAgendamento);
-
-      // CORREÇÃO: Atualiza o Redux com o novo agendamento
       dispatch(addAgendamento(agendamentoCriado));
-
       setSuccess(true);
     } catch (error) {
       console.error("Erro ao processar pagamento:", error);
@@ -88,7 +79,6 @@ const ConfirmaPagamentoPage: React.FC = () => {
     navigate("/MonitoriaJa/lista-cartao");
   };
 
-  // Tela de sucesso
   if (success) {
     return (
       <main
@@ -126,7 +116,6 @@ const ConfirmaPagamentoPage: React.FC = () => {
     );
   }
 
-  // Tela de erro
   if (error) {
     return (
       <main
@@ -159,7 +148,6 @@ const ConfirmaPagamentoPage: React.FC = () => {
     );
   }
 
-  // Valores do pedido
   const orderId = currentAgendamento ? `#${currentAgendamento.id}` : '#0000';
 
   return (
@@ -169,9 +157,9 @@ const ConfirmaPagamentoPage: React.FC = () => {
         <div className={styles.infoText}>Pedido {orderId}</div>
 
         <CartaoItem
-          numero={cartao?.numero ?? '************0000'}
-          nome={cartao?.nome ?? 'Nome não disponível'}
-          bandeira={cartao?.bandeira ?? 'Visa'}
+          numero={cartao.ultimosDigitos}
+          nome={cartao.titular}
+          bandeira={cartao.bandeira}
           mostrarBotoes={false}
         />
 

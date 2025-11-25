@@ -20,20 +20,24 @@ import { criarAgendamento } from "../../../redux/features/agendamento/fetch";
 
 import type { AppDispatch } from "../../../redux/store";
 import type { RootState } from "../../../redux/root-reducer";
+import { useLocation } from "react-router-dom";
+
+
 
 const PixPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-
+  const location = useLocation();
+  const currentAgendamento = location.state?.agendamento;
   // Redux Pix
   const { orderId, orderValue, pixCode, status, errorMessage } = useSelector(
     (state: RootState) => state.pix
   );
 
-  // Redux Agendamento
+  /* Redux Agendamento
   const currentAgendamento = useSelector(
     (state: RootState) => state.agendamento.currentAgendamento
-  );
+  );/*/
 
   // Resetar status do Pix ao entrar na página
   useEffect(() => {

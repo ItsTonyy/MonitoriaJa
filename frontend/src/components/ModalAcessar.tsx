@@ -10,12 +10,15 @@ interface ModalAcessarProps {
   onClose: () => void;
 }
 
+function getUsuarioObj(usuario: string | undefined | null | { [key: string]: any }) {
+  return typeof usuario === "object" && usuario !== null ? usuario : undefined;
+}
+
 const ModalAcessar: React.FC<ModalAcessarProps> = ({ open, onClose }) => {
   const [copied, setCopied] = React.useState(false);
   const agendamento = useAppSelector((state) => state.agendamento.currentAgendamento);
-
   if (!agendamento) return null;
-
+  const monitorObj = getUsuarioObj(agendamento?.monitor);
   const handleCopy = () => {
     navigator.clipboard.writeText(agendamento.link || "");
     setCopied(true);
@@ -42,8 +45,8 @@ const ModalAcessar: React.FC<ModalAcessarProps> = ({ open, onClose }) => {
       >
         <Stack spacing={2} alignItems="center">
           <Avatar
-            src={agendamento.monitor!.foto}
-            alt={agendamento.monitor!.nome}
+            src={monitorObj?.foto}
+            alt={monitorObj?.nome}
             sx={{
               width: 80,
               height: 80,
@@ -53,10 +56,10 @@ const ModalAcessar: React.FC<ModalAcessarProps> = ({ open, onClose }) => {
           />
 
           <Typography variant="h6" color="primary.main" align="center">
-            {agendamento.monitor!.nome}
+            {monitorObj?.nome}
           </Typography>
           <Typography variant="body1" color="text.secondary" align="center">
-            Disciplina: {agendamento.monitor!.materia}
+            Disciplina: {monitorObj?.materia}
           </Typography>
           <Typography variant="body1" color="text.secondary" align="center">
             Data: {agendamento.data}

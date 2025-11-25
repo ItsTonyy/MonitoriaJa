@@ -19,20 +19,23 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import StarIcon from "@mui/icons-material/Star";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../redux/hooks";
-import { setSelectedMonitor } from "../redux/features/monitor/monitorSlice";
 import { listarMonitores } from "../redux/features/monitor/fetch";
 import { Disciplina } from "../models/disciplina.model";
 import { listarDisciplinas } from "../redux/features/disciplina/fetch";
 import { Usuario } from "../models/usuario.model";
 
+function removeAccents(str: string) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 function matchStartOfWords(text: string, search: string) {
   if (!search) return true;
-  const s = search.trim().toLowerCase();
-  return text
-    .toLowerCase()
-    .split(/\s+/)
-    .some((w) => w.startsWith(s));
+  const searchWords = removeAccents(search.trim().toLowerCase()).split(/\s+/);
+  const textWords = removeAccents(text).toLowerCase().split(/\s+/);
+  // Cada palavra da busca deve ser início de alguma palavra do texto
+  return searchWords.every((sw) =>
+    textWords.some((tw) => tw.startsWith(sw))
+  );
 }
 
 function getGridCols() {
@@ -62,7 +65,6 @@ function getCardsPerPage() {
 }
 
 function ListaMonitores() {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [monitores, setmonitores] = useState<Usuario[]>([]);
   const [, setLoading] = useState(true);
@@ -106,7 +108,7 @@ function ListaMonitores() {
     return monitores.filter(
       (m) =>
         matchStartOfWords(m.nome!, buscaNome) &&
-        matchStartOfWords(m.materia!, buscaMateria)
+         (!buscaMateria ||  (m.materia && matchStartOfWords(m.materia!, buscaMateria)))
     );
   }, [monitores, buscaNome, buscaMateria]);
 
@@ -415,8 +417,12 @@ function ListaMonitores() {
                         color="primary"
                         size="medium"
                         onClick={() => {
-                          dispatch(setSelectedMonitor(monitor));
-                          navigate("/MonitoriaJa/detalhes-monitor");
+                          navigate("/MonitoriaJa/detalhes-monitor", {
+                            state: {
+                              monitorId: (monitor as any).id ?? (monitor as any)._id,
+                              monitor,
+                            },
+                          });
                         }}
                       >
                         Acessar

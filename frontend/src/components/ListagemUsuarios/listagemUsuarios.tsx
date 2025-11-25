@@ -15,6 +15,12 @@ import {
   Box,
   Fade,
   Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  CircularProgress,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
@@ -56,7 +62,6 @@ function matchStartOfWords(text: string, search: string) {
   const searchTerms = search.trim().toLowerCase().split(/\s+/);
   const textWords = text.toLowerCase().split(/\s+/);
   
-  // Cada termo da busca deve ter pelo menos uma palavra que comece com ele
   return searchTerms.every(searchTerm => 
     textWords.some(word => word.startsWith(searchTerm))
   );
@@ -96,6 +101,9 @@ function ListagemUsuarios() {
   const [buscaRole, setBuscaRole] = useState<string>("");
   const [pagina, setPagina] = useState(1);
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
+  const [dialogAberto, setDialogAberto] = useState(false);
+  const [usuarioSelecionado, setUsuarioSelecionado] = useState<UserData | null>(null);
+  const [removendo, setRemovendo] = useState(false);
 
   useEffect(() => {
     dispatch(fetchUsuariosAdmin());
@@ -131,12 +139,59 @@ function ListagemUsuarios() {
     pagina * cardsPorPagina
   );
 
-  // Função para navegar para o perfil correto baseado na role
   const handleVisualizarUsuario = (usuario: UserData) => {
-    if (usuario.role === 'monitor') {
+    if (usuario.role === 'monitor' || usuario.role === 'admin') {
       navigate(`/MonitoriaJa/perfil-monitor/${usuario.id}`);
     } else {
       navigate(`/MonitoriaJa/perfil-usuario/${usuario.id}`);
+    }
+  };
+
+  const handleAbrirDialogRemocao = (usuario: UserData) => {
+    setUsuarioSelecionado(usuario);
+    setDialogAberto(true);
+  };
+
+  const handleFecharDialog = () => {
+    setDialogAberto(false);
+    setUsuarioSelecionado(null);
+    setRemovendo(false);
+  };
+
+  const handleConfirmarRemocao = async () => {
+    if (!usuarioSelecionado) return;
+
+    setRemovendo(true);
+    try {
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        alert("Token de autenticação não encontrado. Faça login novamente.");
+        setRemovendo(false);
+        return;
+      }
+
+      const response = await fetch(`http://localhost:3001/usuario/${usuarioSelecionado.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      dispatch(fetchUsuariosAdmin());
+      
+      handleFecharDialog();
+    } catch (error) {
+      console.error("Erro ao remover usuário:", error);
+      alert("Erro ao remover usuário. Tente novamente.");
+      setRemovendo(false);
     }
   };
 
@@ -473,9 +528,8 @@ function ListagemUsuarios() {
                         variant="outlined"
                         color="error"
                         size="small"
-                        onClick={() => {
-                          console.log('Remover usuário:', usuario);
-                        }}
+                        onClick={() => handleAbrirDialogRemocao(usuario)}
+                        disabled={removendo}
                       >
                         Remover
                       </Button>
@@ -514,6 +568,36 @@ function ListagemUsuarios() {
           &#8594;
         </Button>
       </Stack>
+
+      <Dialog
+        open={dialogAberto}
+        onClose={handleFecharDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Confirmar Exclusão
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Tem certeza que deseja remover o usuário <strong>{usuarioSelecionado?.name}</strong>? Esta ação não pode ser desfeita.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleFecharDialog} disabled={removendo}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleConfirmarRemocao}
+            color="error"
+            variant="contained"
+            disabled={removendo}
+            startIcon={removendo ? <CircularProgress size={20} /> : undefined}
+          >
+            {removendo ? "Removendo..." : "Remover"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 }

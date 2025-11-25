@@ -11,7 +11,7 @@ export default async function autenticar(req: Request, res: Response, next: Next
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_KEY as string) as { id: string; role: string;};
-        if(decoded.role !== 'admin'){
+        if(decoded.role.toLowerCase() !== 'admin'){
             return  res.status(403).json({ message: "Acesso negado!" });
         }
         await AdminCheck(decoded.id);

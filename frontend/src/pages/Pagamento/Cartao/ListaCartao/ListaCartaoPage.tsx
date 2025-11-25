@@ -11,71 +11,123 @@ import {
   fetchCartoes,
   removerCartao,
   selectAllCartoes,
+  selectCartoesLoading,
+  selectCartoesError,
+  clearError,
 } from "../../../../redux/features/listaCartao/slice";
+import { CircularProgress } from "@mui/material";
 
 const ListaCartaoPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // Seleciona os cartões do estado Redux
   const cartoes = useSelector((state: RootState) => selectAllCartoes(state));
-  
-  // Verifica se existe agendamento
-  const currentAgendamento = useSelector(
-    (state: RootState) => state.agendamento.currentAgendamento
-  );
+  const loading = useSelector((state: RootState) => selectCartoesLoading(state));
+  const error = useSelector((state: RootState) => selectCartoesError(state));
 
-  // Carrega os cartões ao montar o componente
+  const [removendoId, setRemovendoId] = React.useState<string | null>(null);
+
   useEffect(() => {
     dispatch(fetchCartoes());
   }, [dispatch]);
 
-  // Verifica se há agendamento
   useEffect(() => {
-    if (!currentAgendamento) {
-      alert("Nenhum agendamento encontrado!");
-      navigate("/MonitoriaJa/agendamento-monitor");
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(clearError());
+      }, 5000);
+      return () => clearTimeout(timer);
     }
-  }, [currentAgendamento, navigate]);
+  }, [error, dispatch]);
 
   const handleEscolherCartao = (cartao: any) => {
-    // Navega para confirmação de pagamento com o cartão selecionado
     navigate("/MonitoriaJa/confirma-pagamento", { state: { cartao } });
+  };
+
+  const handleRemoverCartao = async (id: string) => {
+    if (!id) return;
+
+    setRemovendoId(id);
+    try {
+      await dispatch(removerCartao(id)).unwrap();
+    } catch (err: any) {
+      // Erro já está no estado Redux
+    } finally {
+      setRemovendoId(null);
+    }
   };
 
   const handleCancel = () => {
     navigate("/MonitoriaJa/agendamento-monitor");
   };
 
+  const handleCadastrarCartao = () => {
+    navigate("/MonitoriaJa/cadastra-cartao");
+  };
+
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
         <Title text="Cartões Cadastrados" />
-        <div className={styles.cardContainer}>
-          {cartoes.length === 0 ? (
-            <p style={{ textAlign: "center", color: "#666" }}>
-              Nenhum cartão cadastrado. Cadastre um novo cartão para continuar.
-            </p>
-          ) : (
-            cartoes.map((cartao) => (
-              <CartaoItem
-                key={cartao.id}
-                numero={cartao.numero}
-                nome={cartao.nome}
-                bandeira={cartao.bandeira}
-                mostrarBotoes={true}
-                onEscolher={() => handleEscolherCartao(cartao)}
-                onRemover={() => dispatch(removerCartao(cartao.id))}
-              />
-            ))
-          )}
-        </div>
+
+        {error && (
+          <div
+            style={{
+              padding: "10px",
+              marginBottom: "20px",
+              backgroundColor: "#ffebee",
+              color: "#c62828",
+              borderRadius: "4px",
+              textAlign: "center",
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        {loading && cartoes.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "40px" }}>
+            <CircularProgress />
+          </div>
+        ) : (
+          <div className={styles.cardContainer}>
+            {cartoes.length === 0 ? (
+              <p style={{ textAlign: "center", color: "#666", marginBottom: "20px" }}>
+                Nenhum cartão cadastrado. Cadastre um novo cartão para continuar.
+              </p>
+            ) : (
+              cartoes.map((cartao: any) => (
+                <div
+                  key={cartao._id}
+                  style={{
+                    opacity: removendoId === cartao._id ? 0.5 : 1,
+                    pointerEvents: removendoId === cartao._id ? "none" : "auto",
+                    transition: "opacity 0.3s",
+                  }}
+                >
+                  <CartaoItem
+                    numero={cartao.ultimosDigitos || "••••"}
+                    nome={cartao.titular || "Titular não informado"}
+                    bandeira={(cartao.bandeira === "Visa" || cartao.bandeira === "MasterCard" || cartao.bandeira === "Elo") 
+                      ? cartao.bandeira 
+                      : "Visa"}
+                    mostrarBotoes={true}
+                    onEscolher={() => handleEscolherCartao(cartao)}
+                    onRemover={() => handleRemoverCartao(cartao._id)}
+                  />
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
         <ConfirmationButton
-          onClick={() => navigate("/MonitoriaJa/cadastra-cartao")}
+          onClick={handleCadastrarCartao}
+          disabled={loading}
         >
           Cadastrar Novo Cartão
         </ConfirmationButton>
-        <ConfirmationButton onClick={handleCancel}>
+        <ConfirmationButton onClick={handleCancel} disabled={loading}>
           Cancelar
         </ConfirmationButton>
       </div>

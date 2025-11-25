@@ -3,9 +3,46 @@ dotenv.config({quiet: true});
 import express from "express";
 import Notificacao from "../models/notificacao.model";
 import jwt from "jsonwebtoken";
+import autenticar from "../middleware/auth";
+import adminAuth from "../middleware/adminAuth";
 const router = express.Router();
+/**
+ * @swagger
+ * /notificacao:
+ *   post:
+ *     summary: Cria uma notificação
+ *     tags: [Notificacao]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               titulo:
+ *                 type: string
+ *               mensagem:
+ *                 type: string
+ *               tipo:
+ *                 type: string
+ *                 enum: [AGENDAMENTO, CANCELAMENTO, REAGENDAMENTO, AVALIACAO]
+ *               destinatario:
+ *                 type: string
+ *               agendamento:
+ *                 type: string
+ *               prioridade:
+ *                 type: string
+ *                 enum: [ALTA, MEDIA, BAIXA]
+ *     responses:
+ *       201:
+ *         description: Notificação criada com sucesso
+ *       500:
+ *         description: Erro ao criar notificação
+ */
 // CREATE - Adiciona uma nova notificação
-router.post("/", async (req, res) => {
+router.post("/", autenticar, async (req, res) => {
   const notificacao = req.body;
 
   try {
@@ -16,8 +53,22 @@ router.post("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /notificacao:
+ *   get:
+ *     summary: Lista todas as notificações
+ *     tags: [Notificacao]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de notificações
+ *       500:
+ *         description: Erro ao listar notificações
+ */
 // READ ALL - Lista todas as notificações (com destinatario e agendamento populados)
-router.get("/", async (req, res) => {
+router.get("/",adminAuth, async (req, res) => {
   try {
     const notificacoes = await Notificacao.find()
       .populate("destinatario")
@@ -28,8 +79,24 @@ router.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /notificacao/user:
+ *   get:
+ *     summary: Obtém uma notificação pelo ID do token
+ *     tags: [Notificacao]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Notificação encontrada
+ *       404:
+ *         description: Notificação não encontrada
+ *       500:
+ *         description: Erro ao buscar notificação
+ */
 // READ ONE - Busca notificação por id (com destinatario e agendamento populados)
-router.get("/user", async (req, res) => {
+router.get("/user", autenticar, async (req, res) => {
   const id = req.headers.authorization?.split(" ")[1];
   try {
     const notificacao = await Notificacao.findOne({ _id: id })
@@ -47,8 +114,38 @@ router.get("/user", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /notificacao/update:
+ *   patch:
+ *     summary: Atualiza uma notificação pelo ID do token
+ *     tags: [Notificacao]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [LIDA, NAO_LIDA, ARQUIVADA]
+ *               titulo:
+ *                 type: string
+ *               mensagem:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Notificação atualizada
+ *       404:
+ *         description: Notificação não encontrada
+ *       500:
+ *         description: Erro ao atualizar notificação
+ */
 // UPDATE - Atualiza notificação por id
-router.patch("/update", async (req, res) => {
+router.put("/update", autenticar, async (req, res) => {
   const id = req.headers.authorization?.split(" ")[1];
   const update = req.body;
 
@@ -66,16 +163,49 @@ router.patch("/update", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /notificacao/{id}/marcar-lida:
+ *   patch:
+ *     summary: Marca uma notificação como lida
+ *     tags: [Notificacao]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Notificação marcada como lida
+ *       404:
+ *         description: Notificação não encontrada
+ *       500:
+ *         description: Erro ao marcar notificação como lida
+ */
 // PATCH - Marca notificação como lida
-router.patch("/:id/marcar-lida", async (req, res) => {
+router.patch("/:id/marcar-lida", autenticar, async (req, res) => {
   const id = req.params.id;
+  const token = req.headers.authorization?.split(" ")[1];
 
   try {
+    if(!token){
+      return res.status(401).json({message:"Token de autenticação ausente."});
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_KEY as string) as { id: string; role: string };
+    
     const notificacao = await Notificacao.findById(id);
 
     if (!notificacao) {
       res.status(404).json({ message: "Notificação não encontrada!" });
       return;
+    }
+
+    if(notificacao.destinatario.toString() !== decoded.id){
+      return res.status(403).json({message:"Você não tem permissão para marcar esta notificação como lida."});
     }
 
     const updatedNotificacao = await Notificacao.findByIdAndUpdate(
@@ -126,8 +256,22 @@ router.patch("/:id/marcar-lida", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /notificacao/delete:
+ *   delete:
+ *     summary: Remove uma notificação pelo ID do token
+ *     tags: [Notificacao]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Notificação removida com sucesso
+ *       404:
+ *         description: Notificação não encontrada
+ */
 // DELETE - Remove notificação por id
-router.delete("/delete", async (req, res) => {
+router.delete("/delete", adminAuth, async (req, res) => {
   const id = req.headers.authorization?.split(" ")[1];
 
   const notificacao = await Notificacao.findOne({ _id: id });
@@ -145,15 +289,26 @@ router.delete("/delete", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /notificacao/destinatario/:
+ *   get:
+ *     summary: Lista notificações do destinatário do token
+ *     tags: [Notificacao]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de notificações do destinatário
+ */
 // GET - Todas as notificações de um destinatário específico
-router.get("/destinatario/", async (req, res) => {
+router.get("/destinatario/", autenticar, async (req, res) => {
   const destinatarioId = req.headers.authorization?.split(" ")[1];
   if(!destinatarioId){
     return res.status(401).json({message:"Token de autenticação ausente."});
   }
 
   const decoded = jwt.verify(destinatarioId, process.env.JWT_KEY as string) as { id: string; role: string }
-  console.log("Destinatário ID:", decoded.id);
   try {
     const notificacoes = await Notificacao.find({ destinatario: decoded.id })
       .populate("destinatario")
@@ -164,7 +319,6 @@ router.get("/destinatario/", async (req, res) => {
           { path: "aluno", select: "nome email telefone" }
         ]
       });
-    console.log("Notificações encontradas:", notificacoes.length);
     
     const notificacoesFormatadas = notificacoes.map((n: any) => ({
       id: n._id.toString(),
