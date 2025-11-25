@@ -66,9 +66,9 @@ const App = () => {
           <Route
             path="/MonitoriaJa/lista-monitores"
             element={
-              <Middleware>
+              //<Middleware>
                 <ListaMonitores />
-              </Middleware>
+              //</Middleware>
             }
           />
           <Route
@@ -86,9 +86,9 @@ const App = () => {
           <Route
             path="/MonitoriaJa/detalhes-monitor"
             element={
-              <Middleware>
+              //<Middleware>
                 <DetalhesMonitor />
-              </Middleware>
+              //</Middleware>
             }
           />
           <Route

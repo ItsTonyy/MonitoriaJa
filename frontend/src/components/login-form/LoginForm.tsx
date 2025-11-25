@@ -29,11 +29,14 @@ const LoginForm: React.FC = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
+  // resolução temporária para resolver problema de redirecionamento após login
+  var autenticado = localStorage.getItem('token');
+
   useEffect(() => {
-    if (isAuthenticated) {
+    if (autenticado) {
       navigate('/MonitoriaJa/lista-monitores');
     }
-  }, [isAuthenticated, navigate]);
+  }, [autenticado, navigate]);
 
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;

@@ -88,9 +88,7 @@ export default function AppNavBar() {
   }
 
   function handleClickMonitores() {
-    if (isAuthenticated) {
-      navigate("/MonitoriaJa/lista-monitores");
-    }
+    navigate("/MonitoriaJa/lista-monitores");
   }
 
   function handleClickAgendamento() {
@@ -112,6 +110,11 @@ export default function AppNavBar() {
   function handleClickLogin() {
     navigate("/MonitoriaJa/login");
   }
+
+  function handleClickCadastro() {
+    navigate("/MonitoriaJa/cadastro-monitor");
+  }
+
   const token = getToken()
   const decodedToken = token ? decodeToken(token) : null;
   const userType = decodedToken?.role;
@@ -323,7 +326,7 @@ export default function AppNavBar() {
                   variant="contained"
                   size="small"
                   sx={{ ":hover": { transform: "none" } }}
-                  onClick={handleClickLogin}
+                  onClick={handleClickCadastro}
                 >
                   Sign up
                 </Button>
@@ -424,7 +427,7 @@ export default function AppNavBar() {
                         color="primary"
                         variant="contained"
                         fullWidth
-                        onClick={handleClickLogin}
+                        onClick={handleClickCadastro}
                       >
                         Sign up
                       </Button>
