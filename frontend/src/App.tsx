@@ -32,7 +32,7 @@ const App = () => {
       <AppNavBar />
       <MainLayout>
         <Routes>
-          <Route path="/MonitoriaJa/historico-agendamento" element={< HistoricoAgendamentos/>} />
+          <Route path="/MonitoriaJa/historico-agendamento" element={<Middleware> < HistoricoAgendamentos/> </Middleware>} />
           <Route path="/MonitoriaJa/alterar-senha/:userId" element={<AlterarSenhaPage />} />
           <Route path="/MonitoriaJa/perfil-usuario/:userId" element={<PerfilUsuarioPage />} />
           <Route path="/MonitoriaJa/perfil-monitor/:monitorId" element={<PerfilMonitorPage />} />
