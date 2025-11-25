@@ -254,6 +254,21 @@ export default function AppNavBar() {
                   Agendamento
                 </Button>
               }
+                            {autenticado && 
+                <Button
+                  variant="text"
+                  color="info"
+                  size="small"
+                  sx={{
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    ":hover": { transform: "none" },
+                  }}
+                  onClick={handleClickHistorico}
+                >
+                  Histórico
+                </Button>
+              }
               {isAdmin && 
                 <Button
                   variant="text"
