@@ -25,6 +25,7 @@ import {
 import { isAuthenticated, getUserIdFromToken } from '../Pagamento/Cartao/CadastraCartao/authUtils';
 import Modal from "@mui/material/Modal";
 import ModalAgendamento from "../../components/modais/ModalAgendamento";
+import { uploadArquivo } from "../../redux/features/upload/fetch";
 
 export interface Disponibilidade {
   dia: string;
@@ -58,6 +59,7 @@ const PerfilMonitorPage: React.FC = () => {
   const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>([]);
   const [fotoUrl, setFotoUrl] = useState<string>("");
   const [fotoFile, setFotoFile] = useState<File | null>(null);
+  const [uploadingFoto, setUploadingFoto] = useState(false);
   const [open, setOpen] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -71,46 +73,67 @@ const PerfilMonitorPage: React.FC = () => {
 
   // Buscar monitor e disciplinas
   useEffect(() => {
-    // Verifica se está autenticado
     if (!isAuthenticated()) {
       dispatch(clearCurrentMonitor());
       navigate('/MonitoriaJa/login');
       return;
     }
 
-    // Determina qual monitor buscar (sempre como string)
     const targetMonitorId = monitorId || getUserIdFromToken();
     
     if (targetMonitorId) {
-      // Garante que é string
       dispatch(fetchMonitor(String(targetMonitorId)));
       dispatch(fetchDisciplinas());
     } else {
       navigate("/MonitoriaJa/login");
     }
 
-    // Cleanup ao desmontar
     return () => {
       dispatch(clearError());
     };
   }, [dispatch, navigate, monitorId]);
 
-  // Atualizar estados locais quando monitor é carregado
+  // CORREÇÃO: Atualizar estados locais quando monitor é carregado
   useEffect(() => {
     if (monitor) {
       setTelefoneInput(monitor.telefone || "");
       setEmailInput(monitor.email || "");
       setDescricaoInput(monitor.biografia || "");
-      setMateriasSelecionadas(monitor.materia || []);
+      
+      // CORREÇÃO: Usar as matérias do monitor (já devem vir sincronizadas do slice)
+      if (monitor.materia && monitor.materia.length > 0) {
+        console.log('✅ [PerfilMonitorPage] Carregando matérias do monitor:', monitor.materia);
+        setMateriasSelecionadas(monitor.materia);
+      }
+      
       setFotoUrl(monitor.foto || "");
 
-      // Preencher o nome no DOM diretamente
       if (nomeRef.current) {
         nomeRef.current.textContent = monitor.nome || "";
       }
       setNomeInput(monitor.nome || "");
     }
   }, [monitor]);
+
+  // CORREÇÃO: Sincronizar matérias quando as disciplinas estiverem carregadas
+  useEffect(() => {
+    if (monitor && materiasDisponiveis.length > 0 && monitor.listaDisciplinas) {
+      // Se o monitor tem listaDisciplinas (IDs), converter para nomes
+      const materiasNomes = monitor.listaDisciplinas
+        .map((disciplinaId: string) => {
+          const disciplina = materiasDisponiveis.find(d => d.id === disciplinaId);
+          return disciplina?.nome;
+        })
+        .filter(Boolean) as string[];
+      
+      // CORREÇÃO: Só atualizar se as matérias forem diferentes
+      if (materiasNomes.length > 0 && JSON.stringify(materiasNomes) !== JSON.stringify(materiasSelecionadas)) {
+        console.log('🔄 [PerfilMonitorPage] Sincronizando matérias do banco:', materiasNomes);
+        setMateriasSelecionadas(materiasNomes);
+        dispatch(atualizarMaterias(materiasNomes));
+      }
+    }
+  }, [monitor, materiasDisponiveis, materiasSelecionadas, dispatch]);
 
   // Limpar erro quando campos mudarem
   useEffect(() => {
@@ -137,10 +160,10 @@ const PerfilMonitorPage: React.FC = () => {
     }
   }, [error, navigate]);
 
-  // Converter array de objetos {id, nome} para array de strings (nomes)
-  const opcoesMaterias = materiasDisponiveis.map(
-    (disciplina) => disciplina.nome
-  );
+  // CORREÇÃO: Filtrar opções para mostrar apenas matérias NÃO selecionadas
+  const opcoesMaterias = materiasDisponiveis
+    .map((disciplina) => disciplina.nome)
+    .filter(nome => !materiasSelecionadas.includes(nome));
 
   // Handlers
   const handleNomeBlur = () => {
@@ -172,13 +195,18 @@ const PerfilMonitorPage: React.FC = () => {
     setMateriasSelecionadas(novasMaterias);
   };
 
-  const handleFileSelect = (file: File) => {
-    setFotoFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFotoUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+  const handleFileSelect = async (file: File) => {
+    console.log('📤 Arquivo selecionado:', file.name);
+
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFotoUrl(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      setFotoFile(file);
+    }
   };
 
   const handleSalvar = async () => {
@@ -196,7 +224,6 @@ const PerfilMonitorPage: React.FC = () => {
       dispatch(validateField({ field: "descricao", value: descricaoInput }));
     }
 
-    // Verifica se há erros de validação
     const hasValidationErrors = Object.values(validationErrors).some(
       (err) => err !== undefined
     );
@@ -206,6 +233,19 @@ const PerfilMonitorPage: React.FC = () => {
     }
 
     try {
+      console.log('📤 Fazendo upload da foto se necessário...');
+      
+      let fotoUrlFinal = monitor.foto;
+      if (fotoFile) {
+        setUploadingFoto(true);
+        console.log('📸 Iniciando upload da foto...');
+        fotoUrlFinal = await uploadArquivo(fotoFile);
+        console.log('✅ Upload da foto concluído:', fotoUrlFinal);
+        setUploadingFoto(false);
+      }
+
+      console.log('📤 Despachando updateMonitor com matérias:', materiasSelecionadas);
+      
       await dispatch(
         updateMonitor({
           nome: nomeFinal,
@@ -213,7 +253,7 @@ const PerfilMonitorPage: React.FC = () => {
           email: emailInput,
           biografia: descricaoInput,
           materia: materiasSelecionadas,
-          foto: fotoUrl,
+          fotoUrl: fotoUrlFinal,
         })
       ).unwrap();
 
@@ -225,9 +265,10 @@ const PerfilMonitorPage: React.FC = () => {
 
       setOpen(true);
       setHasSubmitted(false);
+      setFotoFile(null);
     } catch (err: any) {
       console.error("Erro ao salvar:", err);
-      // O erro já está sendo tratado pelo Redux
+      setUploadingFoto(false);
     }
   };
 
@@ -263,6 +304,7 @@ const PerfilMonitorPage: React.FC = () => {
       </div>
     );
   }
+  
   const userId = getUserIdFromToken();
   return (
     <main className={styles.centralizeContent}>
@@ -285,7 +327,7 @@ const PerfilMonitorPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Matérias */}
+        {/* Matérias - MOSTRAR SEMPRE que houver matérias selecionadas */}
         {materiasSelecionadas.length > 0 && (
           <div className={styles.materiasAssociadas}>
             <label className={styles.materiasLabel}>Matérias Associadas:</label>
@@ -320,6 +362,7 @@ const PerfilMonitorPage: React.FC = () => {
           </div>
           <div className={styles.uploadButtonContainer}>
             <UploadButton onFileSelect={handleFileSelect} />
+            {uploadingFoto && <p className={styles.uploadingText}>Enviando foto...</p>}
           </div>
         </div>
 
@@ -378,9 +421,14 @@ const PerfilMonitorPage: React.FC = () => {
             }
           />
 
+          {/* CORREÇÃO: O dropdown mostra apenas matérias NÃO selecionadas */}
           <AtualizarMateria
-            value={materiasSelecionadas}
-            onChange={setMateriasSelecionadas}
+            value={[]} // Sempre vazio porque as selecionadas já estão fixas acima
+            onChange={(novasMaterias) => {
+              // Adiciona as novas matérias às já selecionadas
+              const todasMaterias = [...materiasSelecionadas, ...novasMaterias];
+              setMateriasSelecionadas(todasMaterias);
+            }}
             options={opcoesMaterias}
           />
         </div>
@@ -421,7 +469,7 @@ const PerfilMonitorPage: React.FC = () => {
           </ConfirmationButton>
           </div>
           <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={handleSalvar} disabled={loading}>
+            <ConfirmationButton onClick={handleSalvar} disabled={loading || uploadingFoto}>
               {loading ? 'Salvando...' : 'Confirmar Mudanças'}
             </ConfirmationButton>
           </div>

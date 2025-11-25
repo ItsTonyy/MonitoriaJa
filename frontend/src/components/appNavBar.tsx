@@ -105,7 +105,7 @@ export default function AppNavBar() {
   }
   function handleClickAdicionarAgendamento() {
     if (isAuthenticated) {
-      navigate("/MonitoriaJa/adiciona-disciplina");
+      navigate("/MonitoriaJa/cadastro-disciplina");
     }
   }
 

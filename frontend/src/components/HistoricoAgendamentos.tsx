@@ -17,9 +17,23 @@ import ModalAcessar from "./ModalAcessar";
 import { Agendamento } from "../models/agendamento.model";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
-import { listarAgendamentos } from "../redux/features/agendamento/fetch";
 import { Usuario } from "../models/usuario.model";
 import { httpGet } from "../utils";
+import { listarAgendamentosPorUsuarioIdHistorico } from "../redux/features/agendamento/fetch";
+
+function decodeJwtPayload(token: string) {
+  try {
+    const payloadBase64 = token.split(".")[1];
+    const payloadJson = atob(payloadBase64);
+    return JSON.parse(payloadJson);
+  } catch {
+    return null;
+  }
+}
+
+function getUsuarioObj(usuario: string | undefined | null | { [key: string]: any }) {
+  return typeof usuario === "object" && usuario !== null ? usuario : undefined;
+}
 
 function getGridCols() {
   if (typeof window === "undefined") return 2;
@@ -56,45 +70,32 @@ function HistoricoAgendamentos() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
-  const usuarioLogado = useAppSelector((state) => state.login.user);
-  const [alunos, setAlunos] = useState<Usuario[] | null>(null);
 
-  const fetchAgendamentos = async () => {
-    try {
-      const data = await listarAgendamentos();
-      let historicoAgendamentos = data.filter((ag) => ag.status === "CANCELADO" || ag.status === "CONCLUIDO");
-      if (usuarioLogado?.role === "user") {
-        historicoAgendamentos = historicoAgendamentos.filter((ag) => ag.alunoId === usuarioLogado.id);
-      } else if (usuarioLogado?.role === "monitor") {
-        historicoAgendamentos = historicoAgendamentos.filter((ag) => ag.monitor?.id === usuarioLogado.id.toString());
+  const token = localStorage.getItem("token");
+  let usuarioId: string | undefined = undefined;
+  let usuarioRole: string | undefined = undefined;
+  if (token) {
+    const payload = decodeJwtPayload(token);
+    usuarioId = payload?.id;
+    usuarioRole= payload?.role.toLowerCase();
+  }
 
-        try {
-          const usuarios: Usuario[] = await httpGet("http://localhost:3001/usuarios?role=user");
-          const mapa = new Map<string, Usuario>();
-          usuarios.forEach((u) => mapa.set(String(u.id), u));
-
-          historicoAgendamentos = historicoAgendamentos.map((ag) => ({
-            ...ag,
-            aluno: mapa.get(String(ag.alunoId)) ?? null,
-          }));
-
-          setAlunos(usuarios);
-        } catch (err) {
-          console.error("Erro ao buscar alunos:", err);
-        }
-      }
-
-      setAgendamentos(historicoAgendamentos);
-      setLoading(false);
-    } catch (err) {
+  const fetchAgendamentos = () => {
+    if (!usuarioId) return; 
+    listarAgendamentosPorUsuarioIdHistorico(usuarioId)
+  .then((data) => {
+    setAgendamentos(data);
+    setLoading(false);
+  })
+  .catch(() => {
       setError("Erro ao carregar agendamentos");
       setLoading(false);
-    }
+    });
   };
 
 useEffect(() => {
   fetchAgendamentos();
-}, [usuarioLogado]);
+}, [usuarioId]);
 
   useEffect(() => {
     function handleResize() {
@@ -204,14 +205,14 @@ useEffect(() => {
                     <CardMedia
                       component="img"
                       image={
-                        usuarioLogado?.role === "monitor"
-                          ? (agendamento as any).aluno?.foto ?? "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
-                          : agendamento.monitor!.foto
+                        usuarioRole === "monitor" ?
+                          getUsuarioObj(agendamento.aluno)?.foto :
+                          getUsuarioObj(agendamento.monitor)?.foto
                       }
                       alt={`Foto de ${
-                        usuarioLogado?.role === "monitor"
-                          ? (agendamento as any).aluno?.nome ?? "Usuário"
-                          : agendamento.monitor!.nome
+                        usuarioRole === "monitor" ?
+                          getUsuarioObj(agendamento.aluno)?.nome :
+                          getUsuarioObj(agendamento.monitor)?.nome
                       }`}
                       sx={{
                         width: { xs: 70, sm: 80 },
@@ -259,11 +260,12 @@ useEffect(() => {
                         whiteSpace: "normal",
                       }}
                     >
-                      {usuarioLogado?.role === "monitor"
-                        ? (agendamento as any).aluno?.nome ?? "—"
-                        : agendamento.monitor!.nome}
+                      {usuarioRole === "monitor"
+                        ? getUsuarioObj(agendamento.aluno)?.nome ?? "—"
+                        : getUsuarioObj(agendamento.monitor)?.nome ?? "—"
+                      }
                     </Typography>
-                    {usuarioLogado?.role !== "monitor" && (
+                    {usuarioRole !== "monitor" && (
                       <Typography
                         variant="body2"
                         sx={{
@@ -271,7 +273,7 @@ useEffect(() => {
                           color: "text.secondary",
                         }}
                       >
-                        {agendamento.monitor!.materia}
+                        {getUsuarioObj(agendamento.monitor)?.materia}
                       </Typography>
                     )}
                     <Typography
