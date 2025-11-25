@@ -6,6 +6,33 @@ import ownerOrAdminAuth from "../middleware/ownerOrAdminAuth";
 import autenticarAdmin from "../middleware/adminAuth";
 const router = express.Router();
 
+/**
+ * @swagger
+ * /usuario:
+ *   post:
+ *     summary: Cria um usuário
+ *     tags: [Usuario]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *             required: [nome, email, password]
+ *     responses:
+ *       201:
+ *         description: Usuário criado com sucesso
+ *       500:
+ *         description: Erro ao criar usuário
+ */
 // CREATE - Adiciona um novo usuário
 router.post("/", async (req, res) => {
   const usuario = req.body;
@@ -20,6 +47,20 @@ router.post("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /usuario:
+ *   get:
+ *     summary: Lista usuários ativos
+ *     tags: [Usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de usuários ativos
+ *       500:
+ *         description: Erro ao listar usuários
+ */
 // GET todos os usuários ativos (com nomes das disciplinas ministradas)
 router.get("/", autenticarAdmin, async (req, res) => {
   try {
@@ -41,6 +82,25 @@ router.get("/", autenticarAdmin, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /usuario/tipo/{tipoUsuario}:
+ *   get:
+ *     summary: Lista usuários ativos por tipo
+ *     tags: [Usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: tipoUsuario
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [ALUNO, ADMIN, MONITOR]
+ *     responses:
+ *       200:
+ *         description: Lista de usuários por tipo
+ */
 // GET usuários ativos filtrando por tipoUsuario (ex: /usuario/tipo/MONITOR)
 router.get("/tipo/:tipoUsuario", async (req, res) => {
   const tipoUsuario = req.params.tipoUsuario.toUpperCase();
@@ -66,6 +126,31 @@ router.get("/tipo/:tipoUsuario", async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+
+
+/**
+ * @swagger
+ * /usuario/{id}:
+ *   get:
+ *     summary: Obtém usuário ativo por ID
+ *     tags: [Usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Usuário encontrado
+ *       404:
+ *         description: Usuário não encontrado
+ */
+>>>>>>> documentacao/swagger
 // GET usuário ativo por id (com nomes das disciplinas ministradas)
 router.get("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
   const id = req.params.id;
@@ -89,6 +174,45 @@ router.get("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /usuario/{id}:
+ *   patch:
+ *     summary: Atualiza usuário ativo
+ *     tags: [Usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               telefone:
+ *                 type: string
+ *               foto:
+ *                 type: string
+ *               tipoUsuario:
+ *                 type: string
+ *                 enum: [ALUNO, ADMIN, MONITOR]
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado
+ *       404:
+ *         description: Usuário não encontrado
+ */
 // UPDATE - Atualiza usuário ativo por id
 router.patch("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
   const id = req.params.id;
@@ -110,6 +234,26 @@ router.patch("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /usuario/{id}:
+ *   delete:
+ *     summary: Exclusão lógica do usuário (inativa)
+ *     tags: [Usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Usuário excluído com sucesso
+ *       404:
+ *         description: Usuário não encontrado
+ */
 // DELETE - Exclusão lógica: marca isAtivo como false
 router.delete("/:id", autenticarAdmin, async (req, res) => {
   const id = req.params.id;
@@ -129,6 +273,32 @@ router.delete("/:id", autenticarAdmin, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /usuario/disciplina:
+ *   post:
+ *     summary: Adiciona disciplina ao usuário
+ *     tags: [Usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               usuarioId:
+ *                 type: string
+ *               disciplinaId:
+ *                 type: string
+ *             required: [usuarioId, disciplinaId]
+ *     responses:
+ *       200:
+ *         description: Disciplina adicionada
+ *       404:
+ *         description: Usuário não encontrado
+ */
 // Adiciona uma disciplina à listaDisciplinas do usuário ativo
 router.post("/disciplina", autenticar, ownerOrAdminAuth, async (req, res) => {
   const { usuarioId, disciplinaId } = req.body;
@@ -147,6 +317,32 @@ router.post("/disciplina", autenticar, ownerOrAdminAuth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /usuario/disciplina:
+ *   delete:
+ *     summary: Remove disciplina do usuário
+ *     tags: [Usuario]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               usuarioId:
+ *                 type: string
+ *               disciplinaId:
+ *                 type: string
+ *             required: [usuarioId, disciplinaId]
+ *     responses:
+ *       200:
+ *         description: Disciplina removida
+ *       404:
+ *         description: Usuário não encontrado
+ */
 // Remove uma disciplina da listaDisciplinas do usuário ativo
 router.delete("/disciplina", autenticar, ownerOrAdminAuth, async (req, res) => {
   const { usuarioId, disciplinaId } = req.body;

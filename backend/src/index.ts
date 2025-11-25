@@ -45,8 +45,23 @@ const options = {
 
 const swaggerSpec = swaggerJSDoc(options);
 
-
 const app: Application = express();
+
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: { title: "Documentação do Projeto MonitoriaJá", version: "1.0.0" },
+    servers: [{ url: "http://localhost:3001" }],
+    components: {
+      securitySchemes: {
+        bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
+      },
+    },
+  },
+  apis: ["./src/routes/**/*.ts"],
+};
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(
   express.urlencoded({
