@@ -8,7 +8,7 @@ import disponibilidadeRoutes from "./routes/disponibilidadeRoutes";
 import avaliacaoRoutes from "./routes/avaliacaoRoutes";
 import notificacaoRoutes from "./routes/notificacaoRoutes";
 import loginRoutes from "./routes/login";
-import uploadRoutes from "./routes/uploadRoutes";
+//import uploadRoutes from "./routes/uploadRoutes";
 import cors from "cors";
 
 // Se usar dotenv para variáveis de ambiente:
@@ -19,6 +19,7 @@ dotenv.config();
 const swaggerUi = require("swagger-ui-express");
 
 const swaggerJSDoc = require("swagger-jsdoc");
+
 const path = require("path");
 
 const swaggerDefinition = {
@@ -35,16 +36,6 @@ const swaggerDefinition = {
   ],
 };
 
-const options = {
-  swaggerDefinition,
-  apis: [
-    path.join(__dirname, "routes", "*.ts"),
-    path.join(__dirname, "routes", "*.js"),
-  ],
-};
-
-const swaggerSpec = swaggerJSDoc(options);
-
 const app: Application = express();
 
 const swaggerOptions = {
@@ -60,7 +51,7 @@ const swaggerOptions = {
   },
   apis: ["./src/routes/**/*.ts"],
 };
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(
@@ -75,9 +66,6 @@ app.use(cors());
 
 app.use(express.static("public"));
 
-// rotas aqui...
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use(cors());
 // rotas
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/disciplina", disciplinaRoutes);
@@ -87,7 +75,7 @@ app.use("/usuario", usuarioRoutes);
 app.use("/disponibilidade", disponibilidadeRoutes);
 app.use("/avaliacao", avaliacaoRoutes);
 app.use("/notificacao", notificacaoRoutes);
-app.use("/upload", uploadRoutes);
+//app.use("/upload", uploadRoutes);
 app.use(loginRoutes);
 // Conexão com o banco de dados e inicialização do servidor
 app.use(loginRoutes);
