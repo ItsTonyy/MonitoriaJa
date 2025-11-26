@@ -8,7 +8,7 @@ import disponibilidadeRoutes from "./routes/disponibilidadeRoutes";
 import avaliacaoRoutes from "./routes/avaliacaoRoutes";
 import notificacaoRoutes from "./routes/notificacaoRoutes";
 import loginRoutes from "./routes/login";
-//import uploadRoutes from "./routes/uploadRoutes";
+import uploadRoutes from "./routes/uploadRoutes";
 import cors from "cors";
 
 // Se usar dotenv para variáveis de ambiente:
@@ -75,7 +75,7 @@ app.use("/usuario", usuarioRoutes);
 app.use("/disponibilidade", disponibilidadeRoutes);
 app.use("/avaliacao", avaliacaoRoutes);
 app.use("/notificacao", notificacaoRoutes);
-//app.use("/upload", uploadRoutes);
+app.use("/upload", uploadRoutes);
 app.use(loginRoutes);
 // Conexão com o banco de dados e inicialização do servidor
 app.use(loginRoutes);
