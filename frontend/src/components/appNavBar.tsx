@@ -300,21 +300,6 @@ export default function AppNavBar() {
                   +Disciplinas
                 </Button>
               }
-              {isAdmin && 
-                <Button
-                  variant="text"
-                  color="info"
-                  size="small"
-                  sx={{
-                    paddingLeft: "10px",
-                    paddingRight: "10px",
-                    ":hover": { transform: "none" },
-                  }}
-                  onClick={handleClickHistorico}
-                >
-                  Historico
-                </Button>
-              }
             </Box>
           </Box>
           <Box

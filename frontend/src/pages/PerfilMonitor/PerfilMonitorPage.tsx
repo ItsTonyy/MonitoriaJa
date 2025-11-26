@@ -26,6 +26,8 @@ import { isAuthenticated, getUserIdFromToken } from '../Pagamento/Cartao/Cadastr
 import Modal from "@mui/material/Modal";
 import ModalAgendamento from "../../components/modais/ModalAgendamento";
 import { uploadArquivo } from "../../redux/features/upload/fetch";
+import { Button } from "@mui/material";
+
 
 export interface Disponibilidade {
   dia: string;
@@ -327,27 +329,6 @@ const PerfilMonitorPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Matérias - MOSTRAR SEMPRE que houver matérias selecionadas */}
-        {materiasSelecionadas.length > 0 && (
-          <div className={styles.materiasAssociadas}>
-            <label className={styles.materiasLabel}>Matérias Associadas:</label>
-            <div className={styles.materiasChips}>
-              {materiasSelecionadas.map((materia, i) => (
-                <div key={i} className={styles.materiaChip}>
-                  {materia}
-                  <button
-                    type="button"
-                    className={styles.deleteButton}
-                    onClick={() => handleExcluirMateria(materia)}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className={styles.photoSection}>
           <div className={styles.photoContainer}>
             {fotoUrl ? (
@@ -421,6 +402,26 @@ const PerfilMonitorPage: React.FC = () => {
             }
           />
 
+          {materiasSelecionadas.length > 0 && (
+          <div className={styles.materiasAssociadas}>
+            <label className={styles.materiasLabel}>Matérias Associadas:</label>
+            <div className={styles.materiasChips}>
+              {materiasSelecionadas.map((materia, i) => (
+                <div key={i} className={styles.materiaChip}>
+                  {materia}
+                  <button
+                    type="button"
+                    className={styles.deleteButton}
+                    onClick={() => handleExcluirMateria(materia)}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
           {/* CORREÇÃO: O dropdown mostra apenas matérias NÃO selecionadas */}
           <AtualizarMateria
             value={[]} // Sempre vazio porque as selecionadas já estão fixas acima
@@ -457,6 +458,27 @@ const PerfilMonitorPage: React.FC = () => {
           </Modal>
 
           <div className={styles.buttonGroup}>
+            <Button
+            onClick={handleSalvar}
+            disabled={loading || uploadingFoto}
+            sx={{
+              background: "#104c91",
+              color: "#fff",
+              padding: "12px 0",
+              fontWeight: "bold",
+              width: "100%",
+              textTransform: "none",
+              "&:hover": {
+                background: "#125a9e",
+              },
+              "&:disabled": {
+                background: "#9bb9d7",
+                color: "#eee",
+              },
+            }}
+          >
+            {loading ? "Salvando..." : "Confirmar Mudanças"}
+          </Button>
           <ConfirmationButton 
             onClick={() => {
               const targetPath = userId 
@@ -467,17 +489,10 @@ const PerfilMonitorPage: React.FC = () => {
           >
             Trocar senha
           </ConfirmationButton>
-          </div>
-          <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={handleSalvar} disabled={loading || uploadingFoto}>
-              {loading ? 'Salvando...' : 'Confirmar Mudanças'}
-            </ConfirmationButton>
-          </div>
-          <div className={styles.buttonGroup}>
             <ConfirmationButton onClick={() => navigate(-1)}>
               Voltar
             </ConfirmationButton>
-          </div>
+            </div>
         </div>
       </div>
 
