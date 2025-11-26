@@ -17,24 +17,53 @@ const ConfirmaPagamentoPage: React.FC = () => {
   const dispatch = useDispatch();
   
   const cartao = location.state?.cartao;
+  const agendamentoFromState = useSelector(
+    (state: RootState) => state.agendamento.currentAgendamento
+  );
+  
+  // Tentar recuperar o agendamento de múltiplas fontes
+  const [currentAgendamento, setCurrentAgendamento] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const currentAgendamento = useSelector(
-    (state: RootState) => state.agendamento.currentAgendamento
-  );
+  useEffect(() => {
+    // 1. Primeiro tenta do estado do Redux
+    if (agendamentoFromState) {
+      setCurrentAgendamento(agendamentoFromState);
+      return;
+    }
+    
+    // 2. Tenta do sessionStorage
+    const agendamentoFromStorage = sessionStorage.getItem('currentAgendamento');
+    if (agendamentoFromStorage) {
+      try {
+        setCurrentAgendamento(JSON.parse(agendamentoFromStorage));
+        return;
+      } catch (e) {
+        console.error('Erro ao parsear agendamento do storage:', e);
+      }
+    }
+    
+    // 3. Tenta do location.state (fallback)
+    if (location.state?.agendamento) {
+      setCurrentAgendamento(location.state.agendamento);
+      return;
+    }
+    
+    // 4. Se nenhum encontrado, redireciona
+    if (!currentAgendamento) {
+      alert("Nenhum agendamento encontrado! Por favor, inicie um novo agendamento.");
+      navigate("/MonitoriaJa/agendamento-monitor");
+    }
+  }, [agendamentoFromState, location.state, navigate]);
 
   useEffect(() => {
-    if (!currentAgendamento) {
-      alert("Nenhum agendamento encontrado!");
-      navigate("/MonitoriaJa/lista-agendamentos");
-    }
     if (!cartao) {
       alert("Nenhum cartão selecionado!");
       navigate("/MonitoriaJa/lista-cartao");
     }
-  }, [currentAgendamento, cartao, navigate]);
+  }, [cartao, navigate]);
 
   useEffect(() => {
     if (success) {
@@ -51,10 +80,16 @@ const ConfirmaPagamentoPage: React.FC = () => {
       return;
     }
 
+    if (!cartao) {
+      setError("Nenhum cartão selecionado!");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
+      // Simula processamento
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const novoAgendamento = {
@@ -62,10 +97,15 @@ const ConfirmaPagamentoPage: React.FC = () => {
         statusPagamento: "PAGO" as const,
         formaPagamento: "CARTAO" as const,
         status: "CONFIRMADO" as const,
+        cartaoId: cartao._id, // Adiciona ID do cartão usado
       };
 
       const agendamentoCriado = await criarAgendamento(novoAgendamento);
       dispatch(addAgendamento(agendamentoCriado));
+      
+      // Limpa o agendamento do storage após sucesso
+      sessionStorage.removeItem('currentAgendamento');
+      
       setSuccess(true);
     } catch (error) {
       console.error("Erro ao processar pagamento:", error);
@@ -81,14 +121,12 @@ const ConfirmaPagamentoPage: React.FC = () => {
 
   if (success) {
     return (
-      <main
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "80vh",
-        }}
-      >
+      <main style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "80vh",
+      }}>
         <Alert
           severity="success"
           sx={{
@@ -118,14 +156,12 @@ const ConfirmaPagamentoPage: React.FC = () => {
 
   if (error) {
     return (
-      <main
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "80vh",
-        }}
-      >
+      <main style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "80vh",
+      }}>
         <Alert
           severity="error"
           sx={{
@@ -142,13 +178,34 @@ const ConfirmaPagamentoPage: React.FC = () => {
             <ConfirmationButton onClick={() => setError(null)}>
               Tentar novamente
             </ConfirmationButton>
+            <ConfirmationButton 
+              onClick={() => navigate("/MonitoriaJa/agendamento-monitor")}
+            >
+              Novo Agendamento
+            </ConfirmationButton>
           </Box>
         </Alert>
       </main>
     );
   }
 
-  const orderId = currentAgendamento ? `#${currentAgendamento.id}` : '#0000';
+  // Mostrar loading enquanto busca o agendamento
+  if (!currentAgendamento || !cartao) {
+    return (
+      <main style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "80vh",
+      }}>
+        <Alert severity="info">
+          Carregando informações do agendamento...
+        </Alert>
+      </main>
+    );
+  }
+
+  const orderId = currentAgendamento.id ? `#${currentAgendamento.id}` : '#Novo';
 
   return (
     <main className={styles.centralizeContent}>

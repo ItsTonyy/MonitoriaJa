@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import styles from "./ListaCartaoPage.module.css";
 import Title from "../../../AlterarSenha/Titulo/Titulo";
 import CartaoItem from "../CartaoItem/CartaoItem";
@@ -27,6 +28,9 @@ const ListaCartaoPage: React.FC = () => {
 
   const [removendoId, setRemovendoId] = React.useState<string | null>(null);
 
+  const location = useLocation();
+const agendamentoFromLocation = location.state?.agendamento;
+
   useEffect(() => {
     dispatch(fetchCartoes());
   }, [dispatch]);
@@ -40,9 +44,14 @@ const ListaCartaoPage: React.FC = () => {
     }
   }, [error, dispatch]);
 
-  const handleEscolherCartao = (cartao: any) => {
-    navigate("/MonitoriaJa/confirma-pagamento", { state: { cartao } });
-  };
+const handleEscolherCartao = (cartao: any) => {
+  navigate("/MonitoriaJa/confirma-pagamento", { 
+    state: { 
+      cartao,
+      agendamento: agendamentoFromLocation // ← Usa o do location.state
+    } 
+  });
+};
 
   const handleRemoverCartao = async (id: string) => {
     if (!id) return;
@@ -58,7 +67,7 @@ const ListaCartaoPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate("/MonitoriaJa/agendamento-monitor");
+    navigate(-1);
   };
 
   const handleCadastrarCartao = () => {
