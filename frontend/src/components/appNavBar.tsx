@@ -414,12 +414,32 @@ export default function AppNavBar() {
                     <CloseRoundedIcon />
                   </IconButton>
                 </Box>
+
+                {/* --- LINKS SEMPRE VISÍVEIS --- */}
                 <MenuItem onClick={handleClickHome}>Home</MenuItem>
                 <MenuItem onClick={handleClickMonitores}>Monitores</MenuItem>
-                <MenuItem onClick={handleClickAgendamento}>
-                  Agendamento
-                </MenuItem>
+
+                {/* --- LINKS PARA USUÁRIO LOGADO --- */}
+                {autenticado && (
+                  <>
+                    <MenuItem onClick={handleClickAgendamento}>Agendamento</MenuItem>
+                    <MenuItem onClick={handleClickHistorico}>Histórico</MenuItem>
+                  </>
+                )}
+
+                {/* --- LINKS EXCLUSIVOS DO ADMIN --- */}
+                {isAdmin && (
+                  <>
+                    <MenuItem onClick={handleClickListarUsuarios}>Usuários</MenuItem>
+                    <MenuItem onClick={handleClickAdicionarAgendamento}>
+                      +Disciplinas
+                    </MenuItem>
+                  </>
+                )}
+
                 <Divider sx={{ my: 3 }} />
+
+                {/* --- SE NÃO ESTIVER LOGADO --- */}
                 {!isAuthenticated && (
                   <>
                     <MenuItem>
@@ -432,6 +452,7 @@ export default function AppNavBar() {
                         Sign up
                       </Button>
                     </MenuItem>
+
                     <MenuItem>
                       <Button
                         color="primary"
@@ -440,6 +461,22 @@ export default function AppNavBar() {
                         onClick={handleClickLogin}
                       >
                         Sign in
+                      </Button>
+                    </MenuItem>
+                  </>
+                )}
+
+                {/* --- SE ESTIVER LOGADO --- */}
+                {isAuthenticated && (
+                  <>
+                    <MenuItem>
+                      <Button
+                        color="primary"
+                        variant="outlined"
+                        fullWidth
+                        onClick={handleClickLogout}
+                      >
+                        Logout
                       </Button>
                     </MenuItem>
                   </>
