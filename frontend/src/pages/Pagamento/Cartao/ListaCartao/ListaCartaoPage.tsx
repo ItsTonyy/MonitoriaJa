@@ -29,7 +29,7 @@ const ListaCartaoPage: React.FC = () => {
   const [removendoId, setRemovendoId] = React.useState<string | null>(null);
 
   const location = useLocation();
-const agendamentoFromLocation = location.state?.agendamento;
+  const agendamentoFromLocation = location.state?.agendamento;
 
   useEffect(() => {
     dispatch(fetchCartoes());

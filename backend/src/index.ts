@@ -40,7 +40,6 @@ const swaggerDefinition = {
   },
 };
 
-<<<<<<< HEAD
 const swaggerOptions = {
   swaggerDefinition,
   apis: [
@@ -56,41 +55,11 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 const app: Application = express();
 
 app.use(express.urlencoded({ extended: true }));
-=======
-const app: Application = express();
-
-const swaggerOptions = {
-  definition: {
-    openapi: "3.0.0",
-    info: { title: "Documentação do Projeto MonitoriaJá", version: "1.0.0" },
-    servers: [{ url: "http://localhost:3001" }],
-    components: {
-      securitySchemes: {
-        bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
-      },
-    },
-  },
-  apis: ["./src/routes/**/*.ts"],
-};
-const swaggerSpec = swaggerJSDoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
-
->>>>>>> cf9555e5b3862c4e4505bf766102e891a577a44b
 app.use(express.json());
 app.use(cors());
 app.use(express.static("public"));
 
-<<<<<<< HEAD
 // Rota da documentação
-=======
-// rotas
->>>>>>> cf9555e5b3862c4e4505bf766102e891a577a44b
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // -------------------- ROTAS --------------------
