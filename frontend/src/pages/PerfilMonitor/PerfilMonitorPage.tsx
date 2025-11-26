@@ -464,10 +464,11 @@ const PerfilMonitorPage: React.FC = () => {
             sx={{
               background: "#104c91",
               color: "#fff",
-              padding: "12px 0",
+              padding: "6px 0",
               fontWeight: "bold",
               width: "100%",
               textTransform: "none",
+              borderRadius: "6px",
               "&:hover": {
                 background: "#125a9e",
               },

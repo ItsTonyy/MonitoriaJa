@@ -96,3 +96,15 @@ export const setToken = (token: string): void => {
     console.error('Erro ao salvar token no localStorage:', error);
   }
 };
+
+ export function getRoleFromToken(): string | null {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.role ?? null; // depende do seu backend
+  } catch (e) {
+    return null;
+  }
+}

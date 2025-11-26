@@ -19,7 +19,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
 import { Usuario } from "../models/usuario.model";
 import { httpGet } from "../utils";
-import { listarAgendamentosPorUsuarioIdHistorico } from "../redux/features/agendamento/fetch";
+import { listarAgendamentosPorUsuarioIdHistorico, listarTodosAgendamentosHistorico } from "../redux/features/agendamento/fetch";
 
 function decodeJwtPayload(token: string) {
   try {
@@ -81,21 +81,33 @@ function HistoricoAgendamentos() {
   }
 
   const fetchAgendamentos = () => {
-    if (!usuarioId) return; 
-    listarAgendamentosPorUsuarioIdHistorico(usuarioId)
-  .then((data) => {
-    setAgendamentos(data);
-    setLoading(false);
-  })
-  .catch(() => {
-      setError("Erro ao carregar agendamentos");
-      setLoading(false);
-    });
+    if (usuarioRole === 'admin') {
+      listarTodosAgendamentosHistorico()
+        .then((data) => {
+          setAgendamentos(data);
+          setLoading(false);
+        })
+        .catch(() => {
+          setError("Erro ao carregar agendamentos");
+          setLoading(false);
+        });
+    } else {
+      // Se não for admin, usa a rota específica do usuário
+      listarAgendamentosPorUsuarioIdHistorico(usuarioId!)
+        .then((data) => {
+          setAgendamentos(data);
+          setLoading(false);
+        })
+        .catch(() => {
+          setError("Erro ao carregar agendamentos");
+          setLoading(false);
+        });
+    }
   };
 
 useEffect(() => {
   fetchAgendamentos();
-}, [usuarioId]);
+}, [usuarioId, usuarioRole]);
 
   useEffect(() => {
     function handleResize() {
