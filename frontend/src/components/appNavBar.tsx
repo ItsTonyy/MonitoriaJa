@@ -239,7 +239,7 @@ export default function AppNavBar() {
               >
                 Monitores
               </Button>
-              {autenticado && 
+              {isAuthenticated  && 
                 <Button
                   variant="text"
                   color="info"
@@ -254,7 +254,7 @@ export default function AppNavBar() {
                   Agendamento
                 </Button>
               }
-                            {autenticado && 
+                            {isAuthenticated  && 
                 <Button
                   variant="text"
                   color="info"
