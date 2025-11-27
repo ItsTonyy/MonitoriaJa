@@ -180,7 +180,7 @@ export default function AppNavBar() {
     setAnchorElUser(null);
   };
 
-  var autenticado = localStorage.getItem('token');
+  // var autenticado = localStorage.getItem('token');
 
   return (
     <AppBar
@@ -420,7 +420,7 @@ export default function AppNavBar() {
                 <MenuItem onClick={handleClickMonitores}>Monitores</MenuItem>
 
                 {/* --- LINKS PARA USUÁRIO LOGADO --- */}
-                {autenticado && (
+                {isAuthenticated && (
                   <>
                     <MenuItem onClick={handleClickAgendamento}>Agendamento</MenuItem>
                     <MenuItem onClick={handleClickHistorico}>Histórico</MenuItem>
