@@ -423,7 +423,7 @@ function CadastroForm() {
           <TextField
             label="Biografia"
             multiline
-            minRows={9}
+            rows={9}
             value={biografia}
             onChange={(e) => setBiografia(e.target.value)}
             variant="outlined"

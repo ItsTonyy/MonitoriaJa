@@ -8,7 +8,7 @@ import disponibilidadeRoutes from "./routes/disponibilidadeRoutes";
 import avaliacaoRoutes from "./routes/avaliacaoRoutes";
 import notificacaoRoutes from "./routes/notificacaoRoutes";
 import loginRoutes from "./routes/login";
-//import uploadRoutes from "./routes/uploadRoutes";
+import uploadRoutes from "./routes/uploadRoutes";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
@@ -71,7 +71,7 @@ app.use("/usuario", usuarioRoutes);
 app.use("/disponibilidade", disponibilidadeRoutes);
 app.use("/avaliacao", avaliacaoRoutes);
 app.use("/notificacao", notificacaoRoutes);
-//app.use("/upload", uploadRoutes);
+app.use("/upload", uploadRoutes);
 app.use(loginRoutes);
 
 // -------------------- MONGODB & SERVER --------------------
