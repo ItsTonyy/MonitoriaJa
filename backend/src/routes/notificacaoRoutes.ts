@@ -310,7 +310,10 @@ router.get("/destinatario/", autenticar, async (req, res) => {
 
   const decoded = jwt.verify(destinatarioId, process.env.JWT_KEY as string) as { id: string; role: string }
   try {
-    const notificacoes = await Notificacao.find({ destinatario: decoded.id })
+    const notificacoes = await Notificacao.find({ 
+      destinatario: decoded.id,
+      status: "NAO_LIDA"
+    })
       .populate("destinatario")
       .populate({
         path: "agendamento",
