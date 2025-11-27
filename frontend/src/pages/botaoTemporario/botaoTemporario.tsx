@@ -5,6 +5,7 @@ interface ConfirmationButtonProps {
   onClick?: () => void;
   disabled?: boolean;
   children: React.ReactNode;
+  className?: string; 
 }
 
 const ConfirmationButton: React.FC<ConfirmationButtonProps> = ({

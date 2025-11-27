@@ -10,22 +10,21 @@ import notificacaoRoutes from "./routes/notificacaoRoutes";
 import loginRoutes from "./routes/login";
 //import uploadRoutes from "./routes/uploadRoutes";
 import cors from "cors";
-
-// Se usar dotenv para variáveis de ambiente:
 import dotenv from "dotenv";
 dotenv.config();
 
-// configuração do swaggerUI & swaggerJsDoc pra documentação
+// Swagger imports
 const swaggerUi = require("swagger-ui-express");
-
 const swaggerJSDoc = require("swagger-jsdoc");
 
 const path = require("path");
 
+// -------------------- SWAGGER CONFIG --------------------
+
 const swaggerDefinition = {
-  openapi: "3.1.0",
+  openapi: "3.0.0",
   info: {
-    title: "Express API for the MonitoriaJa project.",
+    title: "Documentação da API MonitoriaJá",
     version: "1.0.0",
   },
   servers: [
@@ -34,40 +33,37 @@ const swaggerDefinition = {
       description: "Servidor de desenvolvimento",
     },
   ],
+  components: {
+    securitySchemes: {
+      bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
+    },
+  },
 };
+
+const swaggerOptions = {
+  swaggerDefinition,
+  apis: [
+    path.join(__dirname, "routes", "*.ts"),
+    path.join(__dirname, "routes", "*.js"),
+  ],
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+
+// -------------------- APP CONFIG --------------------
 
 const app: Application = express();
 
-const swaggerOptions = {
-  definition: {
-    openapi: "3.0.0",
-    info: { title: "Documentação do Projeto MonitoriaJá", version: "1.0.0" },
-    servers: [{ url: "http://localhost:3001" }],
-    components: {
-      securitySchemes: {
-        bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
-      },
-    },
-  },
-  apis: ["./src/routes/**/*.ts"],
-};
-const swaggerSpec = swaggerJSDoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
-
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.use(cors());
-
 app.use(express.static("public"));
 
-// rotas
+// Rota da documentação
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// -------------------- ROTAS --------------------
+
 app.use("/disciplina", disciplinaRoutes);
 app.use("/agendamento", agendamentoRoutes);
 app.use("/cartao", cartaoRoutes);
@@ -77,10 +73,9 @@ app.use("/avaliacao", avaliacaoRoutes);
 app.use("/notificacao", notificacaoRoutes);
 //app.use("/upload", uploadRoutes);
 app.use(loginRoutes);
-// Conexão com o banco de dados e inicialização do servidor
-app.use(loginRoutes);
 
-// Conexão com o banco de dados e inicialização do servidor
+// -------------------- MONGODB & SERVER --------------------
+
 const password = encodeURIComponent("psw10monitorija423#");
 
 mongoose
@@ -90,8 +85,6 @@ mongoose
   )
   .then(() => {
     console.log("Conectou ao banco!");
-    app.listen(3001, () =>
-      console.log("Servidor rodando na porta 3001", password)
-    );
+    app.listen(3001, () => console.log("Servidor rodando na porta 3001"));
   })
   .catch((err) => console.log(err));

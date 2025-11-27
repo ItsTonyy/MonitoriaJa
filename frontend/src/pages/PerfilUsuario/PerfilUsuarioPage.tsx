@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import { TextField, CircularProgress } from '@mui/material';
+import { Button } from "@mui/material";
 
 import ConfirmationButton from '../botaoTemporario/botaoTemporario';
 import UploadButton from '../PerfilMonitor/UploadButton/UploadButton';
@@ -337,7 +338,29 @@ const PerfilUsuarioPage: React.FC = () => {
 
         {/* Botões */}
         <div className={styles.buttonSection}>
-          <ConfirmationButton 
+          <Button
+            onClick={handleSalvar}
+            disabled={loading || uploadingFoto}
+            sx={{
+              background: "#104c91",
+              color: "#fff",
+              padding: "6px 0",
+              fontWeight: "bold",
+              width: "100%",
+              textTransform: "none",
+              borderRadius: "6px",
+              "&:hover": {
+                background: "#125a9e",
+              },
+              "&:disabled": {
+                background: "#9bb9d7",
+                color: "#eee",
+              },
+            }}
+          >
+            {loading ? "Salvando..." : "Confirmar Mudanças"}
+          </Button>
+                    <ConfirmationButton 
             onClick={() => {
               const targetPath = userId 
                 ? `/MonitoriaJa/alterar-senha/${userId}`
@@ -346,9 +369,6 @@ const PerfilUsuarioPage: React.FC = () => {
             }}
           >
             Trocar senha
-          </ConfirmationButton>
-          <ConfirmationButton onClick={handleSalvar} disabled={loading || uploadingFoto}>
-            {loading ? 'Salvando...' : 'Confirmar Mudanças'}
           </ConfirmationButton>
           <ConfirmationButton onClick={() => navigate(-1)}>
             Voltar

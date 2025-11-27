@@ -14,7 +14,7 @@ const CustomLoginButton = styled(Button)({
   },
   "&:disabled": {
     backgroundColor: "#ccc",
-    color: "#666",
+    color: "#665",
   },
 });
 
