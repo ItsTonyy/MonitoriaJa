@@ -527,7 +527,7 @@ function ListagemUsuarios() {
                       </Button>
                       <Button
                         variant="contained"
-                        sx={{"background-color":"#2d5be3"}}
+                        color="primary"
                         size="medium"
                         onClick={() => handleVisualizarUsuario(usuario)}
                       >
