@@ -282,7 +282,7 @@ export default function AppNavBar() {
                   onClick={handleClickListarUsuarios}
                 >
                   
-                  Usuarios
+                  Usuários
                 </Button>
               }
               {isAdmin && 
