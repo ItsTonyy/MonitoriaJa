@@ -90,8 +90,11 @@ body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
 
 .buttonGroup {
   display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
+  flex-direction: column;
+  width: 50%;
+  align-self: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
 }
 
 .button {

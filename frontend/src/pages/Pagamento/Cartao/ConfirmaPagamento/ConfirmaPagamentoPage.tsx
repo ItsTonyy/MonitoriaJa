@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Alert } from '@mui/material';
+import { Box, Alert, Button } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
@@ -221,15 +221,29 @@ const ConfirmaPagamentoPage: React.FC = () => {
         />
 
         <Box className={styles.buttonGroup}>
-          <ConfirmationButton
+          <Button
             onClick={handleConfirmarPagamento}
             disabled={loading}
+            variant='contained'
+            sx={{
+              padding: "6px",
+              borderRadius: "6px"
+            }}
           >
             {loading ? "Processando..." : "Confirmar Pagamento"}
-          </ConfirmationButton>
-          <ConfirmationButton onClick={handleCancel} disabled={loading}>
+          </Button>
+          <Button 
+            onClick={handleCancel} 
+            disabled={loading}
+            variant='contained'
+            color='error'
+            sx={{
+              padding: "6px",
+              borderRadius: "6px"
+            }}
+          >
             Cancelar
-          </ConfirmationButton>
+          </Button>
         </Box>
       </Box>
     </main>

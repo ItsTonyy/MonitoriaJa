@@ -9,6 +9,7 @@ import {
   FormControl,
   Box,
   CircularProgress,
+  Button,
 } from "@mui/material";
 import Title from '../../../AlterarSenha/Titulo/Titulo';
 import { useDispatch } from "react-redux";
@@ -220,19 +221,31 @@ const CadastraCartaoPage: React.FC = () => {
             />
           </Box>
           <div className={styles.buttonGroup}>
-            <ConfirmationButton
+            <Button
               onClick={() => navigate("/MonitoriaJa/lista-cartao")}
               disabled={loading}
+              variant="outlined"
+              sx={{
+                borderRadius: "6px"
+              }}
             >
               Voltar
-            </ConfirmationButton>
-            <ConfirmationButton type="submit" disabled={loading}>
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={loading}
+              variant="contained"
+              sx={{
+                padding: "6px 8px",
+                borderRadius: "6px"
+              }}
+            >
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
                 "Cadastrar"
               )}
-            </ConfirmationButton>
+            </Button>
           </div>
         </form>
       </div>

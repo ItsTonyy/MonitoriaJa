@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Typography, Alert } from "@mui/material";
+import { Box, Typography, Alert, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import QrCode2Icon from "@mui/icons-material/QrCode2";
@@ -143,13 +143,29 @@ const PixPage: React.FC = () => {
         </Box>
 
         <Box className={styles.buttonGroup}>
-          <ConfirmationButton 
+          <Button 
             onClick={handleCopyPixCode}
             disabled={status === "loading"}
+            variant="contained"
+            sx={{
+              padding: "6px 0",
+              borderRadius: "6px",
+            }}
           >
             {status === "loading" ? "Processando..." : "Copiar Código Pix"}
-          </ConfirmationButton>
-          <ConfirmationButton onClick={handleCancel}>Cancelar</ConfirmationButton>
+          </Button>
+          <Button 
+            onClick={handleCancel}
+            disabled={status === "loading"}
+            variant="contained"
+            color="error"
+            sx={{
+              padding: "6px 0",
+              borderRadius: "6px",
+            }}
+          >
+            Cancelar
+          </Button>
         </Box>
       </Box>
     </main>

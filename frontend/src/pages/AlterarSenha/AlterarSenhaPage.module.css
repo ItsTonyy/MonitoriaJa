@@ -96,8 +96,13 @@ body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
 }
 
 .buttonSection {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 0.5fr 1fr;
+  grid-template-areas: 
+    "box-1 box-1 box-1"
+    ". . ."
+    "box-2 . .";
   gap: 0.5rem;
 }
 

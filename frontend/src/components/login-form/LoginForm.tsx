@@ -18,11 +18,12 @@ import { loginUserServer } from '../../redux/features/login/fetch';
 import type { RootState } from '../../redux/root-reducer';
 import type { AppDispatch } from '../../redux/store';
 import {Link as LinkRouter } from "react-router-dom"
+import { isAuthenticated as isAuth } from "../../pages/Pagamento/Cartao/CadastraCartao/authUtils";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.login);
+  const { loading, error } = useSelector((state: RootState) => state.login);
   
   const [emailError, setEmailError] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState('');
@@ -30,13 +31,13 @@ const LoginForm: React.FC = () => {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
   // resolução temporária para resolver problema de redirecionamento após login
-  var autenticado = localStorage.getItem('token');
+  var isAuthenticated = isAuth();
 
   useEffect(() => {
-    if (autenticado) {
+    if (isAuthenticated) {
       navigate('/MonitoriaJa/lista-monitores');
     }
-  }, [autenticado, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;

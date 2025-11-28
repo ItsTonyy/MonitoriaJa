@@ -21,6 +21,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import "./ComentariosAvaliacao.css";
 import { useAppSelector } from "../../redux/hooks";
 import { avaliacaoService } from "../../services/avaliacaoService";
+import { isAuthenticated as isAuth } from "../../pages/Pagamento/Cartao/CadastraCartao/authUtils";
+
 
 const AvaliacaoCard = styled(Card)({
   width: "100%",
@@ -72,6 +74,11 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
   const monitorSelecionado = useAppSelector((state) => state.monitor.selectedMonitor);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsAuthenticated(isAuth());
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const load = async () => {
@@ -188,6 +195,7 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
                 color="primary"
                 size="medium"
                 onClick={handleModalOpen}
+                disabled={!isAuthenticated}
                 sx={{
                   backgroundColor: "primary",
                   "&:hover": { backgroundColor: "var(--cor-secundaria)" },

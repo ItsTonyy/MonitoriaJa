@@ -518,20 +518,20 @@ function ListagemUsuarios() {
                     >
                       <Button
                         variant="contained"
-                        color="primary"
-                        size="medium"
-                        onClick={() => handleVisualizarUsuario(usuario)}
-                      >
-                        Visualizar
-                      </Button>
-                      <Button
-                        variant="outlined"
                         color="error"
                         size="small"
                         onClick={() => handleAbrirDialogRemocao(usuario)}
                         disabled={removendo}
                       >
                         Remover
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="medium"
+                        onClick={() => handleVisualizarUsuario(usuario)}
+                      >
+                        Visualizar
                       </Button>
                     </Stack>
                   </CardActions>
