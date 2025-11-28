@@ -72,6 +72,20 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
   const monitorSelecionado = useAppSelector((state) => state.monitor.selectedMonitor);
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const atualizarReacao = async (id: string, tipo: "like" | "dislike") => {
+    try {
+      const res = tipo === "like" ? await avaliacaoService.like(id) : await avaliacaoService.dislike(id);
+      setAvaliacoes((prev) => prev.map((av) => {
+        const avId = (av as any)._id || (av as any).id;
+        if (String(avId) === String(id)) {
+          return { ...av, likes: res.likes, dislikes: res.dislikes };
+        }
+        return av;
+      }));
+    } catch (e) {
+      console.error("Erro ao atualizar reação:", e);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -407,8 +421,9 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
                             px: { xs: 1, sm: 2 },
                             borderRadius: "15px",
                           }}
+                          onClick={() => atualizarReacao(String((avaliacao as any)._id || (avaliacao as any).id), "like")}
                         >
-                          ({0})
+                          ({avaliacao.likes || 0})
                         </Button>
                         <Button
                           variant="outlined"
@@ -425,8 +440,9 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
                             px: { xs: 1, sm: 2 },
                             borderRadius: "15px",
                           }}
+                          onClick={() => atualizarReacao(String((avaliacao as any)._id || (avaliacao as any).id), "dislike")}
                         >
-                          ({0})
+                          ({avaliacao.dislikes || 0})
                         </Button>
                       </Box>
                     </Box>

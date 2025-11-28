@@ -11,4 +11,6 @@ export interface Avaliacao {
   dataAvaliacao: Date;
   status?: "PUBLICADA" | "REMOVIDA";
   agendamento?:  Agendamento | string;
+  likes?: number;
+  dislikes?: number;
 }
