@@ -4,6 +4,7 @@ import VisaLogo from '../Logos/VisaLogo.png';
 import MastercardLogo from '../Logos/MasterCardLogo.png';
 import EloLogo from '../Logos/EloLogo.png';
 import ConfirmationButton from '../../../botaoTemporario/botaoTemporario';
+import { Button } from '@mui/material';
 
 type CartaoProps = {
   numero: string;
@@ -47,12 +48,30 @@ const CartaoItem: React.FC<CartaoProps> = ({
 
 {mostrarBotoes && (
   <div className={styles.buttonGroup}>
-    <ConfirmationButton onClick={onEscolher}>
+    <Button 
+      onClick={onEscolher}
+      variant='contained'
+      size='small'
+      sx={{
+        padding: "6px 12px",
+        borderRadius: "6px",
+      }}
+    >
       Escolher
-    </ConfirmationButton>
-    <ConfirmationButton  onClick={onRemover}>
+    </Button>
+
+    <Button  
+      onClick={onRemover}
+      variant='contained'
+      color='error'
+      size='small'
+      sx={{
+        padding: "6px 12px",
+        borderRadius: "6px",
+      }}
+    >
       Remover
-    </ConfirmationButton>
+    </Button>
   </div>
 )}
 
