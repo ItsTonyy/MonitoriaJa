@@ -12,6 +12,7 @@ import {
   Button,
   Paper,
   Stack,
+  TablePagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -26,12 +27,14 @@ import {
 } from "../redux/features/disciplina/fetch";
 import { Disciplina } from "../models/disciplina.model";
 
-
-
 const ListaDisciplinas: React.FC = () => {
   const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editDisciplina, setEditDisciplina] = useState<Disciplina | null>(null);
+
+  // Paginação
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   // Carrega disciplinas do backend
   const fetchDisciplinas = async () => {
@@ -66,32 +69,46 @@ const ListaDisciplinas: React.FC = () => {
   };
 
   // Exclui disciplina
- const handleDeleteDisciplina = async (id: string) => {
-  if (!window.confirm("Deseja realmente excluir esta disciplina?")) return;
-  try {
-    // Verifica se há monitores alocados
-    const monitores = await listarMonitoresPorDisciplina(id);
-    if (monitores && monitores.length > 0) {
-      alert("Não é possível remover esta disciplina pois existem monitores alocados nela.");
-      return;
-    }
-    await removerDisciplina(id);
-    fetchDisciplinas();
-  } catch {
-  }
-};
+  const handleDeleteDisciplina = async (id: string) => {
+    if (!window.confirm("Deseja realmente excluir esta disciplina?")) return;
+    try {
+      // Verifica se há monitores alocados
+      const monitores = await listarMonitoresPorDisciplina(id);
+      if (monitores && monitores.length > 0) {
+        alert("Não é possível remover esta disciplina pois existem monitores alocados nela.");
+        return;
+      }
+      await removerDisciplina(id);
+      fetchDisciplinas();
+    } catch {}
+  };
+
+  // Paginação handlers
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Disciplinas da página atual
+  const disciplinasPaginadas = disciplinas.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
     <Box
       sx={{
-        maxWidth: 1000, // aumente a largura máxima
-        minWidth: 600,
+        maxWidth: 1400,      // aumente aqui
+        minWidth: 900,       // aumente aqui
         margin: "40px auto",
         padding: 3,
         bgcolor: "background.paper",
         borderRadius: 2,
         boxShadow: "0 8px 24px rgba(5, 3, 21, 0.08)"
-       
       }}
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
@@ -113,7 +130,7 @@ const ListaDisciplinas: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {disciplinas.map((disciplina) => (
+            {disciplinasPaginadas.map((disciplina) => (
               <TableRow key={disciplina._id}>
                 <TableCell>{disciplina.nome}</TableCell>
                 <TableCell align="center">
@@ -135,7 +152,7 @@ const ListaDisciplinas: React.FC = () => {
                 </TableCell>
               </TableRow>
             ))}
-            {disciplinas.length === 0 && (
+            {disciplinasPaginadas.length === 0 && (
               <TableRow>
                 <TableCell colSpan={2} align="center">
                   Nenhuma disciplina cadastrada.
@@ -144,6 +161,16 @@ const ListaDisciplinas: React.FC = () => {
             )}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          count={disciplinas.length}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10, 20]}
+          labelRowsPerPage="Linhas por página:"
+        />
       </TableContainer>
 
       {/* Modal para adicionar/editar disciplina */}
