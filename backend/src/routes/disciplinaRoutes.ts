@@ -180,7 +180,13 @@ router.delete("/:id", adminAuth, async (req, res) => {
     res.status(404).json({ message: "Disciplina não encontrada!" });
     return;
   }
-
+   // Validação: não permitir exclusão se houver monitores alocados
+  if (disciplina.listaMonitores && disciplina.listaMonitores.length > 0) {
+    res.status(400).json({
+      message: "Não é possível remover esta disciplina pois existem monitores alocados nela.",
+    });
+    return;
+  }
   try {
     await Disciplina.deleteOne({ _id: id });
     res.status(200).json({ message: "Disciplina removida com sucesso!" });
@@ -219,7 +225,7 @@ router.delete("/:id", adminAuth, async (req, res) => {
  *       500:
  *         description: Erro ao adicionar monitor à disciplina
  */
-router.post("/monitor", autenticar, async (req, res) => {
+router.post("/monitor", async (req, res) => {
   const { disciplinaId, monitorId } = req.body;
   try {
     const disciplina = await Disciplina.findByIdAndUpdate(

@@ -25,6 +25,7 @@ import ListaCartaoPage from "./pages/Pagamento/Cartao/ListaCartao/ListaCartaoPag
 import Middleware from "./components/routesMiddleware";
 import ListagemUsuarios from "./components/ListagemUsuarios/listagemUsuarios";
 import HistoricoAgendamentos from "./components/HistoricoAgendamentos"
+import ListaDisciplinas from "./components/ListaDisciplinas";
 
 const App = () => {
   return (
@@ -135,6 +136,15 @@ const App = () => {
             element={
               <Middleware>
                 <PerfilUsuarioPage />
+              </Middleware>
+            }
+          />
+
+          <Route
+            path="/MonitoriaJa/lista-disciplinas"
+            element={
+              <Middleware>
+                <ListaDisciplinas />
               </Middleware>
             }
           />

@@ -11,7 +11,7 @@ import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { Disciplina } from "../models/disciplina.model";
 import { criarMonitor } from "../redux/features/monitor/fetch";
 import { criarAluno } from "../redux/features/aluno/fetch";
-import { listarDisciplinas } from "../redux/features/disciplina/fetch";
+import { adicionarMonitorNaDisciplina, listarDisciplinas } from "../redux/features/disciplina/fetch";
 import { useEffect } from "react";
 import { Usuario } from "../models/usuario.model";
 import FormControl from "@mui/material/FormControl";
@@ -254,8 +254,12 @@ function CadastroForm() {
             listaDisciplinas: [],
             listaAgendamentos: [],
           };
-          await criarMonitor(novoMonitor);
-
+          const monitorMongo :any = await criarMonitor(novoMonitor);
+          const monitorCriado= {...monitorMongo, id: monitorMongo._id};
+          const disciplina = opcoesEspecialidades.find(d => d.nome === especialidade);
+          if (disciplina && monitorCriado?.id) {
+          await adicionarMonitorNaDisciplina(disciplina._id!, monitorCriado.id);
+        }
           navigate("/MonitoriaJa/login");
         } catch (err) {
           console.error("Erro ao criar monitor/usuario:", err);
@@ -402,7 +406,7 @@ function CadastroForm() {
             required
           >
             {opcoesEspecialidades.map((d) => (
-              <MenuItem key={d.id?.toString()} value={d.nome?.toString()}>
+              <MenuItem key={d._id?.toString()} value={d.nome?.toString()}>
                 {d.nome?.toString()}
               </MenuItem>
             ))}
