@@ -6,17 +6,26 @@ import {
   Button,
   Stack,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 
 interface DisciplinaModalProps {
   open: boolean;
   onClose: () => void;
   onSave: (nomeDisciplina: string) => void;
+  disciplina?: { nome?: string }; // Recebe disciplina opcional para edição
 }
 
-const DisciplinaModal = ({ open, onClose, onSave }: DisciplinaModalProps) => {
+const DisciplinaModal = ({ open, onClose, onSave, disciplina }: DisciplinaModalProps) => {
   const [nomeDisciplina, setNomeDisciplina] = React.useState("");
   const [error, setError] = React.useState(false);
+
+  // Preenche o input se estiver editando
+  useEffect(() => {
+    if (open) {
+      setNomeDisciplina(disciplina?.nome || "");
+      setError(false);
+    }
+  }, [open, disciplina]);
 
   const handleSave = () => {
     if (!nomeDisciplina.trim()) {
@@ -55,7 +64,7 @@ const DisciplinaModal = ({ open, onClose, onSave }: DisciplinaModalProps) => {
           component="h2"
           sx={{ mb: 3 }}
         >
-          Cadastrar Nova Disciplina
+          {disciplina ? "Editar Disciplina" : "Cadastrar Nova Disciplina"}
         </Typography>
 
         <TextField

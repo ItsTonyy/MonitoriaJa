@@ -78,7 +78,18 @@ export const isTokenExpired = (): boolean => {
 
 export const isAuthenticated = (): boolean => {
   const token = getToken();
-  return token !== null && !isTokenExpired();
+  if (!token) return false;
+  const payload = decodeToken(token);
+  if (!payload || !payload.exp) {
+    removeToken();
+    return false;
+  }
+  const currentTime = Date.now() / 1000;
+  if (payload.exp < currentTime) {
+    removeToken();
+    return false;
+  }
+  return true;
 };
 
 export const removeToken = (): void => {

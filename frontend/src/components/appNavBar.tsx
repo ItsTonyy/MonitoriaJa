@@ -101,9 +101,9 @@ export default function AppNavBar() {
       navigate("/MonitoriaJa/listar-usuarios");
     }
   }
-  function handleClickAdicionarAgendamento() {
+  function handleClickListarDisciplinas() {
     if (isAuthenticated) {
-      navigate("/MonitoriaJa/cadastro-disciplina");
+      navigate("/MonitoriaJa/lista-disciplinas");
     }
   }
 
@@ -180,7 +180,7 @@ export default function AppNavBar() {
     setAnchorElUser(null);
   };
 
-  var autenticado = localStorage.getItem('token');
+ const autenticado = isAuth();
 
   return (
     <AppBar
@@ -295,9 +295,9 @@ export default function AppNavBar() {
                     paddingRight: "10px",
                     ":hover": { transform: "none" },
                   }}
-                  onClick={handleClickAdicionarAgendamento}
+                  onClick={handleClickListarDisciplinas}
                 >
-                  +Disciplinas
+                  Disciplinas
                 </Button>
               }
             </Box>
@@ -431,8 +431,8 @@ export default function AppNavBar() {
                 {isAdmin && (
                   <>
                     <MenuItem onClick={handleClickListarUsuarios}>Usuários</MenuItem>
-                    <MenuItem onClick={handleClickAdicionarAgendamento}>
-                      +Disciplinas
+                    <MenuItem onClick={handleClickListarDisciplinas}>
+                      Disciplinas
                     </MenuItem>
                   </>
                 )}

@@ -27,6 +27,7 @@ import Modal from "@mui/material/Modal";
 import ModalAgendamento from "../../components/modais/ModalAgendamento";
 import { uploadArquivo } from "../../redux/features/upload/fetch";
 import { Button } from "@mui/material";
+import { adicionarMonitorNaDisciplina } from "../../redux/features/disciplina/fetch";
 
 
 export interface Disponibilidade {
@@ -259,6 +260,26 @@ const PerfilMonitorPage: React.FC = () => {
         })
       ).unwrap();
 
+      const monitorId = monitor.id;
+        const disciplinasAdicionadas = materiasSelecionadas.filter(
+          (nome) =>
+            !(monitor.materia || []).includes(nome) &&
+            !(monitor.listaDisciplinas || []).some((id) => {
+              const disciplina = materiasDisponiveis.find(d => d.id === id || d.id === id);
+              return disciplina?.nome === nome;
+            })
+        );
+
+        // Pegue os ids das disciplinas adicionadas
+        const disciplinasIds = materiasDisponiveis
+          .filter((d) => disciplinasAdicionadas.includes(d.nome!))
+          .map((d) => d.id);
+
+        for (const disciplinaId of disciplinasIds) {
+          if (disciplinaId && monitorId) {
+            await adicionarMonitorNaDisciplina(disciplinaId, monitorId);
+          }
+        }
       dispatch(
         atualizarContato({ telefone: telefoneInput, email: emailInput })
       );
