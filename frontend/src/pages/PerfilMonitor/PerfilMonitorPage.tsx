@@ -463,12 +463,6 @@ const PerfilMonitorPage: React.FC = () => {
         )}
 
         <div className={styles.buttonSection}>
-          <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={handleOpen}>
-              Gerenciar Disponibilidade
-            </ConfirmationButton>
-          </div>
-
           <Modal
             open={modalOpen}
             onClose={handleClose}
@@ -477,44 +471,78 @@ const PerfilMonitorPage: React.FC = () => {
           >
             <ModalAgendamento onClose={handleClose} />
           </Modal>
+            
+          {/*<div className={styles.buttonGroup}></div>*/}
 
           <div className={styles.buttonGroup}>
             <Button
-            onClick={handleSalvar}
-            disabled={loading || uploadingFoto}
-            sx={{
-              background: "#104c91",
-              color: "#fff",
-              padding: "6px 0",
-              fontWeight: "bold",
-              width: "100%",
-              textTransform: "none",
-              borderRadius: "6px",
-              "&:hover": {
-                background: "#125a9e",
-              },
-              "&:disabled": {
-                background: "#9bb9d7",
-                color: "#eee",
-              },
-            }}
-          >
-            {loading ? "Salvando..." : "Confirmar Mudanças"}
-          </Button>
-          <ConfirmationButton 
-            onClick={() => {
-              const targetPath = userId 
-                ? `/MonitoriaJa/alterar-senha/${userId}`
-                : '/MonitoriaJa/alterar-senha';
-              navigate(targetPath);
-            }}
-          >
-            Trocar senha
-          </ConfirmationButton>
-            <ConfirmationButton onClick={() => navigate(-1)}>
+              onClick={handleOpen}
+              variant="contained"
+              disabled={loading || uploadingFoto}
+              sx={{
+                padding: "6px 0",
+                borderRadius: "6px",
+                gridArea: "box-1"
+              }}
+            >
+              Gerenciar Disponibilidade
+            </Button>
+
+            <Button 
+              onClick={() => {
+                const targetPath = userId 
+                  ? `/MonitoriaJa/alterar-senha/${userId}`
+                  : '/MonitoriaJa/alterar-senha';
+                navigate(targetPath);
+              }}
+              disabled={loading || uploadingFoto}
+              variant="contained"
+              sx={{
+                padding: "6px 0",
+                borderRadius: "6px",
+                gridArea: "box-2"
+              }}
+            >
+              Trocar senha
+            </Button>
+
+
+            <Button 
+              onClick={() => navigate(-1)}
+              variant="outlined"
+              disabled={loading || uploadingFoto}
+              sx={{
+                padding: "6px 0",
+                borderRadius: "6px",
+                gridArea: "box-3",
+              }}
+              >
               Voltar
-            </ConfirmationButton>
-            </div>
+            </Button>
+
+            <Button
+              onClick={handleSalvar}
+              disabled={loading || uploadingFoto}
+              variant="contained"
+              sx={{
+                background: "#104c91",
+                color: "#fff",
+                padding: "6px 0",
+                fontWeight: "bold",
+                borderRadius: "6px",
+                gridArea: "box-4",
+                "&:hover": {
+                  background: "#125a9e",
+                },
+                "&:disabled": {
+                  background: "#9bb9d7",
+                  color: "#eee",
+                },
+              }}
+            >
+              {loading ? "SALVANDO..." : "SALVAR"}
+            </Button>
+          </div>
         </div>
       </div>
 

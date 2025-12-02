@@ -22,6 +22,7 @@ import {
 import type { AppDispatch } from '../../redux/store';
 import type { RootState } from '../../redux/root-reducer';
 import { getUserIdFromToken } from '../../pages/Pagamento/Cartao/CadastraCartao/authUtils'; // ✅ Import correto
+import { Button } from '@mui/material';
 
 const AlterarSenhaPage: React.FC = () => {
   const navigate = useNavigate();
@@ -185,22 +186,34 @@ const AlterarSenhaPage: React.FC = () => {
         </div>
 
         <div className={styles.buttonSection}>
-          <ConfirmationButton 
+          <Button 
             onClick={handleSubmit}
             disabled={status === 'loading'}
+            variant="contained"
+            sx={{
+              padding: "6px 0",
+              borderRadius: "6px",
+              gridArea: "box-1",
+            }}
           >
             {status === 'loading' 
               ? 'Alterando...' 
               : (modoAdmin ? 'Alterar Senha do Usuário' : 'Trocar senha')
             }
-          </ConfirmationButton>
+          </Button>
 
-          <ConfirmationButton 
+          <Button 
             onClick={handleVoltar}
             disabled={status === 'loading'}
+            variant='outlined'
+            sx={{
+              padding: "6px 0",
+              borderRadius: "6px",
+              gridArea: "box-2",
+            }}
           >
             Voltar
-          </ConfirmationButton>
+          </Button>
         </div>
       </div>
 

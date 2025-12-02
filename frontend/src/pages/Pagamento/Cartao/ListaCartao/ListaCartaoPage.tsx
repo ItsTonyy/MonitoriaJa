@@ -16,7 +16,7 @@ import {
   selectCartoesError,
   clearError,
 } from "../../../../redux/features/listaCartao/slice";
-import { CircularProgress } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 
 const ListaCartaoPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -130,15 +130,31 @@ const handleEscolherCartao = (cartao: any) => {
           </div>
         )}
 
-        <ConfirmationButton
+        <div className={styles.buttonGroup}>
+        <Button
           onClick={handleCadastrarCartao}
           disabled={loading}
+          variant="contained"
+          sx={{
+            padding: "6px 0",
+            borderRadius: "6px"
+          }}
         >
           Cadastrar Novo Cartão
-        </ConfirmationButton>
-        <ConfirmationButton onClick={handleCancel} disabled={loading}>
+        </Button>
+        <Button 
+          onClick={handleCancel} 
+          disabled={loading}
+          variant="contained"
+          color="error"
+          sx={{
+            padding: "6px 0",
+            borderRadius: "6px"
+          }}
+        >
           Cancelar
-        </ConfirmationButton>
+        </Button>
+        </div>
       </div>
     </main>
   );
