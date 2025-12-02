@@ -392,10 +392,16 @@ body, h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, div {
 }
 
 .buttonGroup {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 0.5fr 1fr;
   gap: 0.5rem;
-  width: 100%;
+  /*width: 100%;*/
+  grid-template-areas: 
+    "box-1 box-1 box-1"
+    "box-2 box-2 box-2"
+    ". . ."
+    "box-3 . box-4";
 }
 
 /* Botão reutilizável - agora compatível com MUI Button */
