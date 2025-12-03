@@ -69,7 +69,7 @@ function ListaAgendamentos() {
   const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
   
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
 
 
@@ -146,6 +146,10 @@ useEffect(() => {
     [agendamentos,pagina, cardsPorPagina]
   );
 
+  if (loading) {
+    return <>Carregando...</>
+  }
+  
   return (
     <Paper
       elevation={0}

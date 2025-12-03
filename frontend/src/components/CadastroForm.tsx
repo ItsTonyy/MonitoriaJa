@@ -20,6 +20,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import { uploadArquivo } from "../redux/features/upload/fetch";
+import Chip from "@mui/material/Chip";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -69,8 +70,9 @@ function CadastroForm() {
   const [valorMonitor, setValorMonitor] = useState(0);
   const [erroValorMonitor, setErroValorMonitor] = useState("");
   const [opcaoMonitor, setOpcaoMonitor] = useState<boolean | null>(null);
-  const [especialidade, setEspecialidade] = useState<string>("");
+  const [selectedEspecialidades, setSelectedEspecialidades] = useState<string[]>([]);
   const [biografia, setBiografia] = useState<string>("");
+  const [listaEspecialidades, setListaEspecialidades] = useState<Disciplina[]>([]);
 
   // useState usado para armazenar o arquivo para enviar como parâmetro na função de upload
   const [fileAvatar, setFileAvatar] = useState<File | null>(null);
@@ -170,7 +172,7 @@ function CadastroForm() {
   }
 
   function validarValorMonitor(valor: number) {
-    return valor >= 0;
+    return valor > 0;
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -220,7 +222,7 @@ function CadastroForm() {
     }
 
     if (!validarValorMonitor(valorMonitor) && opcaoMonitor === true) {
-      setErroValorMonitor("O valor do monitor deve ser maior ou igual a zero.");
+      setErroValorMonitor("O valor deve ser maior que zero.");
       valido = false;
     } else {
       setErroValorMonitor("");
@@ -246,12 +248,12 @@ function CadastroForm() {
             //    : avatar,
             
             tipoUsuario: "MONITOR",
-            materia: especialidade,
+            // materia: especialidade,
             valor: `R$ ${valorMonitor}/h`,
             servico: "",
             avaliacao: 0.0,
             biografia: biografia,
-            listaDisciplinas: [],
+            listaDisciplinas: listaEspecialidades,
             listaAgendamentos: [],
           };
           await criarMonitor(novoMonitor);
@@ -392,23 +394,41 @@ function CadastroForm() {
         </>
       ) : (
         <>
-        <FormControl error={especialidade === ""} sx={{ width: "100%" }} variant="outlined">
-          <InputLabel id="especialidade">Especialidade</InputLabel>
+        <FormControl error={listaEspecialidades.length === 0} sx={{ width: "100%" }} variant="outlined">
+          <InputLabel id="disciplinas">Disciplinas (máx. 4)</InputLabel>
           <Select
-            labelId="especialidade"
-            label="Especialidade"
-            value={especialidade}
-            onChange={(e) => setEspecialidade(e.target.value)}
+            labelId="disciplinas"
+            label="Disciplinas (máx. 4)"
+            multiple
+            value={selectedEspecialidades}
+            onChange={(e) => {
+              const value = typeof e.target.value === 'string' ? e.target.value.split(',') : (e.target.value as string[]);
+              const limited = value.slice(0, 4);
+              setSelectedEspecialidades(limited);
+              const selectedDisciplinas = opcoesEspecialidades.filter((d) => limited.includes(d.nome || ""));
+              setListaEspecialidades(selectedDisciplinas);
+            }}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {(selected as string[]).map((val) => (
+                  <Chip key={val} label={val} />
+                ))}
+              </Box>
+            )}
             required
           >
             {opcoesEspecialidades.map((d) => (
-              <MenuItem key={d.id?.toString()} value={d.nome?.toString()}>
+              <MenuItem
+                key={d.id?.toString()}
+                value={d.nome?.toString()}
+                disabled={selectedEspecialidades.length >= 4 && !selectedEspecialidades.includes(d.nome || "")}
+              >
                 {d.nome?.toString()}
               </MenuItem>
             ))}
           </Select>
-          {especialidade === "" && (
-            <FormHelperText>Selecione uma especialidade</FormHelperText>
+          {listaEspecialidades.length === 0 && (
+            <FormHelperText>Selecione uma ou mais disciplinas</FormHelperText>
           )}
           <TextField
             label="Valor por hora (R$)"           
