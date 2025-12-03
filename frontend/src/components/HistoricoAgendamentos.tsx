@@ -68,7 +68,7 @@ function HistoricoAgendamentos() {
   const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
   
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
 
   const token = localStorage.getItem("token");
@@ -134,6 +134,10 @@ useEffect(() => {
       ),
     [agendamentos,pagina, cardsPorPagina]
   );
+
+  if (loading == true) {
+    return <>Carregando...</>
+  }
 
   return (
     <Paper
