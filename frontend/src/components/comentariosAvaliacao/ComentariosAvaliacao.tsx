@@ -23,7 +23,7 @@ import "./ComentariosAvaliacao.css";
 import { useAppSelector } from "../../redux/hooks";
 import { avaliacaoService } from "../../services/avaliacaoService";
 import {jwtDecode} from "jwt-decode";
-import { decode } from "punycode";
+import { isAuthenticated as isAuth } from "../../pages/Pagamento/Cartao/CadastraCartao/authUtils";
 
 export type JwtPayload = {
   id?: string;
@@ -50,8 +50,6 @@ function isAdmin(): boolean{
   const payload = decodeToken();
   return payload?.role === "ADMIN";
 }
-import { isAuthenticated as isAuth } from "../../pages/Pagamento/Cartao/CadastraCartao/authUtils";
-
 
 const AvaliacaoCard = styled(Card)({
   width: "100%",
@@ -81,15 +79,11 @@ const ModalStyle = {
   p: 4,
 };
 
-// Agora as avaliações são fornecidas via serviço (Mongo+Express)
-
 interface FormData {
   rating: number | null;
   titulo: string;
   comentario: string;
 }
-
-// Dados de avaliações removidos; serão carregados do Redux via busco por monitorId
 
 interface Props { monitorId?: string }
 const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
