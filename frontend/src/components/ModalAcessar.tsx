@@ -4,7 +4,8 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { useAppSelector } from "../redux/hooks";
-
+import { useNavigate } from "react-router-dom";
+import {atualizarAgendamento} from "../redux/features/agendamento/fetch";
 interface ModalAcessarProps {
   open: boolean;
   onClose: () => void;
@@ -15,7 +16,9 @@ function getUsuarioObj(usuario: string | undefined | null | { [key: string]: any
 }
 
 const ModalAcessar: React.FC<ModalAcessarProps> = ({ open, onClose }) => {
+  const navigate = useNavigate();
   const [copied, setCopied] = React.useState(false);
+  const [isWaiting, setIsWaiting] = React.useState(false);
   const agendamento = useAppSelector((state) => state.agendamento.currentAgendamento);
   if (!agendamento) return null;
   const monitorObj = getUsuarioObj(agendamento?.monitor);
@@ -23,6 +26,19 @@ const ModalAcessar: React.FC<ModalAcessarProps> = ({ open, onClose }) => {
     navigator.clipboard.writeText(agendamento.link || "");
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
+  };
+
+  const handleEntrarAula = () => {
+    window.open(agendamento.link!, '_blank', 'noopener,noreferrer');
+    setIsWaiting(true);
+    
+    setTimeout(() => {
+      navigate('/MonitoriaJa/avaliacao-pos-aula');
+      setIsWaiting(false);
+      onClose();
+    }, 10000);
+    atualizarAgendamento(agendamento.id!, { status: "CONCLUIDO" });
+
   };
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="modal-acessar-title">
@@ -108,18 +124,17 @@ const ModalAcessar: React.FC<ModalAcessarProps> = ({ open, onClose }) => {
             </Button>
             <Button
               variant="contained"
+              disabled={isWaiting}
               sx={{
                 bgcolor: "#2d5be3 !important",
                 "&:hover": { bgcolor: "#1b3e8a !important" },
                 minWidth: 120,
                 px: 3,
               }}
-              href={agendamento.link!}
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={handleEntrarAula}
             >
-              Entrar na Aula
-            </Button>
+              {isWaiting ? "Aguarde 10s..." : "Entrar na Aula"}
+            </Button> 
           </Box>
         </Stack>
       </Box>

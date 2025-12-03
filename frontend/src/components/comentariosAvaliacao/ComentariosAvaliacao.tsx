@@ -18,9 +18,38 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/Delete";
 import "./ComentariosAvaliacao.css";
 import { useAppSelector } from "../../redux/hooks";
 import { avaliacaoService } from "../../services/avaliacaoService";
+import {jwtDecode} from "jwt-decode";
+import { decode } from "punycode";
+
+export type JwtPayload = {
+  id?: string;
+  role?: string;
+  exp?: number;
+  iat?: number;
+};
+
+export function getToken(): string | null {
+  return localStorage.getItem("token")
+}
+
+function decodeToken(): JwtPayload | null {
+  const token = getToken();
+  if (!token) return null;
+  try {
+    return jwtDecode<JwtPayload>(token);
+  } catch {
+    return null;
+  }
+}
+
+function isAdmin(): boolean{
+  const payload = decodeToken();
+  return payload?.role === "ADMIN";
+}
 import { isAuthenticated as isAuth } from "../../pages/Pagamento/Cartao/CadastraCartao/authUtils";
 
 
@@ -65,6 +94,8 @@ interface FormData {
 interface Props { monitorId?: string }
 const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [avaliacaoToDelete, setAvaliacaoToDelete] = useState<string | null>(null);
   const [showMore, setShowMore] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     rating: null,
@@ -153,6 +184,36 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
     } catch (e) {
       console.error("Erro ao recarregar avaliações:", e);
     }
+  };
+
+  const handleDeleteClick = (avaliacaoId: string) => {
+    setAvaliacaoToDelete(avaliacaoId);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!avaliacaoToDelete) return;
+    
+    try {
+      await avaliacaoService.remove(avaliacaoToDelete);
+      setDeleteModalOpen(false);
+      setAvaliacaoToDelete(null);
+      alert("Avaliação excluída com sucesso!");
+      
+      const mid = monitorId ?? (monitorSelecionado as any)?.id ?? (monitorSelecionado as any)?._id;
+      if (mid) {
+        const res = await avaliacaoService.getByMonitorId(String(mid));
+        setAvaliacoes(res || []);
+      }
+    } catch (e) {
+      console.error("Erro ao excluir avaliação:", e);
+      alert("Erro ao excluir avaliação. Verifique suas permissões.");
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setAvaliacaoToDelete(null);
   };
 
   if (loading) {
@@ -394,49 +455,66 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
                         alignItems: { xs: "flex-start", sm: "center" },
                         flexDirection: { xs: "column", sm: "row" },
                         gap: { xs: 2, sm: 2 },
+                        justifyContent: "space-between",
                       }}
                     >
-                      <Typography variant="body2" color="text.secondary">
-                        Esta avaliação foi útil?
-                      </Typography>
-                      <Box sx={{ display: "flex", gap: 1 }}>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          size="medium"
-                          startIcon={
-                            <ThumbUpIcon
-                              sx={{ fontSize: { xs: 16, sm: 18 } }}
-                            />
-                          }
-                          sx={{
-                            minWidth: "auto",
-                            fontSize: { xs: "0.7rem", sm: "0.8rem" },
-                            px: { xs: 1, sm: 2 },
-                            borderRadius: "15px",
-                          }}
-                        >
-                          ({0})
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          size="medium"
-                          startIcon={
-                            <ThumbDownIcon
-                              sx={{ fontSize: { xs: 16, sm: 18 } }}
-                            />
-                          }
-                          sx={{
-                            minWidth: "auto",
-                            fontSize: { xs: "0.7rem", sm: "0.8rem" },
-                            px: { xs: 1, sm: 2 },
-                            borderRadius: "15px",
-                          }}
-                        >
-                          ({0})
-                        </Button>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Esta avaliação foi útil?
+                        </Typography>
+                        <Box sx={{ display: "flex", gap: 1 }}>
+                          <Button
+                            variant="outlined"
+                            color="primary"
+                            size="medium"
+                            startIcon={
+                              <ThumbUpIcon
+                                sx={{ fontSize: { xs: 16, sm: 18 } }}
+                              />
+                            }
+                            sx={{
+                              minWidth: "auto",
+                              fontSize: { xs: "0.7rem", sm: "0.8rem" },
+                              px: { xs: 1, sm: 2 },
+                              borderRadius: "15px",
+                            }}
+                          >
+                            ({0})
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            color="primary"
+                            size="medium"
+                            startIcon={
+                              <ThumbDownIcon
+                                sx={{ fontSize: { xs: 16, sm: 18 } }}
+                              />
+                            }
+                            sx={{
+                              minWidth: "auto",
+                              fontSize: { xs: "0.7rem", sm: "0.8rem" },
+                              px: { xs: 1, sm: 2 },
+                              borderRadius: "15px",
+                            }}
+                          >
+                            ({0})
+                          </Button>
+                        </Box>
                       </Box>
+
+                      {isAdmin() && (
+                        <IconButton
+                          onClick={() => handleDeleteClick(avaliacao._id || avaliacao.id)}
+                          sx={{
+                            color: "#d32f2f",
+                            "&:hover": {
+                              backgroundColor: "rgba(211, 47, 47, 0.1)",
+                            },
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
                     </Box>
                   </Box>
                   {index < avaliacoesVisiveis.length - 1 && (
@@ -554,6 +632,54 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
                 Enviar avaliação
               </Button>
             </Box>
+          </Box>
+        </Box>
+      </Modal>
+
+      <Modal open={deleteModalOpen} onClose={handleDeleteCancel}>
+        <Box sx={ModalStyle}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 3,
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: "bold", color: "#d32f2f" }}>
+              Confirmar Exclusão
+            </Typography>
+            <IconButton onClick={handleDeleteCancel}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          <Typography variant="body1" sx={{ mb: 4 }}>
+            Tem certeza que deseja excluir esta avaliação? Esta ação não pode ser desfeita.
+          </Typography>
+
+          <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              size="medium"
+              onClick={handleDeleteCancel}
+              sx={{ borderRadius: "15px" }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="contained"
+              size="medium"
+              onClick={handleDeleteConfirm}
+              sx={{
+                backgroundColor: "#d32f2f",
+                "&:hover": { backgroundColor: "#b71c1c" },
+                borderRadius: "15px",
+              }}
+            >
+              Excluir
+            </Button>
           </Box>
         </Box>
       </Modal>
