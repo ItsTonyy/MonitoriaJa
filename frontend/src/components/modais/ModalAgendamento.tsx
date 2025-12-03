@@ -60,7 +60,13 @@ const MenuProps = {
   },
 };
 
-function ModalAgendamento(props: { onClose: () => void }) {
+interface ModalAgendamentoProps {
+  onClose: () => void;
+  monitorId?: string;
+}
+
+function ModalAgendamento(props: ModalAgendamentoProps) {
+  const targetMonitorId = props.monitorId || getUserIdFromToken();
 
   const [dias, setDias] = useState<string[]>([]);
   console.log(dias);
@@ -85,7 +91,7 @@ function ModalAgendamento(props: { onClose: () => void }) {
 
   useEffect(() => {
     const load = async () => {
-      const monitorId = getUserIdFromToken();
+      const monitorId = targetMonitorId;
       if (!monitorId) return;
       try {
         const lista = await disponibilidadeService.getByMonitorId(String(monitorId));
@@ -158,7 +164,7 @@ function ModalAgendamento(props: { onClose: () => void }) {
     };
 
   const handleConfirmarDisponibilidade = async () => {
-    const monitorId = getUserIdFromToken();
+    const monitorId = targetMonitorId;
     if (!monitorId) return;
     const novasDisponibilidades: Disponibilidade[] = dias.map((day) => ({
       day,

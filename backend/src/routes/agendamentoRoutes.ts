@@ -332,4 +332,47 @@ router.delete("/:id", adminAuth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /agendamento/validar/{monitorId}:
+ *   get:
+ *     summary: Valida se o aluno tem agendamento com o monitor
+ *     tags: [Agendamento]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: monitorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Validação retornada
+ *       500:
+ *         description: Erro ao validar agendamento
+ */
+router.get("/validar/:monitorId", autenticar, async (req, res) => {
+  const { monitorId } = req.params;
+  const alunoId = req.id
+  console.log("aluno id", alunoId, "MOnitor id", monitorId)
+  try {
+    const agendamento = await Agendamento.findOne({
+      aluno: alunoId,
+      monitor: monitorId,
+      status: "CONCLUIDO" 
+    });
+    console.log("Agendamento encontrado:", agendamento);
+    if(!agendamento){
+      return res.status(401).json({message:"Não tem permissão para avaliar esse monitor."})
+    }
+    res.status(200).json({ 
+      temAgendamento: !!agendamento,
+      agendamento: agendamento || null
+    });
+  } catch (error) {
+    res.status(500).json({ erro: error });
+  }
+});
+
 export default router;
