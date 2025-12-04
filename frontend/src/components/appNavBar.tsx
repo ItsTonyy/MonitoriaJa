@@ -180,7 +180,7 @@ export default function AppNavBar() {
     setAnchorElUser(null);
   };
 
-  var autenticado = localStorage.getItem('token');
+  // var autenticado = localStorage.getItem('token');
 
   return (
     <AppBar
@@ -239,7 +239,7 @@ export default function AppNavBar() {
               >
                 Monitores
               </Button>
-              {autenticado && 
+              {isAuthenticated  && 
                 <Button
                   variant="text"
                   color="info"
@@ -254,7 +254,7 @@ export default function AppNavBar() {
                   Agendamento
                 </Button>
               }
-                            {autenticado && 
+                            {isAuthenticated  && 
                 <Button
                   variant="text"
                   color="info"
@@ -282,7 +282,7 @@ export default function AppNavBar() {
                   onClick={handleClickListarUsuarios}
                 >
                   
-                  Usuarios
+                  Usuários
                 </Button>
               }
               {isAdmin && 
@@ -420,7 +420,7 @@ export default function AppNavBar() {
                 <MenuItem onClick={handleClickMonitores}>Monitores</MenuItem>
 
                 {/* --- LINKS PARA USUÁRIO LOGADO --- */}
-                {autenticado && (
+                {isAuthenticated && (
                   <>
                     <MenuItem onClick={handleClickAgendamento}>Agendamento</MenuItem>
                     <MenuItem onClick={handleClickHistorico}>Histórico</MenuItem>

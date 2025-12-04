@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
-import ConfirmationButton from '../../botaoTemporario/botaoTemporario';
+// import ConfirmationButton from '../../botaoTemporario/botaoTemporario';
 import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import AddAphotoIcon from '@mui/icons-material/AddAPhoto';
 
 const VisuallyHiddenInput = styled('input')({
   position: 'absolute',
@@ -33,9 +35,13 @@ const UploadButton: React.FC<UploadButtonProps> = ({ className, onFileSelect }) 
   return (
     <>
       {/* mantém aparência padronizada do botão */}
-      <ConfirmationButton onClick={handleClick}>
+      <Button 
+        onClick={handleClick}
+        variant="contained"
+        startIcon={<AddAphotoIcon />}
+      >
         Upload foto
-      </ConfirmationButton>
+      </Button>
       <VisuallyHiddenInput
         ref={inputRef}
         type="file"
