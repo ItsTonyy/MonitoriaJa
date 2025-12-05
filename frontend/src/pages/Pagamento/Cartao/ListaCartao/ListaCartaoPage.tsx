@@ -10,6 +10,7 @@ import { AppDispatch } from "../../../../redux/store";
 import { RootState } from "../../../../redux/root-reducer";
 import {
   fetchCartoes,
+  fetchTodosCartoes,
   removerCartao,
   selectAllCartoes,
   selectCartoesLoading,
@@ -17,6 +18,7 @@ import {
   clearError,
 } from "../../../../redux/features/listaCartao/slice";
 import { CircularProgress } from "@mui/material";
+import { getRoleFromToken } from "../CadastraCartao/authUtils";
 
 const ListaCartaoPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,13 +29,60 @@ const ListaCartaoPage: React.FC = () => {
   const error = useSelector((state: RootState) => selectCartoesError(state));
 
   const [removendoId, setRemovendoId] = React.useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = React.useState(false);
 
   const location = useLocation();
   const agendamentoFromLocation = location.state?.agendamento;
 
+  // Verifica se o usuário é admin pelo token JWT usando authUtils
   useEffect(() => {
-    dispatch(fetchCartoes());
-  }, [dispatch]);
+    try {
+      const token = localStorage.getItem('token');
+      console.log('🎫 Token existe:', !!token);
+      
+      if (token) {
+        // Decodifica manualmente para debug
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log('🔐 Payload completo do token:', payload);
+        console.log('📋 Role no payload:', payload.role);
+        console.log('🔍 Tipo da role:', typeof payload.role);
+      }
+      
+      const role = getRoleFromToken();
+      console.log('🔐 Role retornada por getRoleFromToken():', role);
+      console.log('🔍 Tipo da role:', typeof role);
+      
+      // Compara ignorando maiúsculas/minúsculas
+      const userIsAdmin = role?.toLowerCase() === 'admin';
+      setIsAdmin(userIsAdmin);
+      console.log('👤 Usuário é admin:', userIsAdmin);
+      console.log('⚖️ Comparação (case-insensitive):', `"${role}" -> "${role?.toLowerCase()}" === "admin" = ${userIsAdmin}`);
+    } catch (err) {
+      console.error('❌ Erro ao verificar role:', err);
+      setIsAdmin(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log('🎯 ListaCartaoPage montado');
+    console.log('👤 isAdmin:', isAdmin);
+    
+    if (isAdmin) {
+      console.log('🔍 Admin detectado - Chamando fetchTodosCartoes()');
+      dispatch(fetchTodosCartoes());
+    } else {
+      console.log('🔍 Usuário comum - Chamando fetchCartoes()');
+      dispatch(fetchCartoes());
+    }
+  }, [dispatch, isAdmin]);
+
+  useEffect(() => {
+    console.log('📊 Estado atualizado:');
+    console.log('  - Loading:', loading);
+    console.log('  - Error:', error);
+    console.log('  - Cartões:', cartoes);
+    console.log('  - Total:', cartoes.length);
+  }, [cartoes, loading, error]);
 
   useEffect(() => {
     if (error) {
@@ -44,14 +93,14 @@ const ListaCartaoPage: React.FC = () => {
     }
   }, [error, dispatch]);
 
-const handleEscolherCartao = (cartao: any) => {
-  navigate("/MonitoriaJa/confirma-pagamento", { 
-    state: { 
-      cartao,
-      agendamento: agendamentoFromLocation // ← Usa o do location.state
-    } 
-  });
-};
+  const handleEscolherCartao = (cartao: any) => {
+    navigate("/MonitoriaJa/confirma-pagamento", { 
+      state: { 
+        cartao,
+        agendamento: agendamentoFromLocation
+      } 
+    });
+  };
 
   const handleRemoverCartao = async (id: string) => {
     if (!id) return;
@@ -60,7 +109,7 @@ const handleEscolherCartao = (cartao: any) => {
     try {
       await dispatch(removerCartao(id)).unwrap();
     } catch (err: any) {
-      // Erro já está no estado Redux
+      console.error('Erro ao remover cartão:', err);
     } finally {
       setRemovendoId(null);
     }
@@ -74,10 +123,32 @@ const handleEscolherCartao = (cartao: any) => {
     navigate("/MonitoriaJa/cadastra-cartao");
   };
 
+  const getUsuarioInfo = (usuario: any) => {
+    if (!usuario) return "Usuário desconhecido";
+    
+    if (typeof usuario === "string") {
+      return `ID: ${usuario}`;
+    }
+    
+    if (usuario.nome) {
+      return usuario.nome;
+    }
+    
+    if (usuario.email) {
+      return usuario.email;
+    }
+    
+    if (usuario._id) {
+      return `ID: ${usuario._id}`;
+    }
+    
+    return "Usuário desconhecido";
+  };
+
   return (
     <main className={styles.centralizeContent}>
       <div className={styles.profileCard}>
-        <Title text="Cartões Cadastrados" />
+        <Title text={isAdmin ? "Todos os Cartões Cadastrados (ADMIN)" : "Cartões Cadastrados"} />
 
         {error && (
           <div
@@ -102,7 +173,7 @@ const handleEscolherCartao = (cartao: any) => {
           <div className={styles.cardContainer}>
             {cartoes.length === 0 ? (
               <p style={{ textAlign: "center", color: "#666", marginBottom: "20px" }}>
-                Nenhum cartão cadastrado. Cadastre um novo cartão para continuar.
+                Nenhum cartão cadastrado. {!isAdmin && "Cadastre um novo cartão para continuar."}
               </p>
             ) : (
               cartoes.map((cartao: any) => (
@@ -114,6 +185,20 @@ const handleEscolherCartao = (cartao: any) => {
                     transition: "opacity 0.3s",
                   }}
                 >
+                  {isAdmin && (
+                    <div
+                      style={{
+                        padding: "8px 12px",
+                        backgroundColor: "#f5f5f5",
+                        borderRadius: "4px",
+                        marginBottom: "8px",
+                        fontSize: "14px",
+                        color: "#666",
+                      }}
+                    >
+                      <strong>Proprietário:</strong> {getUsuarioInfo(cartao.usuario)}
+                    </div>
+                  )}
                   <CartaoItem
                     numero={cartao.ultimosDigitos || "••••"}
                     nome={cartao.titular || "Titular não informado"}

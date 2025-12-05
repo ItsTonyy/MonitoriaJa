@@ -85,6 +85,87 @@ export const fetchCartoes = createAsyncThunk(
 );
 
 /**
+ * Busca TODOS os cartões do banco (admin/monitor)
+ * GET /cartao
+ */
+export const fetchTodosCartoes = createAsyncThunk(
+  'cartoes/fetchTodosCartoes',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      console.log('🔍 fetchTodosCartoes - Iniciando requisição');
+      console.log('📍 URL COMPLETA:', CARTAO_ENDPOINT);
+      console.log('📍 API_BASE_URL:', API_BASE_URL);
+      console.log('🔑 Token presente:', !!token);
+
+      if (!token) {
+        return rejectWithValue('Usuário não autenticado');
+      }
+
+      // Decodifica o token para debug
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log('👤 Token payload:', payload);
+        console.log('🎭 Role no token:', payload.role);
+      } catch (e) {
+        console.log('⚠️ Não foi possível decodificar token para debug');
+      }
+
+      const response = await fetch(CARTAO_ENDPOINT, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('📊 Status da resposta:', response.status);
+      console.log('✅ Response OK:', response.ok);
+      console.log('📋 Headers da resposta:', {
+        contentType: response.headers.get('content-type'),
+        contentLength: response.headers.get('content-length')
+      });
+
+      if (!response.ok) {
+        let errMsg = `Erro ${response.status}`;
+        try {
+          const body = await response.json();
+          console.log('❌ Erro do servidor:', body);
+          if (body && (body.erro || body.message)) {
+            errMsg = body.erro || body.message;
+          }
+        } catch (_) {}
+        throw new Error(errMsg);
+      }
+
+      const data = await response.json();
+      console.log('✅ Dados recebidos (primeiros 3 itens):', data.slice(0, 3));
+      console.log('📦 Total de cartões retornados:', Array.isArray(data) ? data.length : 1);
+      
+      if (Array.isArray(data)) {
+        // Mostra IDs únicos de usuários
+        const usuariosUnicos = new Set(data.map(c => {
+          if (typeof c.usuario === 'string') return c.usuario;
+          return c.usuario?._id || 'sem-id';
+        }));
+        console.log('👥 Total de usuários únicos:', usuariosUnicos.size);
+        console.log('👥 IDs de usuários:', Array.from(usuariosUnicos));
+      }
+      
+      return Array.isArray(data) ? data : [data];
+    } catch (error) {
+      console.error('❌ Erro na requisição:', error);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue('Erro ao buscar todos os cartões');
+      }
+    }
+  }
+);
+
+/**
  * Adiciona um novo cartão
  * POST /cartao/:id
  */
@@ -247,7 +328,7 @@ const listaCartaoSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // FETCH CARTOES
+      // FETCH CARTOES (usuário)
       .addCase(fetchCartoes.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -257,6 +338,23 @@ const listaCartaoSlice = createSlice({
         state.items = action.payload;
       })
       .addCase(fetchCartoes.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // FETCH TODOS CARTOES (admin/monitor)
+      .addCase(fetchTodosCartoes.pending, (state) => {
+        console.log('⏳ Redux: fetchTodosCartoes.pending');
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTodosCartoes.fulfilled, (state, action) => {
+        console.log('✅ Redux: fetchTodosCartoes.fulfilled', action.payload);
+        state.loading = false;
+        state.items = action.payload;
+      })
+      .addCase(fetchTodosCartoes.rejected, (state, action) => {
+        console.log('❌ Redux: fetchTodosCartoes.rejected', action.payload);
         state.loading = false;
         state.error = action.payload as string;
       })

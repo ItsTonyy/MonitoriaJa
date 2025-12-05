@@ -130,13 +130,9 @@ const AlterarSenhaPage: React.FC = () => {
   };
 
   const handleVoltar = () => {
-    if (modoAdmin && userIdAlvo) {
-      // ✅ Admin voltando para o perfil do usuário
-      navigate(`/MonitoriaJa/perfil-usuario/${userIdAlvo}`);
-    } else {
       // ✅ Usuário comum voltando para próprio perfil
       navigate(-1);
-    }
+
   };
 
   return (
