@@ -23,7 +23,6 @@ import { useAppSelector } from "../../redux/hooks";
 import { avaliacaoService } from "../../services/avaliacaoService";
 import { isAuthenticated as isAuth } from "../../pages/Pagamento/Cartao/CadastraCartao/authUtils";
 
-
 const AvaliacaoCard = styled(Card)({
   width: "100%",
   maxWidth: "none",
@@ -62,7 +61,9 @@ interface FormData {
 
 // Dados de avaliações removidos; serão carregados do Redux via busco por monitorId
 
-interface Props { monitorId?: string }
+interface Props {
+  monitorId?: string;
+}
 const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -71,9 +72,30 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
     titulo: "",
     comentario: "",
   });
-  const monitorSelecionado = useAppSelector((state) => state.monitor.selectedMonitor);
+  const monitorSelecionado = useAppSelector(
+    (state) => state.monitor.selectedMonitor
+  );
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const atualizarReacao = async (id: string, tipo: "like" | "dislike") => {
+    try {
+      const res =
+        tipo === "like"
+          ? await avaliacaoService.like(id)
+          : await avaliacaoService.dislike(id);
+      setAvaliacoes((prev) =>
+        prev.map((av) => {
+          const avId = (av as any)._id || (av as any).id;
+          if (String(avId) === String(id)) {
+            return { ...av, likes: res.likes, dislikes: res.dislikes };
+          }
+          return av;
+        })
+      );
+    } catch (e) {
+      console.error("Erro ao atualizar reação:", e);
+    }
+  };
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   useEffect(() => {
@@ -82,7 +104,10 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
 
   useEffect(() => {
     const load = async () => {
-      const mid = monitorId ?? (monitorSelecionado as any)?.id ?? (monitorSelecionado as any)?._id;
+      const mid =
+        monitorId ??
+        (monitorSelecionado as any)?.id ??
+        (monitorSelecionado as any)?._id;
       if (!mid) return;
       setLoading(true);
       try {
@@ -95,7 +120,11 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
       }
     };
     load();
-  }, [monitorId, (monitorSelecionado as any)?.id, (monitorSelecionado as any)?._id]);
+  }, [
+    monitorId,
+    (monitorSelecionado as any)?.id,
+    (monitorSelecionado as any)?._id,
+  ]);
 
   const totalAvaliacoes = avaliacoes.length;
   const somaNotas = avaliacoes.reduce((soma, av) => soma + (av.nota || 0), 0);
@@ -132,7 +161,10 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
       const payload = JSON.parse(atob(token.split(".")[1]));
       alunoId = payload?.id as string | undefined;
     } catch {}
-    const mid = monitorId ?? (monitorSelecionado as any)?.id ?? (monitorSelecionado as any)?._id;
+    const mid =
+      monitorId ??
+      (monitorSelecionado as any)?.id ??
+      (monitorSelecionado as any)?._id;
     if (!alunoId || !mid) {
       alert("Você precisa estar logado e selecionar um monitor para avaliar.");
       return;
@@ -415,8 +447,16 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
                             px: { xs: 1, sm: 2 },
                             borderRadius: "15px",
                           }}
+                          onClick={() =>
+                            atualizarReacao(
+                              String(
+                                (avaliacao as any)._id || (avaliacao as any).id
+                              ),
+                              "like"
+                            )
+                          }
                         >
-                          ({0})
+                          ({avaliacao.likes || 0})
                         </Button>
                         <Button
                           variant="outlined"
@@ -433,8 +473,16 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
                             px: { xs: 1, sm: 2 },
                             borderRadius: "15px",
                           }}
+                          onClick={() =>
+                            atualizarReacao(
+                              String(
+                                (avaliacao as any)._id || (avaliacao as any).id
+                              ),
+                              "dislike"
+                            )
+                          }
                         >
-                          ({0})
+                          ({avaliacao.dislikes || 0})
                         </Button>
                       </Box>
                     </Box>
