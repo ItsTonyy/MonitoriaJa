@@ -67,7 +67,7 @@ const handleEscolherCartao = (cartao: any) => {
   };
 
   const handleCancel = () => {
-    navigate(-1);
+    navigate("/MonitoriaJa/lista-monitores");
   };
 
   const handleCadastrarCartao = () => {
