@@ -17,6 +17,7 @@ const DescriptionBox: React.FC<DescriptionBoxProps> = ({
 }) => {
   return (
     <TextField
+      label="Biografia"
       className={styles.editableTextarea}
       value={value}
       onChange={(e) => onChange(e.target.value)}

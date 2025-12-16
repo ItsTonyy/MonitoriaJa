@@ -1,5 +1,6 @@
 import { Agendamento } from "./agendamento.model";
 import { Cartao } from "./cartao.model";
+import { Disciplina } from "./disciplina.model";
 
 export interface Usuario {  
 id?: string;
@@ -17,7 +18,7 @@ servico?: string;
 avaliacao?: number;
 formacao?: string;
 biografia?: string;
-listaDisciplinas?: string[]; 
+listaDisciplinas?: string[] | Disciplina[]; 
 listaAgendamentos?: Agendamento[];
 listaCartoes?: Cartao[];
 }

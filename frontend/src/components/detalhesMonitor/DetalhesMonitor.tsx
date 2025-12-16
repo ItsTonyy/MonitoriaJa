@@ -13,7 +13,11 @@ import type { Usuario } from "../../models/usuario.model";
 import { avaliacaoService } from "../../services/avaliacaoService";
 import { disponibilidadeService } from "../../services/disponibilidadeService";
 import { usuarioService } from "../../services/usuarioService";
-
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { Box } from "@mui/material";
+import dayjs from "dayjs";
 
 /*interface TimeSlot {
   day: "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
@@ -42,7 +46,6 @@ function decodeJwtPayload(token: string) {
     return null;
   }
 }
-
 
 let conquistas: string[] = [
   "Realizou sua primeira monitoria com sucesso.",
@@ -89,7 +92,11 @@ function DetalhesMonitor() {
   const [loading, setLoading] = useState<boolean>(false);
   const [fixedLessons, setFixedLessons] = useState<number>(0);
   const [fixedConquista, setFixedConquista] = useState<string>("");
-  // usuário autenticado é inferido pelo token no header (api.ts)
+
+  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
+
+  const diasSemana = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
+  const selectedDiaAbbr = selectedDate ? diasSemana[selectedDate.day()] : null;
 
   useEffect(() => {
     const load = async () => {
@@ -139,25 +146,17 @@ function DetalhesMonitor() {
 
   const handleTimeSlotClick = (day: string | undefined, time: string) => {
     if (!day) return;
-    setSelectedSlot(`${day}-${time}`); // só um horário por vez
+    if (!selectedDate) return;
+    if (selectedDiaAbbr && day !== selectedDiaAbbr) return;
+    setSelectedSlot(`${day}-${time}`);
   };
 
   const handleAgendar = () => {
     if (!selectedSlot) return;
-    const [diaSelecionado, horarioSelecionado] = selectedSlot.split("-");
+    if (!selectedDate) return;
+    const [, horarioSelecionado] = selectedSlot.split("-");
 
-    // Calcula a data prevista (próximo dia da semana a partir de hoje)
-    const diasSemana = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
-    const hoje = new Date();
-    const hojeIndex = hoje.getDay(); // 0=domingo, 1=segunda, ...
-    const targetIndex = diasSemana.indexOf(diaSelecionado);
-
-    let diff = targetIndex - hojeIndex;
-    if (diff < 0) diff += 7; // pega o próximo dia, nunca o anterior
-
-    const dataPrevista = new Date(hoje);
-    dataPrevista.setDate(hoje.getDate() + diff);
-    const dataFormatada = dataPrevista.toLocaleDateString("pt-BR"); // dd/mm/aaaa
+    const dataFormatada = selectedDate.format("DD/MM/YYYY");
 
     const novoAgendamento: Agendamento = {
       id: Date.now().toString(),
@@ -167,9 +166,9 @@ function DetalhesMonitor() {
       status: "AGUARDANDO",
       valor: monitor.valor,
       statusPagamento: "PENDENTE",
-      duracao:1,
-      link:"https://meet.google.com/zyw-jymr-ipg",
-      aluno:  usuarioId, 
+      duracao: 1,
+      link: "https://meet.google.com/zyw-jymr-ipg",
+      aluno: usuarioId,
     };
 
     navigate("/MonitoriaJa/agendamento-monitor", {
@@ -235,7 +234,7 @@ function DetalhesMonitor() {
       </div>
 
       <div className="formação">
-        <h1 className="titulo">Sobre o Monitor e Suas Formações</h1>
+        <h1 className="titulo">Sobre o Monitor</h1>
         <p className="formação-paragrafo">
           {monitor.biografia || "Informação não disponível"}
         </p>
@@ -249,6 +248,22 @@ function DetalhesMonitor() {
         }
       >
         <h1 className="titulo">Horários</h1>
+        <div className="date-input">
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Box>
+              <DatePicker
+                label="Data de Agendamento"
+                disablePast={true}
+                format="DD/MM/YYYY"
+                value={selectedDate}
+                onChange={(newValue) => {
+                  setSelectedDate(newValue);
+                  setSelectedSlot(null); // limpa seleção ao mudar data
+                }}
+              />
+            </Box>
+          </LocalizationProvider>
+        </div>
         <div className="outer-tabela">
           <div className="schedule-container">
             {horarios &&
@@ -258,13 +273,22 @@ function DetalhesMonitor() {
                   {times!.map((time) => {
                     const slotId = `${day}-${time}`;
                     const isSelected = selectedSlot === slotId;
+                    const isDisabled =
+                      !!selectedDate && selectedDiaAbbr !== day;
                     return (
                       <div
                         key={time}
                         className={`time-slot ${
                           isSelected ? "selecionado" : ""
                         }`}
-                        onClick={() => handleTimeSlotClick(day, time)}
+                        onClick={() => {
+                          if (!isDisabled) handleTimeSlotClick(day, time);
+                        }}
+                        style={
+                          isDisabled
+                            ? { opacity: 0.5, pointerEvents: "none" }
+                            : undefined
+                        }
                       >
                         {time}
                       </div>
@@ -290,7 +314,7 @@ function DetalhesMonitor() {
           variant="contained"
           sx={{ padding: "5px 40px" }}
           onClick={handleAgendar}
-          disabled={!selectedSlot || !token}
+          disabled={!selectedSlot || !selectedDate || !token}
         >
           Agendar
         </Button>

@@ -1,6 +1,6 @@
 :root {
   --cor-primaria: #104c91;
-  --cor-secundaria: #1f8ac0;
+  --cor-secundaria: #1976d2;
   --cor-acento: #efc9af;
   --cor-fundo: #ffffff;
   --cor-texto: #050315;
@@ -151,8 +151,13 @@
 }
 
 .buttonSection {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 0.5fr 1fr;
+  grid-template-areas:
+    "box-1 box-1 box-1"
+    ". . ."
+    "box-2 . box-3";
   gap: 0.5rem;
 }
 

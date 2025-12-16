@@ -101,9 +101,9 @@ export default function AppNavBar() {
       navigate("/MonitoriaJa/listar-usuarios");
     }
   }
-  function handleClickAdicionarAgendamento() {
+  function handleClickListarDisciplinas() {
     if (isAuthenticated) {
-      navigate("/MonitoriaJa/cadastro-disciplina");
+      navigate("/MonitoriaJa/lista-disciplinas");
     }
   }
 
@@ -180,7 +180,7 @@ export default function AppNavBar() {
     setAnchorElUser(null);
   };
 
-  var autenticado = localStorage.getItem('token');
+ const autenticado = isAuth();
 
   return (
     <AppBar
@@ -239,7 +239,7 @@ export default function AppNavBar() {
               >
                 Monitores
               </Button>
-              {autenticado && 
+              {isAuthenticated  && 
                 <Button
                   variant="text"
                   color="info"
@@ -254,7 +254,7 @@ export default function AppNavBar() {
                   Agendamento
                 </Button>
               }
-                            {autenticado && 
+                            {isAuthenticated  && 
                 <Button
                   variant="text"
                   color="info"
@@ -295,24 +295,9 @@ export default function AppNavBar() {
                     paddingRight: "10px",
                     ":hover": { transform: "none" },
                   }}
-                  onClick={handleClickAdicionarAgendamento}
+                  onClick={handleClickListarDisciplinas}
                 >
-                  +Disciplinas
-                </Button>
-              }
-              {isAdmin && 
-                <Button
-                  variant="text"
-                  color="info"
-                  size="small"
-                  sx={{
-                    paddingLeft: "10px",
-                    paddingRight: "10px",
-                    ":hover": { transform: "none" },
-                  }}
-                  onClick={handleClickHistorico}
-                >
-                  Historico
+                  Disciplinas
                 </Button>
               }
             </Box>
@@ -429,12 +414,32 @@ export default function AppNavBar() {
                     <CloseRoundedIcon />
                   </IconButton>
                 </Box>
+
+                {/* --- LINKS SEMPRE VISÍVEIS --- */}
                 <MenuItem onClick={handleClickHome}>Home</MenuItem>
                 <MenuItem onClick={handleClickMonitores}>Monitores</MenuItem>
-                <MenuItem onClick={handleClickAgendamento}>
-                  Agendamento
-                </MenuItem>
+
+                {/* --- LINKS PARA USUÁRIO LOGADO --- */}
+                {autenticado && (
+                  <>
+                    <MenuItem onClick={handleClickAgendamento}>Agendamento</MenuItem>
+                    <MenuItem onClick={handleClickHistorico}>Histórico</MenuItem>
+                  </>
+                )}
+
+                {/* --- LINKS EXCLUSIVOS DO ADMIN --- */}
+                {isAdmin && (
+                  <>
+                    <MenuItem onClick={handleClickListarUsuarios}>Usuários</MenuItem>
+                    <MenuItem onClick={handleClickListarDisciplinas}>
+                      Disciplinas
+                    </MenuItem>
+                  </>
+                )}
+
                 <Divider sx={{ my: 3 }} />
+
+                {/* --- SE NÃO ESTIVER LOGADO --- */}
                 {!isAuthenticated && (
                   <>
                     <MenuItem>
@@ -447,6 +452,7 @@ export default function AppNavBar() {
                         Sign up
                       </Button>
                     </MenuItem>
+
                     <MenuItem>
                       <Button
                         color="primary"
@@ -455,6 +461,22 @@ export default function AppNavBar() {
                         onClick={handleClickLogin}
                       >
                         Sign in
+                      </Button>
+                    </MenuItem>
+                  </>
+                )}
+
+                {/* --- SE ESTIVER LOGADO --- */}
+                {isAuthenticated && (
+                  <>
+                    <MenuItem>
+                      <Button
+                        color="primary"
+                        variant="outlined"
+                        fullWidth
+                        onClick={handleClickLogout}
+                      >
+                        Logout
                       </Button>
                     </MenuItem>
                   </>

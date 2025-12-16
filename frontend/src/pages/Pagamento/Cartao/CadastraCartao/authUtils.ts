@@ -78,7 +78,18 @@ export const isTokenExpired = (): boolean => {
 
 export const isAuthenticated = (): boolean => {
   const token = getToken();
-  return token !== null && !isTokenExpired();
+  if (!token) return false;
+  const payload = decodeToken(token);
+  if (!payload || !payload.exp) {
+    removeToken();
+    return false;
+  }
+  const currentTime = Date.now() / 1000;
+  if (payload.exp < currentTime) {
+    removeToken();
+    return false;
+  }
+  return true;
 };
 
 export const removeToken = (): void => {
@@ -96,3 +107,15 @@ export const setToken = (token: string): void => {
     console.error('Erro ao salvar token no localStorage:', error);
   }
 };
+
+ export function getRoleFromToken(): string | null {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.role ?? null; // depende do seu backend
+  } catch (e) {
+    return null;
+  }
+}

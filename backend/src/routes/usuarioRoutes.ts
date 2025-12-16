@@ -40,8 +40,8 @@ router.post("/", async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(usuario.password, salt);
     usuario.password = hash;
-    await Usuario.create({ ...usuario, isAtivo: true });
-    res.status(201).json({ message: "Usuário criado com sucesso!" });
+    const usuarioCriado= await Usuario.create({ ...usuario, isAtivo: true });
+    res.status(201).json(usuarioCriado);
   } catch (error) {
     res.status(500).json({ erro: error });
   }
@@ -102,7 +102,7 @@ router.get("/", autenticarAdmin, async (req, res) => {
  *         description: Lista de usuários por tipo
  */
 // GET usuários ativos filtrando por tipoUsuario (ex: /usuario/tipo/MONITOR)
-router.get("/tipo/:tipoUsuario", autenticarAdmin, async (req, res) => {
+router.get("/tipo/:tipoUsuario", async (req, res) => {
   const tipoUsuario = req.params.tipoUsuario.toUpperCase();
   try {
     const usuarios = await Usuario.find({

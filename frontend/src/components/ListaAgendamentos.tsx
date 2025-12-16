@@ -19,7 +19,7 @@ import ModalCancelamento from "./ModalCancelamento";
 import { Agendamento } from "../models/agendamento.model";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setCurrentAgendamento } from "../redux/features/agendamento/agendamentoSlice";
-import { listarAgendamentosPorUsuarioId } from "../redux/features/agendamento/fetch";
+import { listarAgendamentosPorUsuarioId, listarAgendamentosAbertos } from "../redux/features/agendamento/fetch";
 
 function decodeJwtPayload(token: string) {
   try {
@@ -69,7 +69,7 @@ function ListaAgendamentos() {
   const [modalAcessarOpen, setModalAcessarOpen] = useState(false);
   
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
 
 
@@ -82,22 +82,43 @@ if (token) {
   usuarioRole= payload?.role.toLowerCase();
 }
 
-const fetchAgendamentos = () => {
-   if (!usuarioId) return; 
-  listarAgendamentosPorUsuarioId(usuarioId)
-    .then((data) => {
-      setAgendamentos(data);
+const isAdmin = usuarioRole === "admin";
+
+  const fetchAgendamentos = () => {
+    setLoading(true);
+    setError(null);
+
+    if (isAdmin) {
+      listarAgendamentosAbertos()
+        .then((data) => {
+          setAgendamentos(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError("Erro ao carregar agendamentos abertos");
+          setLoading(false);
+          console.error("Erro ao buscar agendamentos abertos:", err);
+        });
+    } else if (usuarioId) {
+      listarAgendamentosPorUsuarioId(usuarioId)
+        .then((data) => {
+          setAgendamentos(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError("Erro ao carregar agendamentos");
+          setLoading(false);
+          console.error("Erro ao buscar agendamentos do usuário:", err);
+        });
+    } else {
+      setError("Usuário não identificado");
       setLoading(false);
-    })
-    .catch(() => {
-      setError("Erro ao carregar agendamentos");
-      setLoading(false);
-    });
-};
+    }
+  };
 
 useEffect(() => {
   fetchAgendamentos();
-}, [usuarioId]);
+}, [usuarioId, usuarioRole]);
 
   useEffect(() => {
     function handleResize() {
@@ -125,6 +146,10 @@ useEffect(() => {
     [agendamentos,pagina, cardsPorPagina]
   );
 
+  if (loading) {
+    return <>Carregando...</>
+  }
+  
   return (
     <Paper
       elevation={0}

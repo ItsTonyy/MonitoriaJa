@@ -26,6 +26,9 @@ import { isAuthenticated, getUserIdFromToken } from '../Pagamento/Cartao/Cadastr
 import Modal from "@mui/material/Modal";
 import ModalAgendamento from "../../components/modais/ModalAgendamento";
 import { uploadArquivo } from "../../redux/features/upload/fetch";
+import { Button } from "@mui/material";
+import { adicionarMonitorNaDisciplina } from "../../redux/features/disciplina/fetch";
+
 
 export interface Disponibilidade {
   dia: string;
@@ -257,6 +260,26 @@ const PerfilMonitorPage: React.FC = () => {
         })
       ).unwrap();
 
+      const monitorId = monitor.id;
+        const disciplinasAdicionadas = materiasSelecionadas.filter(
+          (nome) =>
+            !(monitor.materia || []).includes(nome) &&
+            !(monitor.listaDisciplinas || []).some((id) => {
+              const disciplina = materiasDisponiveis.find(d => d.id === id || d.id === id);
+              return disciplina?.nome === nome;
+            })
+        );
+
+        // Pegue os ids das disciplinas adicionadas
+        const disciplinasIds = materiasDisponiveis
+          .filter((d) => disciplinasAdicionadas.includes(d.nome!))
+          .map((d) => d.id);
+
+        for (const disciplinaId of disciplinasIds) {
+          if (disciplinaId && monitorId) {
+            await adicionarMonitorNaDisciplina(disciplinaId, monitorId);
+          }
+        }
       dispatch(
         atualizarContato({ telefone: telefoneInput, email: emailInput })
       );
@@ -326,27 +349,6 @@ const PerfilMonitorPage: React.FC = () => {
             )}
           </div>
         </div>
-
-        {/* Matérias - MOSTRAR SEMPRE que houver matérias selecionadas */}
-        {materiasSelecionadas.length > 0 && (
-          <div className={styles.materiasAssociadas}>
-            <label className={styles.materiasLabel}>Matérias Associadas:</label>
-            <div className={styles.materiasChips}>
-              {materiasSelecionadas.map((materia, i) => (
-                <div key={i} className={styles.materiaChip}>
-                  {materia}
-                  <button
-                    type="button"
-                    className={styles.deleteButton}
-                    onClick={() => handleExcluirMateria(materia)}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         <div className={styles.photoSection}>
           <div className={styles.photoContainer}>
@@ -421,6 +423,26 @@ const PerfilMonitorPage: React.FC = () => {
             }
           />
 
+          {materiasSelecionadas.length > 0 && (
+          <div className={styles.materiasAssociadas}>
+            <label className={styles.materiasLabel}>Matérias Associadas:</label>
+            <div className={styles.materiasChips}>
+              {materiasSelecionadas.map((materia, i) => (
+                <div key={i} className={styles.materiaChip}>
+                  {materia}
+                  <button
+                    type="button"
+                    className={styles.deleteButton}
+                    onClick={() => handleExcluirMateria(materia)}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
           {/* CORREÇÃO: O dropdown mostra apenas matérias NÃO selecionadas */}
           <AtualizarMateria
             value={[]} // Sempre vazio porque as selecionadas já estão fixas acima
@@ -441,12 +463,6 @@ const PerfilMonitorPage: React.FC = () => {
         )}
 
         <div className={styles.buttonSection}>
-          <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={handleOpen}>
-              Gerenciar Disponibilidade
-            </ConfirmationButton>
-          </div>
-
           <Modal
             open={modalOpen}
             onClose={handleClose}
@@ -455,28 +471,77 @@ const PerfilMonitorPage: React.FC = () => {
           >
             <ModalAgendamento onClose={handleClose} />
           </Modal>
+            
+          {/*<div className={styles.buttonGroup}></div>*/}
 
           <div className={styles.buttonGroup}>
-          <ConfirmationButton 
-            onClick={() => {
-              const targetPath = userId 
-                ? `/MonitoriaJa/alterar-senha/${userId}`
-                : '/MonitoriaJa/alterar-senha';
-              navigate(targetPath);
-            }}
-          >
-            Trocar senha
-          </ConfirmationButton>
-          </div>
-          <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={handleSalvar} disabled={loading || uploadingFoto}>
-              {loading ? 'Salvando...' : 'Confirmar Mudanças'}
-            </ConfirmationButton>
-          </div>
-          <div className={styles.buttonGroup}>
-            <ConfirmationButton onClick={() => navigate(-1)}>
+            <Button
+              onClick={handleOpen}
+              variant="contained"
+              disabled={loading || uploadingFoto}
+              sx={{
+                padding: "6px 0",
+                borderRadius: "6px",
+                gridArea: "box-1"
+              }}
+            >
+              Gerenciar Disponibilidade
+            </Button>
+
+            <Button 
+              onClick={() => {
+                const targetPath = userId 
+                  ? `/MonitoriaJa/alterar-senha/${userId}`
+                  : '/MonitoriaJa/alterar-senha';
+                navigate(targetPath);
+              }}
+              disabled={loading || uploadingFoto}
+              variant="contained"
+              sx={{
+                padding: "6px 0",
+                borderRadius: "6px",
+                gridArea: "box-2"
+              }}
+            >
+              Trocar senha
+            </Button>
+
+
+            <Button 
+              onClick={() => navigate(-1)}
+              variant="outlined"
+              disabled={loading || uploadingFoto}
+              sx={{
+                padding: "6px 0",
+                borderRadius: "6px",
+                gridArea: "box-3",
+              }}
+              >
               Voltar
-            </ConfirmationButton>
+            </Button>
+
+            <Button
+              onClick={handleSalvar}
+              disabled={loading || uploadingFoto}
+              variant="contained"
+              sx={{
+                background: "#104c91",
+                color: "#fff",
+                padding: "6px 0",
+                fontWeight: "bold",
+                borderRadius: "6px",
+                gridArea: "box-4",
+                "&:hover": {
+                  background: "#125a9e",
+                },
+                "&:disabled": {
+                  background: "#9bb9d7",
+                  color: "#eee",
+                },
+              }}
+            >
+              {loading ? "SALVANDO..." : "SALVAR"}
+            </Button>
           </div>
         </div>
       </div>

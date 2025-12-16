@@ -95,3 +95,37 @@ export async function listarAgendamentosPorUsuarioIdHistorico(id: string): Promi
         ag.status === "CANCELADO" || ag.status === "CONCLUIDO"
     );
 }
+
+export async function listarTodosAgendamentosHistorico(): Promise<Agendamento[]> {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${BASE_URL}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  
+  if (!response.ok) throw new Error("Erro ao buscar agendamentos");
+  
+  const data = await response.json();
+  return data.map(mapAgendamentoMongo).filter(
+      (ag: Agendamento) =>
+        ag.status === "CANCELADO" || ag.status === "CONCLUIDO"
+    );
+}
+
+
+export async function listarAgendamentosAbertos(): Promise<Agendamento[]> {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${BASE_URL}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) throw new Error("Erro ao buscar agendamentos");
+
+  const data = await response.json();
+  return data.map(mapAgendamentoMongo).filter(
+      (ag: Agendamento) =>
+        ag.status !== "CANCELADO" && ag.status !== "CONCLUIDO"
+    );
+}

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import styles from "./ListaCartaoPage.module.css";
 import Title from "../../../AlterarSenha/Titulo/Titulo";
 import CartaoItem from "../CartaoItem/CartaoItem";
@@ -15,7 +16,7 @@ import {
   selectCartoesError,
   clearError,
 } from "../../../../redux/features/listaCartao/slice";
-import { CircularProgress } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 
 const ListaCartaoPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,6 +27,9 @@ const ListaCartaoPage: React.FC = () => {
   const error = useSelector((state: RootState) => selectCartoesError(state));
 
   const [removendoId, setRemovendoId] = React.useState<string | null>(null);
+
+  const location = useLocation();
+  const agendamentoFromLocation = location.state?.agendamento;
 
   useEffect(() => {
     dispatch(fetchCartoes());
@@ -40,9 +44,14 @@ const ListaCartaoPage: React.FC = () => {
     }
   }, [error, dispatch]);
 
-  const handleEscolherCartao = (cartao: any) => {
-    navigate("/MonitoriaJa/confirma-pagamento", { state: { cartao } });
-  };
+const handleEscolherCartao = (cartao: any) => {
+  navigate("/MonitoriaJa/confirma-pagamento", { 
+    state: { 
+      cartao,
+      agendamento: agendamentoFromLocation // ← Usa o do location.state
+    } 
+  });
+};
 
   const handleRemoverCartao = async (id: string) => {
     if (!id) return;
@@ -58,7 +67,7 @@ const ListaCartaoPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate("/MonitoriaJa/agendamento-monitor");
+    navigate(-1);
   };
 
   const handleCadastrarCartao = () => {
@@ -121,15 +130,31 @@ const ListaCartaoPage: React.FC = () => {
           </div>
         )}
 
-        <ConfirmationButton
+        <div className={styles.buttonGroup}>
+        <Button
           onClick={handleCadastrarCartao}
           disabled={loading}
+          variant="contained"
+          sx={{
+            padding: "6px 0",
+            borderRadius: "6px"
+          }}
         >
           Cadastrar Novo Cartão
-        </ConfirmationButton>
-        <ConfirmationButton onClick={handleCancel} disabled={loading}>
+        </Button>
+        <Button 
+          onClick={handleCancel} 
+          disabled={loading}
+          variant="contained"
+          color="error"
+          sx={{
+            padding: "6px 0",
+            borderRadius: "6px"
+          }}
+        >
           Cancelar
-        </ConfirmationButton>
+        </Button>
+        </div>
       </div>
     </main>
   );
