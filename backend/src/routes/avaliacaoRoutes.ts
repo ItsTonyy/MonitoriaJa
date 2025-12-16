@@ -288,7 +288,7 @@ router.get("/monitor/:monitorId", async (req, res) => {
  *       404:
  *         description: Avaliação não encontrada
  */
-router.post("/:id/like", autenticar, userOrAdminAuth, async (req, res) => {
+router.post("/:id/like", userOrAdminAuth, async (req, res) => {
   const id = req.params.id;
   const userId = req.id;
   try {
@@ -349,7 +349,7 @@ router.post("/:id/like", autenticar, userOrAdminAuth, async (req, res) => {
  *       404:
  *         description: Avaliação não encontrada
  */
-router.post("/:id/dislike", autenticar, userOrAdminAuth, async (req, res) => {
+router.post("/:id/dislike", userOrAdminAuth, async (req, res) => {
   const id = req.params.id;
   const userId = req.id;
   try {
