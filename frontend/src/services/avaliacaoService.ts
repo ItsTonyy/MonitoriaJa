@@ -14,4 +14,6 @@ export const avaliacaoService = {
   update: (id: string, patch: Partial<Avaliacao>) => api.patch<Partial<Avaliacao>>(`${base}/${id}`, patch),
   remove: (id: string) => api.delete<{ message: string }>(`${base}/${id}`),
   getByMonitorId: (monitorId: string) => api.get<Avaliacao[]>(`${base}/monitor/${monitorId}`),
+  like: (id: string) => api.post<{ likes: number; dislikes: number }>(`${base}/${id}/like`, {}),
+  dislike: (id: string) => api.post<{ likes: number; dislikes: number }>(`${base}/${id}/dislike`, {}),
 };

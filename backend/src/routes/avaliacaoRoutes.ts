@@ -1,8 +1,8 @@
 import express from "express";
 import Avaliacao from "../models/avaliacao.model";
-import { criarNotificacaoAvaliacao } from "../service/notificacaoService";
 import autenticar from "../middleware/auth";
 import adminAuth from "../middleware/adminAuth";
+import userOrAdminAuth from "../middleware/userOrAdminAuth";
 
 const router = express.Router();
 
@@ -265,6 +265,128 @@ router.get("/monitor/:monitorId", async (req, res) => {
     res.status(200).json(avaliacoes);
   } catch (error) {
     res.status(500).json({ erro: error });
+  }
+});
+
+/**
+ * @swagger
+ * /avaliacao/{id}/like:
+ *   post:
+ *     summary: Dá like em uma avaliação (toggle)
+ *     tags: [Avaliacao]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Estado de reação atualizado
+ *       404:
+ *         description: Avaliação não encontrada
+ */
+router.post("/:id/like", autenticar, userOrAdminAuth, async (req, res) => {
+  const id = req.params.id;
+  const userId = req.id;
+  try {
+    const avaliacao: any = await Avaliacao.findById(id);
+    if (!avaliacao) {
+      return res.status(404).json({ message: "Avaliação não encontrada!" });
+    }
+
+    const liked = avaliacao.likedBy?.some(
+      (u: any) => String(u) === String(userId)
+    );
+    const disliked = avaliacao.dislikedBy?.some(
+      (u: any) => String(u) === String(userId)
+    );
+
+    if (liked) {
+      avaliacao.likedBy = (avaliacao.likedBy || []).filter(
+        (u: any) => String(u) !== String(userId)
+      );
+      avaliacao.likes = Math.max(0, (avaliacao.likes || 0) - 1);
+    } else {
+      avaliacao.likedBy = [...(avaliacao.likedBy || []), userId];
+      avaliacao.likes = (avaliacao.likes || 0) + 1;
+      if (disliked) {
+        avaliacao.dislikedBy = (avaliacao.dislikedBy || []).filter(
+          (u: any) => String(u) !== String(userId)
+        );
+        avaliacao.dislikes = Math.max(0, (avaliacao.dislikes || 0) - 1);
+      }
+    }
+
+    await avaliacao.save();
+    return res
+      .status(200)
+      .json({ likes: avaliacao.likes || 0, dislikes: avaliacao.dislikes || 0 });
+  } catch (error) {
+    return res.status(500).json({ erro: error });
+  }
+});
+
+/**
+ * @swagger
+ * /avaliacao/{id}/dislike:
+ *   post:
+ *     summary: Dá dislike em uma avaliação (toggle)
+ *     tags: [Avaliacao]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Estado de reação atualizado
+ *       404:
+ *         description: Avaliação não encontrada
+ */
+router.post("/:id/dislike", autenticar, userOrAdminAuth, async (req, res) => {
+  const id = req.params.id;
+  const userId = req.id;
+  try {
+    const avaliacao: any = await Avaliacao.findById(id);
+    if (!avaliacao) {
+      return res.status(404).json({ message: "Avaliação não encontrada!" });
+    }
+
+    const liked = avaliacao.likedBy?.some(
+      (u: any) => String(u) === String(userId)
+    );
+    const disliked = avaliacao.dislikedBy?.some(
+      (u: any) => String(u) === String(userId)
+    );
+
+    if (disliked) {
+      avaliacao.dislikedBy = (avaliacao.dislikedBy || []).filter(
+        (u: any) => String(u) !== String(userId)
+      );
+      avaliacao.dislikes = Math.max(0, (avaliacao.dislikes || 0) - 1);
+    } else {
+      avaliacao.dislikedBy = [...(avaliacao.dislikedBy || []), userId];
+      avaliacao.dislikes = (avaliacao.dislikes || 0) + 1;
+      if (liked) {
+        avaliacao.likedBy = (avaliacao.likedBy || []).filter(
+          (u: any) => String(u) !== String(userId)
+        );
+        avaliacao.likes = Math.max(0, (avaliacao.likes || 0) - 1);
+      }
+    }
+
+    await avaliacao.save();
+    return res
+      .status(200)
+      .json({ likes: avaliacao.likes || 0, dislikes: avaliacao.dislikes || 0 });
+  } catch (error) {
+    return res.status(500).json({ erro: error });
   }
 });
 

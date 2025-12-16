@@ -1,7 +1,7 @@
 import { Usuario } from "./usuario.model";
 
 export interface Disciplina{
-    id?: number;
+    _id?: string;
     nome?: string;
     listaMonitores?: (Usuario | string)[];
 

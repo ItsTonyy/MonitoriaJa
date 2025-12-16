@@ -67,7 +67,7 @@ function getCardsPerPage() {
 function ListaMonitores() {
   const navigate = useNavigate();
   const [monitores, setmonitores] = useState<Usuario[]>([]);
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
   const [buscaNome, setBuscaNome] = useState("");
   const [buscaMateria, setBuscaMateria] = useState("");
@@ -124,6 +124,10 @@ function ListaMonitores() {
     (pagina - 1) * cardsPorPagina,
     pagina * cardsPorPagina
   );
+
+  if (loading) {
+    return <>Carregando...</>
+  }
 
   return (
     <Paper

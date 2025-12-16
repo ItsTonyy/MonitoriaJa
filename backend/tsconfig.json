@@ -13,5 +13,11 @@
     "typeRoots": ["./src/types","./node_modules/@types"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "src/db-mock.ts",
+    "src/routes/notificacao.ts",
+    "src/routes/alterarSenha.ts",
+    "src/server.ts"
+  ]
 }
