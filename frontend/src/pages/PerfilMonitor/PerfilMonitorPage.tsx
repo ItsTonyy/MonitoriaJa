@@ -260,26 +260,27 @@ const PerfilMonitorPage: React.FC = () => {
         })
       ).unwrap();
 
-      const monitorId = monitor.id;
-        const disciplinasAdicionadas = materiasSelecionadas.filter(
-          (nome) =>
-            !(monitor.materia || []).includes(nome) &&
-            !(monitor.listaDisciplinas || []).some((id) => {
-              const disciplina = materiasDisponiveis.find(d => d.id === id || d.id === id);
-              return disciplina?.nome === nome;
-            })
-        );
+      const monitorIdValue = monitor.id;
+      const disciplinasAdicionadas = materiasSelecionadas.filter(
+        (nome) =>
+          !(monitor.materia || []).includes(nome) &&
+          !(monitor.listaDisciplinas || []).some((id) => {
+            const disciplina = materiasDisponiveis.find(d => d.id === id || d.id === id);
+            return disciplina?.nome === nome;
+          })
+      );
 
-        // Pegue os ids das disciplinas adicionadas
-        const disciplinasIds = materiasDisponiveis
-          .filter((d) => disciplinasAdicionadas.includes(d.nome!))
-          .map((d) => d.id);
+      // Pegue os ids das disciplinas adicionadas
+      const disciplinasIds = materiasDisponiveis
+        .filter((d) => disciplinasAdicionadas.includes(d.nome!))
+        .map((d) => d.id);
 
-        for (const disciplinaId of disciplinasIds) {
-          if (disciplinaId && monitorId) {
-            await adicionarMonitorNaDisciplina(disciplinaId, monitorId);
-          }
+      for (const disciplinaId of disciplinasIds) {
+        if (disciplinaId && monitorIdValue) {
+          await adicionarMonitorNaDisciplina(disciplinaId, monitorIdValue);
         }
+      }
+
       dispatch(
         atualizarContato({ telefone: telefoneInput, email: emailInput })
       );
@@ -471,8 +472,6 @@ const PerfilMonitorPage: React.FC = () => {
           >
             <ModalAgendamento onClose={handleClose} monitorId={monitorId || monitor?.id} />
           </Modal>
-            
-          {/*<div className={styles.buttonGroup}></div>*/}
 
           <div className={styles.buttonGroup}>
             <Button
@@ -490,10 +489,13 @@ const PerfilMonitorPage: React.FC = () => {
 
             <Button 
               onClick={() => {
-                const targetPath = userId 
-                  ? `/MonitoriaJa/alterar-senha/${userId}`
-                  : '/MonitoriaJa/alterar-senha';
-                navigate(targetPath);
+                const loggedUserId = getUserIdFromToken();
+                
+                if (monitorId && monitorId !== loggedUserId) {
+                  navigate(`/MonitoriaJa/alterar-senha/${monitorId}`);
+                } else {
+                  navigate('/MonitoriaJa/alterar-senha');
+                }
               }}
               disabled={loading || uploadingFoto}
               variant="contained"
@@ -503,9 +505,8 @@ const PerfilMonitorPage: React.FC = () => {
                 gridArea: "box-2"
               }}
             >
-              Trocar senha
+              Alterar senha
             </Button>
-
 
             <Button 
               onClick={() => navigate(-1)}
@@ -516,7 +517,7 @@ const PerfilMonitorPage: React.FC = () => {
                 borderRadius: "6px",
                 gridArea: "box-3",
               }}
-              >
+            >
               Voltar
             </Button>
 
