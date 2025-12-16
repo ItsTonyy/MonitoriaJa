@@ -119,14 +119,23 @@ router.get(
  *         description: Erro ao buscar cartão
  */
 // READ ONE - Busca cartão por id (com usuário preenchido)
-router.get("/:id", autenticar, ownerOrAdminAuth, async (req, res) => {
+router.get("/:id", autenticar, async (req, res) => {
   const id = req.params.id;
 
   try {
-    const cartao = await Cartao.findOne({ _id: id }).populate("usuario");
+    const cartao = await Cartao.findOne({ _id: id });
 
     if (!cartao) {
       res.status(404).json({ message: "Cartão não encontrado!" });
+      return;
+    }
+
+    if (
+      !(
+        req.role?.toLowerCase() === "admin" || String(cartao.usuario) === req.id
+      )
+    ) {
+      res.status(403).json({ message: "Acesso negado!" });
       return;
     }
 
