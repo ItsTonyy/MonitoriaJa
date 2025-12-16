@@ -9,4 +9,6 @@ export const agendamentoService = {
   getById: (id: string) => api.get<Agendamento>(`${base}/${id}`),
   update: (id: string, patch: Partial<Agendamento>) => api.patch<Partial<Agendamento>>(`${base}/${id}`, patch),
   remove: (id: string) => api.delete<{ message: string }>(`${base}/${id}`),
+  validarAgendamento: (monitorId: string) => 
+    api.get<{ temAgendamento: boolean; agendamento: Agendamento | null }>(`${base}/validar/${monitorId}`),
 };
