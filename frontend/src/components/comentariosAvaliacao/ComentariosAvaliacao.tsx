@@ -489,6 +489,14 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
                         </Typography>
                         <Box sx={{ display: "flex", gap: 1 }}>
                           <Button
+                            onClick={() =>
+                            atualizarReacao(
+                              String(
+                                (avaliacao as any)._id || (avaliacao as any).id
+                              ),
+                              "like"
+                            )
+                          }
                             variant="outlined"
                             color="primary"
                             size="medium"
@@ -504,9 +512,17 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
                               borderRadius: "15px",
                             }}
                           >
-                            ({0})
+                            ({avaliacao.likes || 0})
                           </Button>
                           <Button
+                          onClick={() =>
+                            atualizarReacao(
+                              String(
+                                (avaliacao as any)._id || (avaliacao as any).id
+                              ),
+                              "dislike"
+                            )
+                          }
                             variant="outlined"
                             color="primary"
                             size="medium"
@@ -522,7 +538,7 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
                               borderRadius: "15px",
                             }}
                           >
-                            ({0})
+                            ({avaliacao.dislikes || 0})
                           </Button>
                         </Box>
                       </Box>
@@ -536,14 +552,6 @@ const ComentariosAvaliacao: React.FC<Props> = ({ monitorId }) => {
                               backgroundColor: "rgba(211, 47, 47, 0.1)",
                             },
                           }}
-                          onClick={() =>
-                            atualizarReacao(
-                              String(
-                                (avaliacao as any)._id || (avaliacao as any).id
-                              ),
-                              "dislike"
-                            )
-                          }
                         >
                           <DeleteIcon />
                         </IconButton>
