@@ -23,6 +23,7 @@ import { listarMonitores } from "../redux/features/monitor/fetch";
 import { Disciplina } from "../models/disciplina.model";
 import { listarDisciplinas } from "../redux/features/disciplina/fetch";
 import { Usuario } from "../models/usuario.model";
+import { avaliacaoService } from "../services/avaliacaoService";
 
 function removeAccents(str: string) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -75,6 +76,7 @@ function ListaMonitores() {
   const [, setCols] = useState(getGridCols());
   const [cardsPorPagina, setCardsPorPagina] = useState(getCardsPerPage());
   const [disciplinas, setDisciplinas] = useState<Disciplina[]>([]);
+  const [avaliacoesPorMonitor, setAvaliacoesPorMonitor] = useState<{ [key: string]: { media: string; total: number } }>({});
 
   useEffect(() => {
     listarDisciplinas()
@@ -87,6 +89,25 @@ function ListaMonitores() {
       .then((data) => {
         setmonitores(data);
         setLoading(false);
+        // Carregar avaliações para cada monitor
+        data.forEach(async (monitor) => {
+          try {
+            const monitorId = (monitor as any).id ?? (monitor as any)._id;
+            const avaliacoes = await avaliacaoService.getByMonitorId(String(monitorId));
+            
+            // Calcular média seguindo o padrão de DetalhesMonitor
+            const totalAvaliacoes = (avaliacoes || []).length;
+            const somaNotas = (avaliacoes || []).reduce((soma: number, av: any) => soma + (av.nota || 0), 0);
+            const notaMedia = totalAvaliacoes > 0 ? (somaNotas / totalAvaliacoes).toFixed(1) : "0.0";
+            
+            setAvaliacoesPorMonitor(prev => ({
+              ...prev,
+              [String(monitorId)]: { media: notaMedia, total: totalAvaliacoes }
+            }));
+          } catch (e) {
+            console.error("Erro ao carregar avaliações do monitor:", e);
+          }
+        });
       })
       .catch(() => {
         setError("Erro ao carregar monitores");
@@ -313,7 +334,9 @@ function ListaMonitores() {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {monitor.avaliacao}
+                        {avaliacoesPorMonitor[(monitor as any).id ?? (monitor as any)._id]?.media ?? "0.0"}
+                        {" "}
+                        ({avaliacoesPorMonitor[(monitor as any).id ?? (monitor as any)._id]?.total ?? 0})
                       </Typography>
                     </div>
                   </Box>
