@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Box,
@@ -11,8 +11,13 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import StarIcon from "@mui/icons-material/Star";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../redux/hooks";
+import { avaliacaoService } from "../../services/avaliacaoService";
+import { agendamentoService } from "../../services/agendamentoService";
+import {jwtDecode} from "jwt-decode";
 import "./AvaliacaoPosAula .css";
-
+import {Link as RouterLink} from "react-router-dom";
 const AvaliacaoCard = styled(Card)({
   width: "100%",
   maxWidth: "none",
@@ -41,20 +46,62 @@ interface FormData {
   observacoes: string;
 }
 
-const MONITOR_INFO: MonitorInfo = {
-  nome: "Carlos Silva",
-  materia: "Matemática - Cálculo I",
-  duracao: "60 min",
-  foto: "/static/images/avatar/1.jpg",
-};
-
 const AvaliacaoPosAula: React.FC = () => {
+  const navigate = useNavigate();
+  const agendamento = useAppSelector((state) => state.agendamento.currentAgendamento);
+  
   const [formData, setFormData] = useState<FormData>({
     rating: null,
     observacoes: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [validacaoErro, setValidacaoErro] = useState<string | null>(null);
+  const [validando, setValidando] = useState(true);
+
+  const monitorObj = typeof agendamento?.monitor === "object" && agendamento?.monitor !== null 
+    ? agendamento.monitor 
+    : undefined;
+
+  useEffect(() => {
+    const validarAgendamento = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setValidacaoErro("Você precisa estar logado para avaliar.");
+        setValidando(false);
+        return;
+      }
+
+      const monitorId = (monitorObj as any)?._id || (monitorObj as any)?.id;
+
+      if (!monitorId) {
+        setValidacaoErro("Informações do monitor não encontradas.");
+        setValidando(false);
+        return;
+      }
+
+      try {
+        console.log("Validando agendamento para monitor:", monitorId);
+        const response = await agendamentoService.validarAgendamento(monitorId);
+        
+        if (!response.temAgendamento) {
+          setValidacaoErro("Você não possui um agendamento com este monitor. Apenas alunos que agendaram podem avaliar.");
+          setValidando(false);
+          return;
+        }
+
+        setValidando(false);
+      } catch (error) {
+        console.error("Erro ao validar agendamento:", error);
+        setValidacaoErro("Erro ao validar seu agendamento. Tente novamente.");
+        setValidando(false);
+      }
+    };
+
+    if (monitorObj) {
+      validarAgendamento();
+    }
+  }, [monitorObj]);
 
   const handleRatingChange = (
     _event: React.SyntheticEvent,
@@ -81,19 +128,94 @@ const AvaliacaoPosAula: React.FC = () => {
       return;
     }
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Você precisa estar logado para avaliar.");
+      return;
+    }
+
+    let alunoId: string | undefined;
+    try {
+      const payload = jwtDecode<{ id: string }>(token);
+      alunoId = payload?.id;
+    } catch {
+      alert("Token inválido. Faça login novamente.");
+      return;
+    }
+
+    const monitorId = (monitorObj as any)?._id || (monitorObj as any)?.id;
+    const agendamentoId = (agendamento as any)?._id || (agendamento as any)?.id;
+
+    if (!alunoId || !monitorId) {
+      alert("Informações do monitor ou aluno não encontradas.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await avaliacaoService.create({
+        aluno: String(alunoId),
+        monitor: String(monitorId),
+        nota: formData.rating || 0,
+        comentario: formData.observacoes,
+        agendamento: agendamentoId ? String(agendamentoId) : undefined,
+        dataAvaliacao: new Date(),
+      });
+      
       setSubmitSuccess(true);
 
-      setTimeout(() => {}, 2000);
+      setTimeout(() => {
+        navigate('/MonitoriaJa/lista-monitores');
+      }, 2000);
     } catch (error) {
       console.error("Erro ao enviar avaliação:", error);
+      alert("Erro ao enviar avaliação. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (validando) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "50vh",
+        }}
+      >
+        <Typography variant="h6">Validando agendamento...</Typography>
+      </Box>
+    );
+  }
+
+  if (validacaoErro) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "50vh",
+          px: 2,
+        }}
+      >
+        <Alert severity="error" sx={{ fontSize: "1.1rem", maxWidth: 600 }}>
+          {validacaoErro}
+          <Box sx={{ mt: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => navigate('/MonitoriaJa/lista-monitores')}
+            >
+              Voltar para Lista de Monitores
+            </Button>
+          </Box>
+        </Alert>
+      </Box>
+    );
+  }
 
   if (submitSuccess) {
     return (
@@ -142,19 +264,19 @@ const AvaliacaoPosAula: React.FC = () => {
             textAlign: "left",
           }}
         >
-          <MonitorAvatar src={MONITOR_INFO.foto} alt="Foto do Monitor">
-            {MONITOR_INFO.nome.charAt(0)}
+          <MonitorAvatar src={(monitorObj as any)?.foto} alt="Foto do Monitor">
+            {(monitorObj as any)?.nome?.charAt(0) || 'M'}
           </MonitorAvatar>
 
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
-              {MONITOR_INFO.nome}
+              {(monitorObj as any)?.nome || 'Monitor'}
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              {MONITOR_INFO.materia}
+              {(monitorObj as any)?.materia || 'Disciplina'}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Duração: {MONITOR_INFO.duracao}
+              Duração: {agendamento?.duracao || '60'} min
             </Typography>
           </Box>
         </Box>

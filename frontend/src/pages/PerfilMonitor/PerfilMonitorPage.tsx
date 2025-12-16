@@ -469,7 +469,7 @@ const PerfilMonitorPage: React.FC = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <ModalAgendamento onClose={handleClose} />
+            <ModalAgendamento onClose={handleClose} monitorId={monitorId || monitor?.id} />
           </Modal>
             
           {/*<div className={styles.buttonGroup}></div>*/}
