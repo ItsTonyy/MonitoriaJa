@@ -353,7 +353,7 @@ const PerfilUsuarioPage: React.FC = () => {
               gridArea: "box-1",
             }}
           >
-            Trocar senha
+            Alterar senha
           </Button>
 
           <Button 
