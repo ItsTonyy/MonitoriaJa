@@ -92,7 +92,11 @@ const PixPage: React.FC = () => {
 
   const handleCancel = () => {
     dispatch(resetPix());
+<<<<<<< fix/comentarios-avaliacao-bug-pr
+    navigate("/MonitoriaJa/lista-monitores");
+=======
     navigate(-1);
+>>>>>>> main
   };
 
   // Tela de erro

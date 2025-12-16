@@ -116,7 +116,7 @@ const ListaCartaoPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate(-1);
+    navigate("/MonitoriaJa/lista-monitores");
   };
 
   const handleCadastrarCartao = () => {
