@@ -106,7 +106,7 @@ router.get("/:id", autenticar, async (req, res) => {
 
   try {
     const disponibilidade = await Disponibilidade.findOne({ _id: id }).populate(
-      "usuarioId"
+      "usuario"
     );
 
     if (!disponibilidade) {

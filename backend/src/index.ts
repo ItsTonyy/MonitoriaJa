@@ -78,13 +78,17 @@ app.use(loginRoutes);
 
 const password = encodeURIComponent("psw10monitorija423#");
 
-mongoose
-  .connect(
-    process.env.MONGO_URI ||
-      `mongodb+srv://monitoriaja:${password}@apimonitoriaja.kuue8ey.mongodb.net/monitoriaja?appName=APImonitoriaja`
-  )
-  .then(() => {
-    console.log("Conectou ao banco!");
-    app.listen(3001, () => console.log("Servidor rodando na porta 3001"));
-  })
-  .catch((err) => console.log(err));
+if (process.env.NODE_ENV !== "test") {
+  mongoose
+    .connect(
+      process.env.MONGO_URI ||
+        `mongodb+srv://monitoriaja:${password}@apimonitoriaja.kuue8ey.mongodb.net/monitoriaja?appName=APImonitoriaja`
+    )
+    .then(() => {
+      console.log("Conectou ao banco!");
+      app.listen(3001, () => console.log("Servidor rodando na porta 3001"));
+    })
+    .catch((err) => console.log(err));
+}
+
+export default app;
