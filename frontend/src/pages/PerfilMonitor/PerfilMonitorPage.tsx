@@ -480,16 +480,20 @@ const PerfilMonitorPage: React.FC = () => {
           >
             {loading ? "Salvando..." : "Confirmar Mudanças"}
           </Button>
-          <ConfirmationButton 
-            onClick={() => {
-              const targetPath = userId 
-                ? `/MonitoriaJa/alterar-senha/${userId}`
-                : '/MonitoriaJa/alterar-senha';
-              navigate(targetPath);
-            }}
-          >
-            Trocar senha
-          </ConfirmationButton>
+<ConfirmationButton 
+  onClick={() => {
+    // Só adiciona userId se realmente for diferente do logado
+    const loggedUserId = getUserIdFromToken();
+    
+    if (monitorId && monitorId !== loggedUserId) {
+      navigate(`/MonitoriaJa/alterar-senha/${monitorId}`);
+    } else {
+      navigate('/MonitoriaJa/alterar-senha'); // ← SEM ID
+    }
+  }}
+>
+  Trocar senha
+</ConfirmationButton>
             <ConfirmationButton onClick={() => navigate(-1)}>
               Voltar
             </ConfirmationButton>
